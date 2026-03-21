@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary": "#5f5e5e",
+                        "primary": "#b9000c",
+                        "surface": "#fcf9f8",
+                        "outline-variant": "#e7bdb7",
+                        "on-secondary-container": "#636262",
+                        "on-surface-variant": "#5d3f3b",
+                        "tertiary-container": "#737373",
+                        "surface-container-highest": "#e5e2e1",
+                        "surface-bright": "#fcf9f8",
+                        "surface-container-low": "#f6f3f2",
+                        "on-tertiary": "#ffffff",
+                        "surface-tint": "#c0000d",
+                        "on-tertiary-fixed": "#1b1b1b",
+                        "on-primary": "#ffffff",
+                        "background": "#fcf9f8",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#e2e2e2",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "tertiary-fixed-dim": "#c6c6c6",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#474747",
+                        "on-secondary-fixed-variant": "#474746",
+                        "inverse-on-surface": "#f3f0ef",
+                        "primary-fixed": "#ffdad5",
+                        "inverse-surface": "#313030",
+                        "on-tertiary-container": "#fafafa",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#e5e2e1",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "on-background": "#1c1b1b",
+                        "surface-container": "#f0eded",
+                        "surface-container-high": "#eae7e7",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#fff9f8",
+                        "secondary-container": "#e2dfde",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "surface-variant": "#e5e2e1",
+                        "surface-dim": "#dcd9d9",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface": "#1c1b1b",
+                        "on-primary-fixed-variant": "#930007",
+                        "on-primary-fixed": "#410001",
+                        "inverse-primary": "#ffb4aa",
+                        "primary-container": "#e21d1d",
+                        "outline": "#926e6a",
+                        "on-error": "#ffffff",
+                        "tertiary": "#5a5a5a"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="bg-surface text-on-surface antialiased">
+    <!-- SideNavBar (The Monolith) -->
+    <aside
+        class="fixed inset-y-0 left-0 z-50 flex flex-col bg-[#313030] dark:bg-[#1c1b1b] h-screen w-64 left-0 top-0 rounded-none">
+        <div class="px-8 py-10">
+            <h1 class="text-xl font-bold tracking-tighter text-white uppercase">Monolith CRM</h1>
+            <p class="text-[0.65rem] tracking-[0.2em] text-white/40 uppercase mt-1">Studio Admin</p>
+        </div>
+        <nav class="flex-1 mt-4">
+            <!-- Dashboard (Inactive) -->
+            <a class="text-[#fcf9f8]/60 flex items-center px-6 py-4 hover:text-white transition-colors hover:bg-white/5 transition-all duration-200"
+                href="#">
+                <span class="material-symbols-outlined mr-4" data-icon="dashboard">dashboard</span>
+                <span class="text-[0.75rem] tracking-widest uppercase font-medium">Dashboard</span>
+            </a>
+            <!-- Enquiries (Inactive) -->
+            <a class="text-[#fcf9f8]/60 flex items-center px-6 py-4 hover:text-white transition-colors hover:bg-white/5 transition-all duration-200"
+                href="#">
+                <span class="material-symbols-outlined mr-4" data-icon="inbox_customize">inbox_customize</span>
+                <span class="text-[0.75rem] tracking-widest uppercase font-medium">Enquiries</span>
+            </a>
+            <!-- Projects (Inactive) -->
+            <a class="text-[#fcf9f8]/60 flex items-center px-6 py-4 hover:text-white transition-colors hover:bg-white/5 transition-all duration-200"
+                href="#">
+                <span class="material-symbols-outlined mr-4" data-icon="architecture">architecture</span>
+                <span class="text-[0.75rem] tracking-widest uppercase font-medium">Projects</span>
+            </a>
+            <!-- Proposals (Active - Logic applied based on page intent) -->
+            <a class="relative text-white flex items-center px-6 py-4 before:absolute before:left-0 before:w-1 before:h-full before:bg-[#b9000c] bg-white/5"
+                href="#">
+                <span class="material-symbols-outlined mr-4" data-icon="description">description</span>
+                <span class="text-[0.75rem] tracking-widest uppercase font-medium">Proposals</span>
+            </a>
+            <!-- Financials (Inactive) -->
+            <a class="text-[#fcf9f8]/60 flex items-center px-6 py-4 hover:text-white transition-colors hover:bg-white/5 transition-all duration-200"
+                href="#">
+                <span class="material-symbols-outlined mr-4" data-icon="payments">payments</span>
+                <span class="text-[0.75rem] tracking-widest uppercase font-medium">Financials</span>
+            </a>
+            <!-- Settings (Inactive) -->
+            <a class="text-[#fcf9f8]/60 flex items-center px-6 py-4 hover:text-white transition-colors hover:bg-white/5 transition-all duration-200"
+                href="#">
+                <span class="material-symbols-outlined mr-4" data-icon="settings">settings</span>
+                <span class="text-[0.75rem] tracking-widest uppercase font-medium">Settings</span>
+            </a>
+        </nav>
+        <div class="p-6 mt-auto">
+            <button
+                class="w-full bg-primary text-white py-4 text-[0.75rem] tracking-[0.15em] uppercase font-bold hover:bg-primary-container transition-all">
+                New Project
+            </button>
+            <div class="mt-8 flex flex-col gap-2">
+                <a class="text-[#fcf9f8]/40 flex items-center px-2 py-2 hover:text-white transition-colors text-[0.7rem] uppercase tracking-widest"
+                    href="#">
+                    <span class="material-symbols-outlined text-sm mr-3" data-icon="help_outline">help_outline</span>
+                    Help
+                </a>
+                <a class="text-[#fcf9f8]/40 flex items-center px-2 py-2 hover:text-white transition-colors text-[0.7rem] uppercase tracking-widest"
+                    href="#">
+                    <span class="material-symbols-outlined text-sm mr-3" data-icon="archive">archive</span> Archive
+                </a>
+            </div>
+        </div>
+    </aside>
+    <!-- Main Content Wrapper -->
+    <main class="ml-64 min-h-screen">
+        <!-- TopAppBar (Floating Architectural Frost) -->
+        <header
+            class="fixed top-0 right-0 left-64 h-20 flex justify-between items-center px-12 z-40 bg-[#fcf9f8]/80 dark:bg-[#1c1b1b]/80 backdrop-blur-xl">
+            <div class="flex items-center gap-12">
+                <span class="text-[1.5rem] font-medium text-[#1c1b1b] tracking-tight">Proposal Architect</span>
+                <nav class="flex gap-8 items-center h-full">
+                    <a class="text-[#5d3f3b] dark:text-[#e7bdb7]/60 hover:text-[#1c1b1b] text-[0.75rem] uppercase tracking-widest font-semibold transition-opacity"
+                        href="#">Review</a>
+                    <a class="text-[#1c1b1b] dark:text-white border-b-2 border-[#b9000c] pb-2 text-[0.75rem] uppercase tracking-widest font-bold opacity-80"
+                        href="#">Draft</a>
+                    <a class="text-[#5d3f3b] dark:text-[#e7bdb7]/60 hover:text-[#1c1b1b] text-[0.75rem] uppercase tracking-widest font-semibold transition-opacity"
+                        href="#">Sent</a>
+                    <a class="text-[#5d3f3b] dark:text-[#e7bdb7]/60 hover:text-[#1c1b1b] text-[0.75rem] uppercase tracking-widest font-semibold transition-opacity"
+                        href="#">Approved</a>
+                </nav>
+            </div>
+            <div class="flex items-center gap-6">
+                <button class="p-2 hover:bg-[#f6f3f2] transition-colors"><span class="material-symbols-outlined"
+                        data-icon="search">search</span></button>
+                <button class="p-2 hover:bg-[#f6f3f2] transition-colors relative">
+                    <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+                    <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-primary rounded-full"></span>
+                </button>
+                <div class="w-10 h-10 bg-surface-container-highest overflow-hidden">
+                    <img class="w-full h-full object-cover grayscale" data-alt="User Avatar Professional Architect"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLcJXXuQeoDQ2sDiWIeWsQlGfbg1nCa1JqRcMtA5jzNohFVUds178fqkR9AI8tAOPRwYei6pnuPrsEN9zdqx-RLvCNdty8R0_SMrLq14V7Dq98MgtywDnLPKZKAo5oyym6DNGbJAhm8G3zVAB6Aoxc6W6kUHiSnI1GtzRfkTJLQAXVma7c44gw9ySABmR8SC8QqwzAciyuvoFJ_JWr6JemZ-Ky--H7CYuwzfCS0eis1WpS7exixqOF8TmaAotCgC_OO806a87oHbc" />
+                </div>
+            </div>
+        </header>
+        <!-- Page Canvas -->
+        <div class="pt-32 px-12 pb-24 max-w-7xl mx-auto">
+            <!-- Header Section -->
+            <div class="flex justify-between items-end mb-16">
+                <div>
+                    <span class="text-[0.75rem] tracking-[0.2em] text-primary uppercase font-bold">Proposal
+                        #PR-102</span>
+                    <h2 class="text-[3.5rem] font-bold tracking-tighter leading-none mt-2 text-on-surface">The Obsidian
+                        House</h2>
+                    <p class="text-on-surface-variant mt-4 text-lg">Residential Development • Oslo, Norway</p>
+                </div>
+                <div class="flex gap-4">
+                    <button
+                        class="px-8 py-4 bg-surface-container-highest text-on-surface text-[0.75rem] tracking-widest uppercase font-bold hover:bg-surface-container-high transition-all">Download
+                        PDF</button>
+                    <button
+                        class="px-8 py-4 bg-primary text-white text-[0.75rem] tracking-widest uppercase font-bold hover:brightness-110 transition-all shadow-[0px_24px_48px_rgba(185,0,12,0.15)]">Send
+                        Proposal</button>
+                </div>
+            </div>
+            <!-- Status Timeline Bento -->
+            <div class="grid grid-cols-4 gap-0 mb-16 bg-surface-container-low p-1">
+                <div class="bg-surface p-8 relative">
+                    <span class="text-[0.65rem] tracking-widest uppercase text-on-surface-variant">Phase 01</span>
+                    <h4 class="text-lg font-bold mt-2">Draft</h4>
+                    <p class="text-[0.75rem] text-on-surface-variant mt-1">Completed Jan 12</p>
+                    <div class="absolute bottom-0 left-0 w-full h-1 bg-primary"></div>
+                </div>
+                <div class="bg-surface p-8 relative">
+                    <span class="text-[0.65rem] tracking-widest uppercase text-primary font-bold">Phase 02</span>
+                    <h4 class="text-lg font-bold mt-2">Under Review</h4>
+                    <p class="text-[0.75rem] text-on-surface-variant mt-1">In Progress</p>
+                    <div class="absolute bottom-0 left-0 w-1/2 h-1 bg-primary"></div>
+                    <div class="absolute bottom-0 right-0 w-1/2 h-1 bg-surface-container-highest"></div>
+                </div>
+                <div class="bg-surface-container-low p-8 opacity-50">
+                    <span class="text-[0.65rem] tracking-widest uppercase text-on-surface-variant">Phase 03</span>
+                    <h4 class="text-lg font-bold mt-2">Sent</h4>
+                    <p class="text-[0.75rem] text-on-surface-variant mt-1">Pending Approval</p>
+                </div>
+                <div class="bg-surface-container-low p-8 opacity-50">
+                    <span class="text-[0.65rem] tracking-widest uppercase text-on-surface-variant">Phase 04</span>
+                    <h4 class="text-lg font-bold mt-2">Approved</h4>
+                    <p class="text-[0.75rem] text-on-surface-variant mt-1">Final Sign-off</p>
+                </div>
+            </div>
+            <!-- Dashboard Content Layout -->
+            <div class="grid grid-cols-12 gap-12">
+                <!-- Left Column: Tabs & Detailed Info -->
+                <div class="col-span-8 space-y-12">
+                    <!-- Tabbed Interface -->
+                    <div class="border-b border-outline-variant/20 flex gap-12">
+                        <button
+                            class="pb-4 text-[0.75rem] tracking-widest uppercase font-bold border-b-2 border-primary">Overview</button>
+                        <button
+                            class="pb-4 text-[0.75rem] tracking-widest uppercase font-medium text-on-surface-variant hover:text-on-surface transition-colors">Detailed
+                            Scope</button>
+                        <button
+                            class="pb-4 text-[0.75rem] tracking-widest uppercase font-medium text-on-surface-variant hover:text-on-surface transition-colors">Budget</button>
+                        <button
+                            class="pb-4 text-[0.75rem] tracking-widest uppercase font-medium text-on-surface-variant hover:text-on-surface transition-colors">Documents</button>
+                    </div>
+                    <!-- Scope of Work Section -->
+                    <section>
+                        <h3 class="text-2xl font-bold mb-8">Scope of Work</h3>
+                        <div class="space-y-6">
+                            <div
+                                class="p-8 bg-surface-container-low group hover:bg-surface-container-lowest transition-all hover:shadow-[0px_24px_48px_rgba(28,27,27,0.06)]">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex gap-6">
+                                        <span class="text-primary font-bold font-mono">01</span>
+                                        <div>
+                                            <h5 class="font-bold text-lg mb-2">Architectural Concept Design</h5>
+                                            <p class="text-on-surface-variant leading-relaxed max-w-xl">Initial spatial
+                                                programming, massing studies, and exterior aesthetic direction. Includes
+                                                3D visualization and site integration analysis.</p>
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="text-[0.75rem] tracking-widest uppercase font-bold text-on-surface-variant">40
+                                        Hours</span>
+                                </div>
+                            </div>
+                            <div
+                                class="p-8 bg-surface-container-low group hover:bg-surface-container-lowest transition-all hover:shadow-[0px_24px_48px_rgba(28,27,27,0.06)]">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex gap-6">
+                                        <span class="text-primary font-bold font-mono">02</span>
+                                        <div>
+                                            <h5 class="font-bold text-lg mb-2">Material Specification &amp; Sourcing
+                                            </h5>
+                                            <p class="text-on-surface-variant leading-relaxed max-w-xl">Curation of
+                                                bespoke materials including carbonized wood cladding, basalt flooring,
+                                                and custom glazing solutions.</p>
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="text-[0.75rem] tracking-widest uppercase font-bold text-on-surface-variant">24
+                                        Hours</span>
+                                </div>
+                            </div>
+                            <div
+                                class="p-8 bg-surface-container-low group hover:bg-surface-container-lowest transition-all hover:shadow-[0px_24px_48px_rgba(28,27,27,0.06)]">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex gap-6">
+                                        <span class="text-primary font-bold font-mono">03</span>
+                                        <div>
+                                            <h5 class="font-bold text-lg mb-2">Structural Engineering Liaison</h5>
+                                            <p class="text-on-surface-variant leading-relaxed max-w-xl">Coordinating
+                                                with regional structural engineers to ensure the cantilevered elements
+                                                meet safety and seismic requirements.</p>
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="text-[0.75rem] tracking-widest uppercase font-bold text-on-surface-variant">16
+                                        Hours</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- Timeline Section -->
+                    <section>
+                        <h3 class="text-2xl font-bold mb-8">Estimated Timeline</h3>
+                        <div class="grid grid-cols-2 gap-8">
+                            <div class="border-l-4 border-primary p-6 bg-surface-container-low">
+                                <span class="text-[0.65rem] tracking-widest uppercase font-bold text-primary">Milestone
+                                    01</span>
+                                <h6 class="font-bold mt-1">Concept Approval</h6>
+                                <p class="text-[0.75rem] text-on-surface-variant mt-2">Week 4 — February 15, 2024</p>
+                            </div>
+                            <div class="border-l-4 border-surface-container-highest p-6 bg-surface-container-low">
+                                <span
+                                    class="text-[0.65rem] tracking-widest uppercase font-bold text-on-surface-variant">Milestone
+                                    02</span>
+                                <h6 class="font-bold mt-1">Detailed Documentation</h6>
+                                <p class="text-[0.75rem] text-on-surface-variant mt-2">Week 12 — April 10, 2024</p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <!-- Right Column: Summaries & Metadata -->
+                <div class="col-span-4 space-y-12">
+                    <!-- Client Summary Card -->
+                    <div class="bg-inverse-surface text-white p-10">
+                        <span class="text-[0.65rem] tracking-[0.2em] uppercase text-white/40 font-bold">Client
+                            Entity</span>
+                        <div class="mt-4 flex items-center gap-4">
+                            <div class="w-12 h-12 bg-white/10 flex items-center justify-center font-bold text-xl">N
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg">Nordic Living Ltd.</h4>
+                                <p class="text-white/60 text-[0.75rem]">Hegdehaugsveien 24, Oslo</p>
+                            </div>
+                        </div>
+                        <hr class="my-8 border-white/10" />
+                        <div class="space-y-4">
+                            <div class="flex justify-between">
+                                <span class="text-[0.7rem] uppercase tracking-widest text-white/40">Contact</span>
+                                <span class="text-[0.75rem] font-medium">Erik Solberg</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-[0.7rem] uppercase tracking-widest text-white/40">Email</span>
+                                <span class="text-[0.75rem] font-medium">e.solberg@nordic.no</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Financial Summary Card -->
+                    <div
+                        class="p-10 bg-surface-container-lowest border border-outline-variant/10 shadow-[0px_24px_48px_rgba(28,27,27,0.04)]">
+                        <span
+                            class="text-[0.65rem] tracking-[0.2em] uppercase text-on-surface-variant font-bold">Financial
+                            Summary</span>
+                        <div class="mt-8">
+                            <span class="text-4xl font-bold tracking-tighter">€42,500.00</span>
+                            <p class="text-on-surface-variant text-[0.75rem] mt-2">Total Estimated Professional Fees</p>
+                        </div>
+                        <div class="mt-10 space-y-4">
+                            <div class="flex justify-between items-end">
+                                <span class="text-[0.7rem] uppercase tracking-widest text-on-surface-variant">Retainer
+                                    (10%)</span>
+                                <span class="text-[0.85rem] font-bold">€4,250.00</span>
+                            </div>
+                            <div class="flex justify-between items-end">
+                                <span class="text-[0.7rem] uppercase tracking-widest text-on-surface-variant">Monthly
+                                    Fixed</span>
+                                <span class="text-[0.85rem] font-bold">€8,500.00</span>
+                            </div>
+                        </div>
+                        <button
+                            class="w-full mt-10 py-4 border border-on-surface text-on-surface text-[0.75rem] tracking-widest uppercase font-bold hover:bg-on-surface hover:text-white transition-all">
+                            View Fee Breakdown
+                        </button>
+                    </div>
+                    <!-- Project Context Map/Image -->
+                    <div class="h-64 bg-surface-container-high overflow-hidden relative">
+                        <img class="w-full h-full object-cover grayscale opacity-60"
+                            data-alt="Architectural Site Context Abstract Map"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLcJXXuQeoDQ2sDiWIeWsQlGfbg1nCa1JqRcMtA5jzNohFVUds178fqkR9AI8tAOPRwYei6pnuPrsEN9zdqx-RLvCNdty8R0_SMrLq14V7Dq98MgtywDnLPKZKAo5oyym6DNGbJAhm8G3zVAB6Aoxc6W6kUHiSnI1GtzRfkTJLQAXVma7c44gw9ySABmR8SC8QqwzAciyuvoFJ_JWr6JemZ-Ky--H7CYuwzfCS0eis1WpS7exixqOF8TmaAotCgC_OO806a87oHbc" />
+                        <div
+                            class="absolute inset-0 bg-gradient-to-t from-surface-container-low via-transparent to-transparent">
+                        </div>
+                        <div class="absolute bottom-6 left-6">
+                            <span
+                                class="text-[0.65rem] tracking-widest uppercase font-bold px-3 py-1 bg-white inline-block">Site
+                                Context</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Contextual FAB - Restricted to Dashboard/Main Context as per rules -->
+    <!-- Hidden here as we are in a 'Details' transactional-focused screen -->
+</body>
+
+</html>

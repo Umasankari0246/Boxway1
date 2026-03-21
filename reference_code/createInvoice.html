@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4a6841", // Overridden by brand requirement in design but following system
+                        "brand-red": "#dc2626",
+                        "background-light": "#f7f7f6",
+                        "background-dark": "#181b17",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #4a6841;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-900 text-slate-400 flex flex-col border-r border-slate-800">
+            <div class="p-6 flex items-center gap-3">
+                <div class="w-8 h-8 bg-brand-red rounded flex items-center justify-center text-white font-bold italic">B
+                </div>
+                <span class="text-white font-bold tracking-wider text-sm">BOXWAY STUDIO</span>
+            </div>
+            <nav class="flex-1 px-4 space-y-1">
+                <div class="py-2 text-[10px] uppercase font-bold tracking-widest text-slate-500 px-2">Main</div>
+                <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors" href="#">
+                    <span class="material-icons text-xl">dashboard</span>
+                    <span class="text-sm">Overview</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors" href="#">
+                    <span class="material-icons text-xl">architecture</span>
+                    <span class="text-sm">Studio</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/20 text-white font-medium" href="#">
+                    <span class="material-icons text-xl text-primary">payments</span>
+                    <span class="text-sm">Finance</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors" href="#">
+                    <span class="material-icons text-xl">insights</span>
+                    <span class="text-sm">Intelligence</span>
+                </a>
+            </nav>
+            <div class="p-4 border-t border-slate-800">
+                <div class="flex items-center gap-3 px-3 py-2">
+                    <img class="w-8 h-8 rounded-full border border-slate-700"
+                        data-alt="Profile picture of studio manager"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeeJiF8qkA7LGQMs3-g1pyHZfRdQCxc1Gp1FdgeVgcduoOrnTLwDQZ4fZwlu5Za4rTNqB-5QBVKmyINWPSKwZ55RStXxi3C0yHGgVoyRGMzA6b4JlOgv7wiH46OAzXcglebJJ9JcUs5AKqNnn0FjzxztDrQbRjTALgbsfGl3JiS2hHXT1OIZwGzRc_BnFhfxdPR-10se-pSsXlAREk7dKdoA0leTkXezHBoPpkWSc7pNqBaFBTPcD55_Lcnn64ihnfybdhVhLA-dY" />
+                    <div class="flex-1 overflow-hidden">
+                        <p class="text-xs text-white truncate">Admin User</p>
+                        <p class="text-[10px] truncate">Studio Director</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col min-w-0 bg-background-light relative">
+            <!-- Top Header -->
+            <header
+                class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-10">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-xl font-semibold text-slate-800">New Invoice</h1>
+                    <span
+                        class="px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] rounded font-bold uppercase tracking-wider">Draft</span>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="text-right">
+                        <p class="text-xs font-medium text-slate-500">Oct 24, 2023</p>
+                        <p class="text-[10px] text-slate-400">14:22 PM</p>
+                    </div>
+                    <div class="flex items-center gap-3 border-l border-slate-200 pl-6">
+                        <button class="text-slate-400 hover:text-slate-600 relative">
+                            <span class="material-icons">notifications_none</span>
+                            <span
+                                class="absolute top-0 right-0 w-2 h-2 bg-brand-red rounded-full border-2 border-white"></span>
+                        </button>
+                        <button class="text-slate-400 hover:text-slate-600">
+                            <span class="material-icons">help_outline</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            <!-- Scrollable Body -->
+            <div class="flex-1 overflow-y-auto p-8 custom-scrollbar pb-32">
+                <div class="max-w-5xl mx-auto space-y-6">
+                    <!-- Header Card -->
+                    <div
+                        class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Invoice
+                                Number</label>
+                            <div class="text-slate-900 font-mono font-semibold">INV-2023-0842</div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Issue Date</label>
+                            <input
+                                class="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary"
+                                type="date" value="2023-10-24" />
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Due Date</label>
+                            <input
+                                class="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary"
+                                type="date" value="2023-11-07" />
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Project
+                                Link</label>
+                            <select
+                                class="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary">
+                                <option>The Urban Loft - Interior Design</option>
+                                <option>Skye Residency - Facade</option>
+                                <option>Harbor Hotel Renovation</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Details Row -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Firm Details (Read-only) -->
+                        <div class="bg-slate-50 rounded-xl border border-slate-200 p-6 shadow-sm">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">From: BOXWAY
+                                    STUDIO</h3>
+                                <span class="material-icons text-slate-300 text-sm">lock</span>
+                            </div>
+                            <div class="space-y-2 text-sm text-slate-600">
+                                <p class="font-bold text-slate-900">Boxway Studio Architects</p>
+                                <p>Suite 402, Creative Hub, South Industrial Park</p>
+                                <p>Mumbai, Maharashtra, 400013</p>
+                                <div class="pt-2">
+                                    <p class="text-[10px] text-slate-400 uppercase font-bold">GSTIN</p>
+                                    <p class="font-mono">27AAAAA0000A1Z5</p>
+                                </div>
+                                <div class="pt-2">
+                                    <p class="text-[10px] text-slate-400 uppercase font-bold">Contact</p>
+                                    <p>accounts@boxwaystudio.com | +91 22 4567 8900</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Client Details Card -->
+                        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xs font-bold text-primary uppercase tracking-widest">Bill To: Client
+                                </h3>
+                                <button class="text-[10px] text-primary hover:underline font-bold">SEARCH
+                                    CLIENT</button>
+                            </div>
+                            <div class="space-y-4">
+                                <input
+                                    class="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary"
+                                    placeholder="Client Name" type="text" value="Modern Living Co." />
+                                <textarea
+                                    class="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary"
+                                    placeholder="Billing Address"
+                                    rows="2">12th Floor, Corporate Heights, BKC, Mumbai 400051</textarea>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <input
+                                        class="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary"
+                                        placeholder="GSTIN" type="text" value="27BBBBB1234B1Z2" />
+                                    <input
+                                        class="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary"
+                                        placeholder="Contact Person" type="text" value="Mr. Rahul Khanna" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Line Items Card -->
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                            <h3 class="text-sm font-semibold text-slate-800">Invoice Items</h3>
+                            <button
+                                class="flex items-center gap-1 text-primary text-xs font-bold hover:opacity-80 transition-opacity">
+                                <span class="material-icons text-sm">add</span> ADD LINE ITEM
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 border-b border-slate-100">
+                                    <tr>
+                                        <th class="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase">Description
+                                        </th>
+                                        <th class="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase w-28">
+                                            HSN/SAC</th>
+                                        <th class="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase w-20">Qty
+                                        </th>
+                                        <th class="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase w-32">Rate
+                                        </th>
+                                        <th class="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase w-20">Disc %
+                                        </th>
+                                        <th
+                                            class="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase w-32 text-right">
+                                            Amount</th>
+                                        <th class="px-4 py-3 w-10"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <tr>
+                                        <td class="px-6 py-4">
+                                            <input class="w-full text-sm border-none focus:ring-0 p-0" type="text"
+                                                value="Phase 1: Conceptual Design &amp; Layouts" />
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <input class="w-full text-sm border-none focus:ring-0 p-0" type="text"
+                                                value="9983" />
+                                        </td>
+                                        <td class="px-6 py-4 text-center">
+                                            <input class="w-full text-sm border-none focus:ring-0 p-0" type="number"
+                                                value="1" />
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <input class="w-full text-sm border-none focus:ring-0 p-0" type="number"
+                                                value="45000" />
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <input class="w-full text-sm border-none focus:ring-0 p-0" type="number"
+                                                value="0" />
+                                        </td>
+                                        <td class="px-6 py-4 text-sm font-medium text-slate-700 text-right">₹45,000.00
+                                        </td>
+                                        <td class="px-4 py-4">
+                                            <button class="text-slate-300 hover:text-brand-red"><span
+                                                    class="material-icons text-sm">close</span></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4">
+                                            <input class="w-full text-sm border-none focus:ring-0 p-0" type="text"
+                                                value="On-site Consultation Fee (2 Visits)" />
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <input class="w-full text-sm border-none focus:ring-0 p-0" type="text"
+                                                value="9983" />
+                                        </td>
+                                        <td class="px-6 py-4 text-center">
+                                            <input class="w-full text-sm border-none focus:ring-0 p-0" type="number"
+                                                value="2" />
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <input class="w-full text-sm border-none focus:ring-0 p-0" type="number"
+                                                value="5000" />
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <input class="w-full text-sm border-none focus:ring-0 p-0" type="number"
+                                                value="10" />
+                                        </td>
+                                        <td class="px-6 py-4 text-sm font-medium text-slate-700 text-right">₹9,000.00
+                                        </td>
+                                        <td class="px-4 py-4">
+                                            <button class="text-slate-300 hover:text-brand-red"><span
+                                                    class="material-icons text-sm">close</span></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- Totals & Payment Row -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                        <!-- Terms & Attachments -->
+                        <div class="space-y-6">
+                            <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-3">Payment
+                                    Terms</label>
+                                <select
+                                    class="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary mb-3">
+                                    <option>Consultation Template</option>
+                                    <option>Turnkey Project Template</option>
+                                    <option>Custom Terms</option>
+                                </select>
+                                <textarea
+                                    class="w-full text-xs border-slate-100 bg-slate-50 rounded focus:ring-primary focus:border-primary"
+                                    rows="3">1. Payment to be made within 15 days of invoice date. 
+2. Mode of payment: Bank Transfer / NEFT only. 
+3. Delayed payments attract 2% interest per month.</textarea>
+                            </div>
+                            <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+                                <label class="block text-xs font-bold text-slate-400 uppercase mb-3">Notes &amp;
+                                    Attachments</label>
+                                <textarea
+                                    class="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary mb-4"
+                                    placeholder="Add a note..." rows="2"></textarea>
+                                <div
+                                    class="border-2 border-dashed border-slate-100 rounded-lg p-6 text-center group cursor-pointer hover:border-primary/50 transition-colors">
+                                    <span
+                                        class="material-icons text-slate-300 group-hover:text-primary mb-2">cloud_upload</span>
+                                    <p class="text-[10px] text-slate-400 font-medium">Click to upload receipts or
+                                        supporting documents</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Tax & Totals Card -->
+                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                            <div class="p-6 space-y-4">
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="text-slate-500">Subtotal</span>
+                                    <span class="font-medium">₹54,000.00</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-slate-500">CGST (9%)</span>
+                                        <span class="material-icons text-[14px] text-slate-300">info_outline</span>
+                                    </div>
+                                    <span class="font-medium">₹4,860.00</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-slate-500">SGST (9%)</span>
+                                        <span class="material-icons text-[14px] text-slate-300">info_outline</span>
+                                    </div>
+                                    <span class="font-medium">₹4,860.00</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm opacity-50">
+                                    <span class="text-slate-500">IGST (0%)</span>
+                                    <span class="font-medium">₹0.00</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm border-t border-slate-100 pt-4">
+                                    <span class="text-slate-500 italic">Rounding Adjustment</span>
+                                    <span class="font-medium">-₹0.00</span>
+                                </div>
+                            </div>
+                            <div class="bg-slate-900 p-6">
+                                <div class="flex justify-between items-end mb-4">
+                                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Total
+                                        Amount Payable</span>
+                                    <span class="text-2xl font-bold text-white tracking-tight">₹63,720.00</span>
+                                </div>
+                                <div class="pt-4 border-t border-slate-700">
+                                    <p class="text-[10px] font-bold text-slate-500 uppercase mb-1">Amount in Words</p>
+                                    <p class="text-xs text-slate-300 leading-relaxed italic">Rupees Sixty Three Thousand
+                                        Seven Hundred and Twenty Only.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Sticky Footer Action Bar -->
+            <footer
+                class="h-20 bg-white border-t border-slate-200 fixed bottom-0 left-64 right-0 z-20 px-8 flex items-center justify-between shadow-[0_-4px_10px_rgba(0,0,0,0.03)]">
+                <div class="flex items-center gap-4">
+                    <button
+                        class="flex items-center gap-2 text-slate-500 hover:text-slate-700 transition-colors text-sm font-medium">
+                        <span class="material-icons text-lg">delete_outline</span>
+                        Discard
+                    </button>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button
+                        class="px-6 py-2 border border-slate-300 rounded font-medium text-slate-600 hover:bg-slate-50 transition-colors text-sm">
+                        Save as Draft
+                    </button>
+                    <button
+                        class="px-8 py-2 bg-primary text-white rounded font-bold hover:opacity-90 transition-opacity text-sm flex items-center gap-2">
+                        Preview Invoice
+                        <span class="material-icons text-sm">visibility</span>
+                    </button>
+                </div>
+            </footer>
+        </main>
+    </div>
+</body>
+
+</html>

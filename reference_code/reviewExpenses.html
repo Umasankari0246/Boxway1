@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#dc2626", // Red as requested for the main action
+                        "background-light": "#f7f7f6",
+                        "background-dark": "#121212",
+                        "sidebar-dark": "#181b17",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+    <title>Review &amp; Confirm Expense - BOXWAY STUDIO</title>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+    <div class="flex min-h-screen">
+        <!-- Professional Dark Sidebar -->
+        <aside class="w-64 bg-sidebar-dark text-slate-100 flex flex-col shrink-0 border-r border-slate-800">
+            <div class="p-6 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-white">box</span>
+                </div>
+                <div>
+                    <h1 class="text-sm font-bold tracking-tight uppercase">BOXWAY STUDIO</h1>
+                    <p class="text-[10px] text-slate-400 font-medium">Professional Workspace</p>
+                </div>
+            </div>
+            <nav class="flex-1 px-3 space-y-1">
+                <a class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 rounded transition-colors text-sm"
+                    href="#">
+                    <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                    <span>Dashboard</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2 bg-primary/10 text-primary border-r-2 border-primary rounded-sm text-sm font-medium"
+                    href="#">
+                    <span class="material-symbols-outlined text-[20px]">receipt_long</span>
+                    <span>Expenses</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 rounded transition-colors text-sm"
+                    href="#">
+                    <span class="material-symbols-outlined text-[20px]">work</span>
+                    <span>Projects</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 rounded transition-colors text-sm"
+                    href="#">
+                    <span class="material-symbols-outlined text-[20px]">bar_chart</span>
+                    <span>Reports</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white hover:bg-white/5 rounded transition-colors text-sm"
+                    href="#">
+                    <span class="material-symbols-outlined text-[20px]">settings</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            <div class="p-4 border-t border-slate-800">
+                <div class="flex items-center gap-3 px-2">
+                    <div class="size-8 rounded-full bg-slate-700 overflow-hidden">
+                        <img class="w-full h-full object-cover" data-alt="User profile avatar"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFO7ahB1H9xTeHV9x_A7Yw6cq5yZGmYj9Wkpw5ZnRNcAtS1Q57itbrLBndd5hWUUUxSrul1uhKHFrFBvGUQRzKJoSBzn29ymOgEGsPLGjRTgdRZAja_YqeXdtT0sK61zSO63R0aQlsDpVNWGTXsIx3CxTYhMxmG5JiQgaDYiExH50ObguDPtaDD6nYRXVkiQFUdGhDL34XiT6tQcyMx88Y6-F0HxkdY1o7ORG7BKIXRisakKNpqVKzk_---4lIZELo4f37ckvRLOY" />
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-medium truncate">Alex Rivera</p>
+                        <p class="text-[10px] text-slate-500 truncate">Admin</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col h-screen overflow-hidden">
+            <!-- Header -->
+            <header
+                class="h-16 flex items-center justify-between px-8 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark shrink-0">
+                <div class="flex items-center gap-4">
+                    <span class="material-symbols-outlined text-slate-400">arrow_back</span>
+                    <h2 class="text-lg font-bold">Review Expense</h2>
+                </div>
+                <div class="flex items-center gap-6">
+                    <span class="text-xs font-medium text-slate-500">10:45 AM</span>
+                    <div class="relative">
+                        <span
+                            class="material-symbols-outlined text-slate-600 dark:text-slate-400 cursor-pointer">notifications</span>
+                        <span class="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full"></span>
+                    </div>
+                </div>
+            </header>
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto p-8 space-y-6 pb-32 bg-slate-50 dark:bg-background-dark/50">
+                <div class="max-w-4xl mx-auto space-y-6">
+                    <!-- 1. Summary Header Card -->
+                    <div
+                        class="bg-white dark:bg-background-dark border border-slate-200 dark:border-slate-800 p-6 rounded-lg shadow-sm flex flex-wrap justify-between items-center gap-4">
+                        <div class="space-y-1">
+                            <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Expense ID</p>
+                            <h3 class="text-xl font-bold">EXP-2023-089</h3>
+                        </div>
+                        <div class="space-y-1">
+                            <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Submission Date</p>
+                            <p class="text-sm font-medium">Oct 24, 2023</p>
+                        </div>
+                        <div
+                            class="flex items-center gap-2 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700">
+                            <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                            <span
+                                class="text-xs font-bold uppercase tracking-tight text-slate-600 dark:text-slate-400">Draft</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- 2. Details Card -->
+                        <div
+                            class="bg-white dark:bg-background-dark border border-slate-200 dark:border-slate-800 p-6 rounded-lg shadow-sm">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="material-symbols-outlined text-primary">category</span>
+                                <h4 class="font-bold text-sm uppercase tracking-wide">Category &amp; Details</h4>
+                            </div>
+                            <div class="space-y-4">
+                                <div
+                                    class="flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-800/50 rounded border border-slate-100 dark:border-slate-700">
+                                    <div
+                                        class="w-10 h-10 rounded bg-primary/10 flex items-center justify-center text-primary">
+                                        <span class="material-symbols-outlined">laptop_mac</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold">Software Subscription</p>
+                                        <p class="text-xs text-slate-500">Technology &amp; Tools</p>
+                                    </div>
+                                </div>
+                                <div class="pt-2">
+                                    <p class="text-xs text-slate-400 mb-1">Description</p>
+                                    <p class="text-sm leading-relaxed">Monthly Adobe Creative Cloud suite for the design
+                                        department. Priority billing for the upcoming Quarter 4 campaign projects.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 3. Vendor & Payment Card -->
+                        <div
+                            class="bg-white dark:bg-background-dark border border-slate-200 dark:border-slate-800 p-6 rounded-lg shadow-sm">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="material-symbols-outlined text-primary">payments</span>
+                                <h4 class="font-bold text-sm uppercase tracking-wide">Vendor &amp; Payment</h4>
+                            </div>
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="text-xs text-slate-400 mb-1">Payee Name</p>
+                                    <p class="text-sm font-bold">Adobe Inc.</p>
+                                </div>
+                                <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+                                    <p class="text-xs text-slate-400 mb-1">Payment Method</p>
+                                    <div class="flex items-center gap-2">
+                                        <span
+                                            class="material-symbols-outlined text-slate-400 text-lg">credit_card</span>
+                                        <p class="text-sm font-medium">Corporate Visa •••• 4242</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 4. Project Card -->
+                        <div
+                            class="bg-white dark:bg-background-dark border border-slate-200 dark:border-slate-800 p-6 rounded-lg shadow-sm">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="material-symbols-outlined text-primary">account_tree</span>
+                                <h4 class="font-bold text-sm uppercase tracking-wide">Linked Project</h4>
+                            </div>
+                            <div
+                                class="flex justify-between items-center p-3 bg-primary/5 rounded border border-primary/10">
+                                <div>
+                                    <p class="text-sm font-bold">Q4 Brand Refresh</p>
+                                    <p class="text-xs text-slate-500">Internal Marketing</p>
+                                </div>
+                                <div class="text-right">
+                                    <span
+                                        class="text-[10px] font-bold px-2 py-0.5 bg-primary text-white rounded-full">Phase
+                                        2: Execution</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 5. Receipts Card -->
+                        <div
+                            class="bg-white dark:bg-background-dark border border-slate-200 dark:border-slate-800 p-6 rounded-lg shadow-sm">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="material-symbols-outlined text-primary">attachment</span>
+                                <h4 class="font-bold text-sm uppercase tracking-wide">Receipts (2)</h4>
+                            </div>
+                            <div class="flex gap-3">
+                                <div
+                                    class="size-16 rounded border border-slate-200 dark:border-slate-700 overflow-hidden relative group cursor-pointer">
+                                    <img class="w-full h-full object-cover" data-alt="Receipt thumbnail invoice"
+                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUQirDn88824Ba-TSOfx__tExnY28Z48D2yYUZyyPfKKzMzUZKTB042leLafn-QF4HsvvN5CFi0H9_o8oiWukw9AaXUtWkJ5DJntaci07ELrOCECIDS6RiMk44FDpxThxJMJDZtFCzBG280G1Onec6NbBf12e_HcQIypkTeioJWboQJP258UfZ7GW0o7tqrx_gHImCBmG9IK9tE04jozX5H5d3v_BskQsQyddtiyn0SRaGrCszAnhHTyu9Woy3NUWjqfg1CTmyHlY" />
+                                    <div
+                                        class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-white text-sm">visibility</span>
+                                    </div>
+                                </div>
+                                <div
+                                    class="size-16 rounded border border-slate-200 dark:border-slate-700 overflow-hidden relative group cursor-pointer">
+                                    <img class="w-full h-full object-cover"
+                                        data-alt="Receipt thumbnail credit card slip"
+                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDi_JBx21lr-UNRC_JWbECUrHLdJILHDT1VMVkKg-yl3Ef8wVqsVCDAKP3bGohPJj7OPK8bDiI5dX9rkQMfq3LgExb1UcaLNPuUh8MauoHfP1cCjaCnrhedKMtN5ZNbF4hyRo50JzF8t9IMdYNjSLwcmz---d-JpUXBdqvr7bHJJEROZOfqsMpPMcFqfvPDHKO2Ybxqsmf0tNfTEgyV8cKz-QRP8BsTQOOAUU84ke9M_rVvuCfkCeyp2RMjGyyfO-3xWdk5UWO1I5Y" />
+                                    <div
+                                        class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-white text-sm">visibility</span>
+                                    </div>
+                                </div>
+                                <button
+                                    class="size-16 rounded border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center text-slate-400 hover:text-primary hover:border-primary transition-colors">
+                                    <span class="material-symbols-outlined text-sm">add</span>
+                                    <span class="text-[8px] font-bold">ADD</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- 6. Totals Card -->
+                        <div
+                            class="md:col-span-2 bg-white dark:bg-background-dark border border-slate-200 dark:border-slate-800 p-6 rounded-lg shadow-sm">
+                            <div class="flex items-center gap-3 mb-6">
+                                <span class="material-symbols-outlined text-primary">calculate</span>
+                                <h4 class="font-bold text-sm uppercase tracking-wide">Cost Breakdown</h4>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-slate-500">Subtotal</span>
+                                    <span class="font-medium">$52.99</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-slate-500">Tax (10%)</span>
+                                    <span class="font-medium">$5.30</span>
+                                </div>
+                                <div
+                                    class="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-between items-end">
+                                    <span class="text-base font-bold text-slate-900 dark:text-slate-100">Total
+                                        Amount</span>
+                                    <span class="text-3xl font-black text-primary">$58.29</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 7. Notes Card -->
+                        <div
+                            class="bg-white dark:bg-background-dark border border-slate-200 dark:border-slate-800 p-6 rounded-lg shadow-sm">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="material-symbols-outlined text-primary">sticky_note_2</span>
+                                <h4 class="font-bold text-sm uppercase tracking-wide">Internal Notes</h4>
+                            </div>
+                            <p class="text-sm italic text-slate-500">
+                                "This subscription is shared with the junior designer. Auto-renewal is set for the 15th
+                                of each month."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Sticky Footer Actions -->
+            <footer
+                class="fixed bottom-0 right-0 left-64 bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 p-6 z-10">
+                <div class="max-w-4xl mx-auto flex items-center justify-between">
+                    <button
+                        class="flex items-center gap-2 px-6 py-3 text-slate-600 dark:text-slate-400 font-bold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 rounded transition-colors uppercase tracking-widest">
+                        <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                        Back to Edit
+                    </button>
+                    <div class="flex gap-4">
+                        <button
+                            class="px-8 py-3 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-bold text-sm rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors uppercase tracking-widest">
+                            Save as Draft
+                        </button>
+                        <button
+                            class="px-10 py-3 bg-primary text-white font-bold text-sm rounded shadow-lg shadow-primary/20 hover:brightness-110 active:scale-95 transition-all uppercase tracking-widest flex items-center gap-2">
+                            Submit Expense
+                            <span class="material-symbols-outlined text-[18px]">send</span>
+                        </button>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
+</body>
+
+</html>

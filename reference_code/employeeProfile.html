@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>ArchFlow | Employee Profile</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f20d0d", // Red from BOXWAY theme
+                        "secondary": "#000000",
+                        "background-light": "#ffffff",
+                        "accent": "#f20d0d",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "4px",
+                        "lg": "8px",
+                        "xl": "12px",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="bg-[#fcfcfc] text-black overflow-hidden h-screen">
+    <div class="flex h-full">
+        <!-- Sidebar Navigation: BOXWAY Style -->
+        <aside class="w-60 flex-shrink-0 bg-black text-white flex flex-col">
+            <div class="p-6 flex items-center gap-3">
+                <div class="bg-primary text-white w-8 h-8 rounded flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[20px] font-bold">architecture</span>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black tracking-tighter uppercase">ArchFlow</h1>
+                </div>
+            </div>
+            <nav class="flex-1 overflow-y-auto no-scrollbar px-4 py-2 space-y-6">
+                <!-- Overview Section -->
+                <div>
+                    <p class="px-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Overview</p>
+                    <div class="space-y-1">
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                            <span class="text-sm">Dashboard</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">group</span>
+                            <span class="text-sm">Directory</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">architecture</span>
+                            <span class="text-sm">Projects</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-3 py-2 rounded bg-primary text-white font-medium" href="#">
+                            <span class="material-symbols-outlined text-[20px]">person</span>
+                            <span class="text-sm">Profile</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+            <div class="p-4 border-t border-zinc-800">
+                <div class="flex items-center gap-3 p-2 bg-zinc-900 rounded">
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded w-8 h-8"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCaN5iZMbKzbrpjF0IYoyhn5damhWSH05ZXzhrjSrz4rZDrJloQQlQ3hupcv8Gt3HsgHEXdtjoQtKa7CRI0K4y8veH04OIa2cA5uVXb_Fl53KWd5Vp4pi45n1joOOZoqz0_A-qx_SOtOOZdm_SSiwGyyJOG-bxDKiskpLLOhaP6dOYRu7VnWpZBwl0HdPTjnjirnxi-Nw3JYGHy3-k18VtdyDjft3RL4ZgnzKFqNa1wOfzOarh-bctWJO9jWACDZXRv2mU2QYFK4Ec");'>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-bold truncate">David Sullivan</p>
+                        <p class="text-[10px] text-zinc-500 uppercase">Admin</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col h-screen overflow-hidden">
+            <!-- Header: BOXWAY Style -->
+            <header class="h-14 flex-shrink-0 flex items-center justify-between px-8 bg-white border-b border-zinc-100">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-base font-black uppercase tracking-tight">Employee Profile</h2>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="text-xs font-bold text-zinc-400 tabular-nums uppercase">10:42 AM</div>
+                    <button class="relative p-1 text-black hover:bg-zinc-50 transition-colors">
+                        <span class="material-symbols-outlined text-[22px]">notifications</span>
+                        <span class="absolute top-1 right-1 w-1.5 h-1.5 bg-primary rounded-full"></span>
+                    </button>
+                    <button class="p-1 text-black hover:bg-zinc-50 transition-colors">
+                        <span class="material-symbols-outlined text-[22px]">settings</span>
+                    </button>
+                </div>
+            </header>
+            <!-- Scrollable Content -->
+            <div class="flex-1 p-8 overflow-y-auto no-scrollbar space-y-8">
+                <!-- Top: Profile Header -->
+                <section class="bg-white p-6 border border-zinc-100 shadow-sm">
+                    <div class="flex flex-col md:flex-row gap-8 items-start">
+                        <div class="bg-center bg-no-repeat aspect-square bg-cover rounded w-32 h-32 border border-zinc-100 shadow-sm shrink-0"
+                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCUjGjEjFn6TctmOacbQXPqWcu_BE33ZWinmxVUwAJhqRtOr4dH6GevLYwc-iAgkB0_RLpryyGPgInzve4l6yezb9rzqZgkkrRxG8UDhPkK0Z6DLz93qWaukDcHD0wZ8DxHmcInz8g_r6nbu8RMXAnHx5B6a_OSl_O149lzNs1pMNKbxNGOrPvA-u5WybNNCs2rAoGup1beiKkGyeVuQb2hjZZz-EgooNVRZch9z6WX4O4w-ava3fefyNPckppiyDW0Zjtfo4qwUxY");'>
+                        </div>
+                        <div class="flex-1">
+                            <h1 class="text-3xl font-black uppercase tracking-tighter">Alex Rivera</h1>
+                            <p class="text-primary text-xs font-black uppercase tracking-widest mt-1">Senior Architect |
+                                Design Lead</p>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-12 mt-6">
+                                <div>
+                                    <p class="text-[10px] text-zinc-400 font-black uppercase">Employee ID</p>
+                                    <p class="text-sm font-bold">AF-7829</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] text-zinc-400 font-black uppercase">Date of Birth</p>
+                                    <p class="text-sm font-bold">12/05/1990</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] text-zinc-400 font-black uppercase">Blood Group</p>
+                                    <p class="text-sm font-bold">O+</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] text-zinc-400 font-black uppercase">Location</p>
+                                    <p class="text-sm font-bold">New York, USA</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Middle: Personal and Family Side-by-Side -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Personal Information -->
+                    <section class="bg-white p-6 border border-zinc-100 shadow-sm">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xs font-black uppercase tracking-tight">Personal Information</h3>
+                            <span class="material-symbols-outlined text-[18px] text-zinc-300">contact_page</span>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="p-3 bg-zinc-50 border-l-4 border-black">
+                                <p class="text-[10px] text-zinc-400 font-black uppercase">Phone</p>
+                                <p class="text-sm font-bold">+1 (212) 555-0198</p>
+                            </div>
+                            <div class="p-3 bg-zinc-50 border-l-4 border-primary">
+                                <p class="text-[10px] text-zinc-400 font-black uppercase">Email</p>
+                                <p class="text-sm font-bold text-primary">a.rivera@archflow.com</p>
+                            </div>
+                            <div class="p-3 bg-zinc-50 border-l-4 border-black">
+                                <p class="text-[10px] text-zinc-400 font-black uppercase">Address</p>
+                                <p class="text-sm font-bold">782 Architecture Way, Brooklyn, NY 11201</p>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- Family Info -->
+                    <section class="bg-white p-6 border border-zinc-100 shadow-sm">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xs font-black uppercase tracking-tight">Family Info</h3>
+                            <span class="material-symbols-outlined text-[18px] text-zinc-300">family_restroom</span>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="p-3 bg-zinc-50 border-l-4 border-black">
+                                <p class="text-[10px] text-zinc-400 font-black uppercase">Emergency Contact</p>
+                                <p class="text-sm font-bold">Elena Rivera (Spouse)</p>
+                            </div>
+                            <div class="p-3 bg-zinc-50 border-l-4 border-primary">
+                                <p class="text-[10px] text-zinc-400 font-black uppercase">Contact Number</p>
+                                <p class="text-sm font-bold">+1 (212) 555-0214</p>
+                            </div>
+                            <div class="p-3 bg-zinc-50 border-l-4 border-black">
+                                <p class="text-[10px] text-zinc-400 font-black uppercase">Marital Status</p>
+                                <p class="text-sm font-bold">Married</p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <!-- Bottom: Academic Info (Full Width) -->
+                <section class="bg-white p-6 border border-zinc-100 shadow-sm">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="text-xs font-black uppercase tracking-tight">Academic Info &amp; Skillsets</h3>
+                        <span class="material-symbols-outlined text-[18px] text-zinc-300">school</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div class="space-y-6">
+                            <p class="text-[10px] text-zinc-400 font-black uppercase tracking-widest">Educational
+                                Background</p>
+                            <div class="space-y-4">
+                                <div class="flex gap-4">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0"></div>
+                                    <div>
+                                        <p class="text-sm font-black">Master of Architecture</p>
+                                        <p class="text-[10px] text-zinc-500 font-bold uppercase mt-0.5">Pratt Institute,
+                                            New York (2014)</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-4">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-black mt-1.5 shrink-0"></div>
+                                    <div>
+                                        <p class="text-sm font-black">B.A. Architectural Design</p>
+                                        <p class="text-[10px] text-zinc-500 font-bold uppercase mt-0.5">Cornell
+                                            University (2012)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-6">
+                            <p class="text-[10px] text-zinc-400 font-black uppercase tracking-widest">Skillsets</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span
+                                    class="px-3 py-1.5 bg-black text-white text-[10px] font-black uppercase tracking-widest">Revit</span>
+                                <span
+                                    class="px-3 py-1.5 bg-zinc-100 text-black text-[10px] font-black uppercase tracking-widest">AutoCAD</span>
+                                <span
+                                    class="px-3 py-1.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest">Sustainable
+                                    Design</span>
+                                <span
+                                    class="px-3 py-1.5 bg-zinc-100 text-black text-[10px] font-black uppercase tracking-widest">Rhino
+                                    3D</span>
+                                <span
+                                    class="px-3 py-1.5 bg-black text-white text-[10px] font-black uppercase tracking-widest">BIM</span>
+                                <span
+                                    class="px-3 py-1.5 bg-zinc-100 text-black text-[10px] font-black uppercase tracking-widest">Grasshopper</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <div class="flex justify-end pb-8">
+                    <button
+                        class="bg-primary text-white px-8 py-3 text-[11px] font-black uppercase tracking-[0.2em] shadow-lg hover:opacity-90 transition-opacity">
+                        Edit Profile
+                    </button>
+                </div>
+            </div>
+            <!-- Footer: BOXWAY Style -->
+            <footer class="h-10 flex-shrink-0 px-8 border-t border-zinc-100 bg-white flex items-center justify-between">
+                <p class="text-[9px] font-black text-zinc-300 uppercase tracking-widest">© 2023 ARCHFLOW ENTERPRISE
+                    PORTAL</p>
+                <div class="flex gap-4">
+                    <a class="text-[9px] font-black text-zinc-400 hover:text-primary uppercase" href="#">Security</a>
+                    <a class="text-[9px] font-black text-zinc-400 hover:text-primary uppercase" href="#">Privacy</a>
+                </div>
+            </footer>
+        </main>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>BOXWAY Employee Registration - Step 4</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4a6841",
+                        "background-light": "#f7f7f6",
+                        "background-dark": "#181b17",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #dadfd8;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+    <div class="relative flex min-h-screen w-full flex-col items-center justify-center p-4">
+        <!-- Modal Container -->
+        <div
+            class="layout-content-container flex flex-col w-full max-w-[560px] bg-white dark:bg-zinc-900 shadow-xl rounded-xl overflow-hidden border border-primary/10">
+            <!-- Header -->
+            <header class="flex items-center justify-between border-b border-solid border-primary/10 px-6 py-4">
+                <div class="flex items-center gap-3">
+                    <div class="text-primary">
+                        <svg class="size-6" fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h2 class="text-lg font-bold leading-tight tracking-tight">BOXWAY Registration</h2>
+                </div>
+                <button
+                    class="flex items-center justify-center rounded-full size-8 hover:bg-primary/10 transition-colors text-slate-500">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </header>
+            <!-- Step Indicator -->
+            <div class="flex flex-col gap-2 p-6 bg-primary/5">
+                <div class="flex justify-between items-center">
+                    <p class="text-slate-900 dark:text-slate-100 text-sm font-semibold">Step 4 of 4</p>
+                    <p class="text-primary text-xs font-bold uppercase tracking-wider">Final Review</p>
+                </div>
+                <div class="h-2 w-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                    <div class="h-full bg-primary" style="width: 100%;"></div>
+                </div>
+                <p class="text-slate-500 dark:text-slate-400 text-xs">Please review your information before submitting.
+                </p>
+            </div>
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto max-h-[500px] px-6 py-4 space-y-8">
+                <!-- Personal Details Section -->
+                <section>
+                    <div class="flex items-center justify-between mb-3 border-b border-primary/10 pb-2">
+                        <h3 class="text-base font-bold text-primary flex items-center gap-2">
+                            <span class="material-symbols-outlined text-lg">person</span>
+                            Personal Details
+                        </h3>
+                        <button
+                            class="text-primary hover:bg-primary/10 p-1 rounded transition-colors flex items-center text-xs font-bold gap-1">
+                            <span class="material-symbols-outlined text-sm">edit</span> EDIT
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-y-3 text-sm">
+                        <p class="text-slate-500">Full Name</p>
+                        <p class="text-right font-medium">Johnathan Doe</p>
+                        <p class="text-slate-500">Email Address</p>
+                        <p class="text-right font-medium">j.doe@example.com</p>
+                        <p class="text-slate-500">Date of Birth</p>
+                        <p class="text-right font-medium">May 15, 1992</p>
+                        <p class="text-slate-500">Gender</p>
+                        <p class="text-right font-medium">Male</p>
+                    </div>
+                </section>
+                <!-- Family Information Section -->
+                <section>
+                    <div class="flex items-center justify-between mb-3 border-b border-primary/10 pb-2">
+                        <h3 class="text-base font-bold text-primary flex items-center gap-2">
+                            <span class="material-symbols-outlined text-lg">family_restroom</span>
+                            Family Information
+                        </h3>
+                        <button
+                            class="text-primary hover:bg-primary/10 p-1 rounded transition-colors flex items-center text-xs font-bold gap-1">
+                            <span class="material-symbols-outlined text-sm">edit</span> EDIT
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-y-3 text-sm">
+                        <p class="text-slate-500">Emergency Contact</p>
+                        <p class="text-right font-medium">Jane Doe (Spouse)</p>
+                        <p class="text-slate-500">Contact Number</p>
+                        <p class="text-right font-medium">+1 (555) 012-3456</p>
+                        <p class="text-slate-500">Marital Status</p>
+                        <p class="text-right font-medium">Married</p>
+                    </div>
+                </section>
+                <!-- Academic Background Section -->
+                <section>
+                    <div class="flex items-center justify-between mb-3 border-b border-primary/10 pb-2">
+                        <h3 class="text-base font-bold text-primary flex items-center gap-2">
+                            <span class="material-symbols-outlined text-lg">school</span>
+                            Academic Background
+                        </h3>
+                        <button
+                            class="text-primary hover:bg-primary/10 p-1 rounded transition-colors flex items-center text-xs font-bold gap-1">
+                            <span class="material-symbols-outlined text-sm">edit</span> EDIT
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-y-3 text-sm">
+                        <p class="text-slate-500">Highest Degree</p>
+                        <p class="text-right font-medium">Bachelor of Science</p>
+                        <p class="text-slate-500">Institution</p>
+                        <p class="text-right font-medium">University of Tech</p>
+                        <p class="text-slate-500">Graduation Year</p>
+                        <p class="text-right font-medium">2014</p>
+                    </div>
+                </section>
+                <!-- Work Experience Section -->
+                <section>
+                    <div class="flex items-center justify-between mb-3 border-b border-primary/10 pb-2">
+                        <h3 class="text-base font-bold text-primary flex items-center gap-2">
+                            <span class="material-symbols-outlined text-lg">work</span>
+                            Work Experience
+                        </h3>
+                        <button
+                            class="text-primary hover:bg-primary/10 p-1 rounded transition-colors flex items-center text-xs font-bold gap-1">
+                            <span class="material-symbols-outlined text-sm">edit</span> EDIT
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-y-3 text-sm">
+                        <p class="text-slate-500">Current/Last Role</p>
+                        <p class="text-right font-medium">Senior Logistics Coordinator</p>
+                        <p class="text-slate-500">Previous Company</p>
+                        <p class="text-right font-medium">Global Freight Solutions</p>
+                        <p class="text-slate-500">Years of Experience</p>
+                        <p class="text-right font-medium">8 Years</p>
+                    </div>
+                </section>
+                <!-- Certification Checkbox -->
+                <div class="pt-4">
+                    <label class="flex items-start gap-3 cursor-pointer group">
+                        <div class="mt-1">
+                            <input
+                                class="size-5 rounded border-primary/30 text-primary focus:ring-primary/20 bg-background-light dark:bg-background-dark"
+                                type="checkbox" />
+                        </div>
+                        <span class="text-sm text-slate-600 dark:text-slate-400 leading-tight">
+                            I hereby certify that the information provided is true and complete to the best of my
+                            knowledge. I understand that any false statement may be grounds for dismissal.
+                        </span>
+                    </label>
+                </div>
+            </div>
+            <!-- Footer -->
+            <footer class="flex items-center justify-between gap-4 p-6 border-t border-primary/10">
+                <button
+                    class="flex-1 flex items-center justify-center h-12 px-6 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                    Back
+                </button>
+                <button
+                    class="flex-[1.5] flex items-center justify-center h-12 px-6 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-sm shadow-lg shadow-red-200 dark:shadow-none transition-all">
+                    Submit Registration
+                </button>
+            </footer>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4a6841",
+                        "accent-red": "#dc2626",
+                        "background-light": "#f7f7f6",
+                        "background-dark": "#181b17",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+    <title>BOXWAY - Employee Registration</title>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+    <div class="relative flex min-h-screen w-full flex-col items-center justify-center p-4">
+        <!-- Modal Container -->
+        <div
+            class="layout-content-container flex flex-col w-full max-w-[520px] bg-white dark:bg-zinc-900 shadow-2xl rounded-xl overflow-hidden border border-primary/10">
+            <!-- Header -->
+            <header
+                class="flex items-center justify-between whitespace-nowrap border-b border-solid border-primary/10 px-8 py-5 bg-white dark:bg-zinc-900">
+                <div class="flex items-center gap-3">
+                    <div class="text-primary">
+                        <svg class="size-6" fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                            <g clip-path="url(#clip0_6_319)">
+                                <path
+                                    d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z">
+                                </path>
+                            </g>
+                            <defs>
+                                <clippath id="clip0_6_319">
+                                    <rect fill="white" height="48" width="48"></rect>
+                                </clippath>
+                            </defs>
+                        </svg>
+                    </div>
+                    <h2
+                        class="text-slate-900 dark:text-slate-100 text-xl font-bold leading-tight tracking-tight uppercase">
+                        BOXWAY</h2>
+                </div>
+                <button
+                    class="flex size-10 cursor-pointer items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </header>
+            <!-- Progress Section -->
+            <div class="flex flex-col gap-3 px-8 pt-6 pb-2">
+                <div class="flex gap-6 justify-between items-end">
+                    <p class="text-slate-900 dark:text-slate-100 text-sm font-semibold uppercase tracking-wider">Step 2
+                        of 4</p>
+                    <p class="text-primary text-sm font-bold">50%</p>
+                </div>
+                <div class="h-1.5 w-full bg-primary/10 rounded-full overflow-hidden">
+                    <div class="h-full bg-primary transition-all duration-500 ease-out" style="width: 50%;"></div>
+                </div>
+                <p class="text-primary/70 text-xs font-medium uppercase">Academic Information</p>
+            </div>
+            <!-- Scrollable Content Area -->
+            <div class="flex flex-col px-8 py-4 overflow-y-auto max-h-[614px]">
+                <!-- Section 1: Educational Background -->
+                <div class="mb-8">
+                    <div class="flex items-center gap-2 mb-4 border-l-4 border-primary pl-3">
+                        <h3 class="text-slate-900 dark:text-slate-100 text-lg font-bold">Educational Background</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Degree Name</label>
+                            <input
+                                class="w-full h-12 px-4 rounded-lg border border-primary/20 bg-background-light dark:bg-zinc-800 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-slate-400"
+                                placeholder="e.g. Bachelor of Architecture" type="text" />
+                        </div>
+                        <div class="flex flex-col gap-1.5">
+                            <label
+                                class="text-sm font-semibold text-slate-700 dark:text-slate-300">University/Institution</label>
+                            <input
+                                class="w-full h-12 px-4 rounded-lg border border-primary/20 bg-background-light dark:bg-zinc-800 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-slate-400"
+                                placeholder="e.g. Harvard Graduate School of Design" type="text" />
+                        </div>
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Year of
+                                Graduation</label>
+                            <select
+                                class="w-full h-12 px-4 rounded-lg border border-primary/20 bg-background-light dark:bg-zinc-800 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all">
+                                <option disabled="" selected="" value="">Select year</option>
+                                <option>2024</option>
+                                <option>2023</option>
+                                <option>2022</option>
+                                <option>2021</option>
+                                <option>2020</option>
+                                <option>2019</option>
+                                <option>Earlier</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!-- Section 2: Technical Skillsets -->
+                <div class="mb-4">
+                    <div class="flex items-center gap-2 mb-4 border-l-4 border-primary pl-3">
+                        <h3 class="text-slate-900 dark:text-slate-100 text-lg font-bold">Technical Skillsets</h3>
+                    </div>
+                    <div class="flex flex-col gap-3">
+                        <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Search &amp; Add
+                            Skills</label>
+                        <div class="relative">
+                            <span
+                                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+                            <input
+                                class="w-full h-12 pl-10 pr-4 rounded-lg border border-primary/20 bg-background-light dark:bg-zinc-800 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                placeholder="Type a skill (e.g. Revit, AutoCAD)" type="text" />
+                        </div>
+                        <!-- Tag Cloud -->
+                        <div class="flex flex-wrap gap-2 pt-2">
+                            <span
+                                class="flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1.5 rounded-full text-sm font-medium">
+                                Revit <button
+                                    class="material-symbols-outlined text-sm hover:text-accent-red">close</button>
+                            </span>
+                            <span
+                                class="flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1.5 rounded-full text-sm font-medium">
+                                AutoCAD <button
+                                    class="material-symbols-outlined text-sm hover:text-accent-red">close</button>
+                            </span>
+                            <span
+                                class="flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1.5 rounded-full text-sm font-medium">
+                                BIM <button
+                                    class="material-symbols-outlined text-sm hover:text-accent-red">close</button>
+                            </span>
+                            <span
+                                class="flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1.5 rounded-full text-sm font-medium">
+                                Rhino <button
+                                    class="material-symbols-outlined text-sm hover:text-accent-red">close</button>
+                            </span>
+                            <button
+                                class="flex items-center gap-1 px-3 py-1.5 border border-dashed border-primary/30 text-primary/60 rounded-full text-sm font-medium hover:border-primary hover:text-primary transition-all">
+                                <span class="material-symbols-outlined text-sm">add</span> Add More
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer -->
+            <footer
+                class="flex items-center justify-between p-8 bg-slate-50 dark:bg-zinc-800/50 border-t border-primary/10">
+                <button
+                    class="flex items-center gap-2 px-6 h-12 rounded-lg text-slate-600 dark:text-slate-400 font-bold hover:bg-slate-200 dark:hover:bg-zinc-700 transition-all">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    BACK
+                </button>
+                <button
+                    class="flex items-center gap-2 px-8 h-12 rounded-lg bg-accent-red text-white font-bold shadow-lg shadow-accent-red/20 hover:brightness-110 active:scale-95 transition-all">
+                    NEXT STEP
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+</body>
+
+</html>

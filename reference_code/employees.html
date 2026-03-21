@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>BOXWAY | Employee Directory</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f20d0d", // Red from theme
+                        "secondary": "#000000", // Black
+                        "background-light": "#ffffff",
+                        "accent": "#f20d0d",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "4px",
+                        "lg": "8px",
+                        "xl": "12px",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="bg-[#fcfcfc] text-black overflow-hidden h-screen font-display">
+    <div class="flex h-full">
+        <!-- Sidebar Navigation -->
+        <aside class="w-60 flex-shrink-0 bg-black text-white flex flex-col">
+            <div class="p-6 flex items-center gap-3">
+                <div class="bg-primary text-white w-8 h-8 rounded flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[20px] font-bold">box</span>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black tracking-tighter uppercase">BOXWAY</h1>
+                </div>
+            </div>
+            <nav class="flex-1 overflow-y-auto no-scrollbar px-4 py-2 space-y-6">
+                <!-- Overview Section -->
+                <div>
+                    <p class="px-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Overview</p>
+                    <div class="space-y-1">
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                            <span class="text-sm">Dashboard</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-3 py-2 rounded bg-primary text-white font-medium" href="#">
+                            <span class="material-symbols-outlined text-[20px]">group</span>
+                            <span class="text-sm">Employees</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">person_pin</span>
+                            <span class="text-sm">Clients</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- Studio Section -->
+                <div>
+                    <p class="px-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Studio</p>
+                    <div class="space-y-1">
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">description</span>
+                            <span class="text-sm">Proposals</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">architecture</span>
+                            <span class="text-sm">Projects</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">folder</span>
+                            <span class="text-sm">Documents</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- Finance Section -->
+                <div>
+                    <p class="px-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Finance</p>
+                    <div class="space-y-1">
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">receipt_long</span>
+                            <span class="text-sm">Invoices</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">payments</span>
+                            <span class="text-sm">Expenses</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+                            <span class="text-sm">Payroll</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- Intelligence Section -->
+                <div>
+                    <p class="px-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Intelligence</p>
+                    <div class="space-y-1">
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">monitoring</span>
+                            <span class="text-sm">Analytics</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">psychology</span>
+                            <span class="text-sm">AI Insights</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">settings</span>
+                            <span class="text-sm">Settings</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+            <div class="p-4 border-t border-zinc-800">
+                <div class="flex items-center gap-3 p-2 bg-zinc-900 rounded">
+                    <img alt="Profile" class="w-8 h-8 rounded object-cover"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxoYW-4TjeiytGwvBQhTY-W-72H7sdqYt5m_Y8_2vEucuWz8PTlozZiUmFFdAWSul54rVVsAhCNSK6ZXF4CHLVBy8ELDOKF-WO4lIsiz95SCk7QFJAWu7gKgW55Ef0A2Q2TXhtlLzdBAso_utFaxrG05oxgCJkB9HhTDWfCwrt4-pKZ5jZkSUT02kdSUCEX-oEb6ZCP6YwUqQgHLpYYOLdDqIfTli1PW_Z9bVGRIvE6C6uVGlBWRp82_9Hr-sprT7hQrgRf_8ieDI" />
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-bold truncate">David Sullivan</p>
+                        <p class="text-[10px] text-zinc-500 uppercase">Admin</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col h-screen overflow-hidden">
+            <!-- Header -->
+            <header class="h-14 flex-shrink-0 flex items-center justify-between px-8 bg-white border-b border-zinc-100">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-base font-black uppercase tracking-tight">Employees</h2>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="text-xs font-bold text-zinc-400 tabular-nums uppercase">10:42 AM</div>
+                    <button class="relative p-1 text-black hover:bg-zinc-50 transition-colors">
+                        <span class="material-symbols-outlined text-[22px]">notifications</span>
+                        <span class="absolute top-1 right-1 w-1.5 h-1.5 bg-primary rounded-full"></span>
+                    </button>
+                </div>
+            </header>
+            <!-- Page Content -->
+            <div class="flex-1 p-6 overflow-y-auto no-scrollbar space-y-6">
+                <!-- Top Actions -->
+                <div class="flex justify-between items-end">
+                    <div>
+                        <h1 class="text-2xl font-black tracking-tight">Employee Directory</h1>
+                        <p class="text-[10px] text-zinc-500 uppercase font-bold mt-0.5">Manage and monitor your
+                            architecture team</p>
+                    </div>
+                    <button
+                        class="bg-primary text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors">
+                        Add New Employee
+                    </button>
+                </div>
+                <!-- KPI Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] text-zinc-400 font-black uppercase mb-1">Total Employees</p>
+                            <h3 class="text-2xl font-black">124</h3>
+                        </div>
+                        <div class="text-primary"><span class="material-symbols-outlined text-[28px]">groups</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] text-zinc-400 font-black uppercase mb-1">Active on Site</p>
+                            <h3 class="text-2xl font-black">42</h3>
+                        </div>
+                        <div class="text-black"><span class="material-symbols-outlined text-[28px]">location_on</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] text-zinc-400 font-black uppercase mb-1">Departments</p>
+                            <h3 class="text-2xl font-black">05</h3>
+                        </div>
+                        <div class="text-primary"><span class="material-symbols-outlined text-[28px]">category</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] text-zinc-400 font-black uppercase mb-1">Onboarding</p>
+                            <h3 class="text-2xl font-black">08</h3>
+                        </div>
+                        <div class="text-black"><span class="material-symbols-outlined text-[28px]">rocket_launch</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Filter & Search Bar -->
+                <div class="bg-white border border-zinc-100 shadow-sm p-3 flex flex-col md:flex-row gap-4 items-center">
+                    <div class="relative flex-1 w-full">
+                        <span
+                            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-[20px]">search</span>
+                        <input
+                            class="w-full pl-10 pr-4 py-2 bg-zinc-50 border-none text-[12px] font-medium placeholder:text-zinc-400 focus:ring-1 focus:ring-primary"
+                            placeholder="Search by name, phone number..." type="text" />
+                    </div>
+                    <div class="flex items-center gap-2 w-full md:w-auto">
+                        <select
+                            class="bg-white border border-zinc-200 text-[11px] font-bold uppercase py-2 px-3 focus:ring-0 focus:border-primary">
+                            <option>All Roles</option>
+                        </select>
+                        <select
+                            class="bg-white border border-zinc-200 text-[11px] font-bold uppercase py-2 px-3 focus:ring-0 focus:border-primary">
+                            <option>Departments</option>
+                        </select>
+                        <select
+                            class="bg-white border border-zinc-200 text-[11px] font-bold uppercase py-2 px-3 focus:ring-0 focus:border-primary">
+                            <option>Status</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- Table Container -->
+                <div class="bg-white border border-zinc-100 shadow-sm overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b border-zinc-100 bg-zinc-50/50">
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                                    Employee</th>
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                                    Role</th>
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                                    Department</th>
+                                <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                                    Status</th>
+                                <th
+                                    class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-400 text-right">
+                                    Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-zinc-100">
+                            <!-- Row 1 -->
+                            <tr class="hover:bg-zinc-50/50 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="h-9 w-9 bg-zinc-100 rounded overflow-hidden flex-shrink-0">
+                                            <img alt="Portrait" class="w-full h-full object-cover"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDf9GIVmcY6ex9Fws2-ioy7fVDNRmYC1RUw9ucOhrsHVJ2hTWbCh0cb1567TOzxkrXwgFmhtxSn_nXejmMB1ZGw8UYBO6FbZM_K3H1neSKhNN1z0GXlLoK8Qpnmig_ISjNDi7Fr1R-anq6E5swUKhkke9inUsNaM4j7t7QQ5Vau4ABNkUEUvdwDSPbllJMayiJFEiBDFypcBbsYN6JMeN2WJMvizZgtAckdELEJV-WsOATr5RoeWK-XeGsxtBbB9ms-vsOeQA9aI3Y" />
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-black">Sarah Jenkins</p>
+                                            <p class="text-[10px] text-zinc-500">sarah.j@boxway.com</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-[11px] font-bold">Senior Architect</td>
+                                <td class="px-6 py-4 text-[11px] font-bold">Design</td>
+                                <td class="px-6 py-4">
+                                    <span
+                                        class="px-2 py-0.5 text-[9px] font-black uppercase bg-emerald-100 text-emerald-700">On
+                                        Site</span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex justify-end gap-2">
+                                        <button
+                                            class="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-black transition-colors"
+                                            title="View">
+                                            <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                        </button>
+                                        <button
+                                            class="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-primary transition-colors"
+                                            title="Edit">
+                                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                                        </button>
+                                        <button
+                                            class="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-red-600 transition-colors"
+                                            title="Delete">
+                                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- Row 2 -->
+                            <tr class="hover:bg-zinc-50/50 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="h-9 w-9 bg-zinc-100 rounded overflow-hidden flex-shrink-0">
+                                            <img alt="Portrait" class="w-full h-full object-cover"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXAPeifDhdp80rO7MwSVBio29PqIRK8a0CaWPnC7RmlAkre5rxaRcPoXiB_RFJwg704_yoo6M8cGOLFJ1zl5f0LbEr8kL7NI43tDjzhIP2OAgGzuyRRWQunu_uurweNxI3xdmzRTm0j1NOIjRAuxgaT0qmXktBcMYFdhwB2wZuxp6-rvouO013EK58u06ITaQ1wiZumL_wu4U0pqdUkgvFRNt439GlfjYmDanUQNn1NT70fu823I_7xL0o0GDW__wWPr86HC8biZ0" />
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-black">Michael Chen</p>
+                                            <p class="text-[10px] text-zinc-500">m.chen@boxway.com</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-[11px] font-bold">Structural Engineer</td>
+                                <td class="px-6 py-4 text-[11px] font-bold">Engineering</td>
+                                <td class="px-6 py-4">
+                                    <span
+                                        class="px-2 py-0.5 text-[9px] font-black uppercase bg-blue-100 text-blue-700">Remote</span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex justify-end gap-2">
+                                        <button
+                                            class="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-black transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                        </button>
+                                        <button
+                                            class="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                                        </button>
+                                        <button
+                                            class="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-red-600 transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- Row 3 -->
+                            <tr class="hover:bg-zinc-50/50 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="h-9 w-9 bg-zinc-100 rounded overflow-hidden flex-shrink-0">
+                                            <img alt="Portrait" class="w-full h-full object-cover"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAask4iO8OmU4oKuenuF-OBPdzk_MHBsHlU9n1rwDpEYGTgfSCIJSfhyGvdsbULrFuOG4vrQl9-yLhnrsaDBfd-ZW3fYOYWlZqQyl4V_B8WhKAX5EwUnA4vIq_FyudjnbZmXAPdg5G4h9Qk5F5sbnmrWcfVzsDJRpH7a3DyYL4wOWVDFCndPEmHZ00jeI7S2gOQl9jpbg3ufIE_khiUQZ4fD2KS5xdDBtPdw-o-HFAk-oX_aVr1xzHXl--gX0jieUR5-M6F70Zj27s" />
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-black">Elena Rodriguez</p>
+                                            <p class="text-[10px] text-zinc-500">elena.r@boxway.com</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-[11px] font-bold">Interior Designer</td>
+                                <td class="px-6 py-4 text-[11px] font-bold">Design</td>
+                                <td class="px-6 py-4">
+                                    <span
+                                        class="px-2 py-0.5 text-[9px] font-black uppercase bg-amber-100 text-amber-700">On
+                                        Leave</span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex justify-end gap-2">
+                                        <button
+                                            class="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-black transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                        </button>
+                                        <button
+                                            class="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                                        </button>
+                                        <button
+                                            class="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-red-600 transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- Row 4 -->
+                            <tr class="hover:bg-zinc-50/50 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="h-9 w-9 bg-zinc-100 rounded overflow-hidden flex-shrink-0">
+                                            <img alt="Portrait" class="w-full h-full object-cover"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7Asfzw6HUqB_LIkwcxsW1m14vS7Zc941BfvUAEX_1DwQsUEriNm94L5YyYhPTYxqA8Eu4dWeCVb7VOlfKrU1wbD7rUJ4MDkWBQTBqTZFmQSUgT9jy91ZjJSEbyrKfAA2AbINQiFqtc3zkCSu_SG9gWj4N6KSJIhLc3S54x6KxjJaHidFw03gBaheWedRTczuKn7YX9nhURmNAXVAk6ZanOmO_AiHHXKGi5pm5djVGgkIxUIQ0f7G_OG7dXhwWaS7yq6gST-oXdwc" />
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-black">David Kim</p>
+                                            <p class="text-[10px] text-zinc-500">dkim@boxway.com</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-[11px] font-bold">Project Manager</td>
+                                <td class="px-6 py-4 text-[11px] font-bold">Management</td>
+                                <td class="px-6 py-4">
+                                    <span
+                                        class="px-2 py-0.5 text-[9px] font-black uppercase bg-emerald-100 text-emerald-700">On
+                                        Site</span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex justify-end gap-2">
+                                        <button
+                                            class="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-black transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                        </button>
+                                        <button
+                                            class="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                                        </button>
+                                        <button
+                                            class="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-red-600 transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- Row 5 -->
+                            <tr class="hover:bg-zinc-50/50 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="h-9 w-9 bg-zinc-100 rounded overflow-hidden flex-shrink-0">
+                                            <img alt="Portrait" class="w-full h-full object-cover"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgUU_-qxsVz_PcRwmJ8FmserBIRLl569DrKSHmvmokgIbzJ7w2f9Mapv-tbxlYQa7czRU2Mxkam4tkmkvamqK-XsgLCLz4FQPD2gfSWsfwmpou_W8W95_AwzwoaoEbuWX0-56NNk4bVR2KNM-l-CDR8DGvuxHzCCWtT0FuKS0Id-SGdE17iwAJgshiixYcyj2YXUfzgC1CuaDr95FrdC3iqmX1OTYvnfRQvkYCq8swHN4nmeR7rGYDF1yCjizDwJUUFzLyWQTXPI8" />
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-black">Amara Okafor</p>
+                                            <p class="text-[10px] text-zinc-500">amara.o@boxway.com</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-[11px] font-bold">Junior Architect</td>
+                                <td class="px-6 py-4 text-[11px] font-bold">Design</td>
+                                <td class="px-6 py-4">
+                                    <span
+                                        class="px-2 py-0.5 text-[9px] font-black uppercase bg-zinc-100 text-zinc-600">Onboarding</span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex justify-end gap-2">
+                                        <button
+                                            class="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-black transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                        </button>
+                                        <button
+                                            class="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                                        </button>
+                                        <button
+                                            class="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-red-600 transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- Pagination -->
+                    <div class="px-6 py-3 border-t border-zinc-100 flex items-center justify-between">
+                        <div class="text-[10px] font-black uppercase text-zinc-400">Showing 1-10 of 124 employees</div>
+                        <div class="flex items-center gap-1">
+                            <button
+                                class="h-8 px-2 text-[10px] font-black uppercase border border-zinc-100 hover:bg-zinc-50">Prev</button>
+                            <button class="h-8 w-8 bg-black text-white text-[10px] font-black">1</button>
+                            <button
+                                class="h-8 w-8 border border-zinc-100 text-[10px] font-black hover:bg-zinc-50">2</button>
+                            <button
+                                class="h-8 w-8 border border-zinc-100 text-[10px] font-black hover:bg-zinc-50">3</button>
+                            <button
+                                class="h-8 px-2 text-[10px] font-black uppercase border border-zinc-100 hover:bg-zinc-50">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer -->
+            <footer class="h-10 flex-shrink-0 px-8 border-t border-zinc-100 bg-white flex items-center justify-between">
+                <p class="text-[9px] font-black text-zinc-300 uppercase tracking-widest">© 2023 BOXWAY DIGITAL SYSTEMS
+                </p>
+                <div class="flex gap-4">
+                    <a class="text-[9px] font-black text-zinc-400 hover:text-primary uppercase" href="#">Security</a>
+                    <a class="text-[9px] font-black text-zinc-400 hover:text-primary uppercase" href="#">Privacy</a>
+                </div>
+            </footer>
+        </main>
+    </div>
+</body>
+
+</html>

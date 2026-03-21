@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>New Enquiry | BOXWAY STUDIO</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-surface-variant": "#5d3f3b",
+                        "tertiary": "#5a5a5a",
+                        "tertiary-fixed-dim": "#c6c6c6",
+                        "surface-container-highest": "#e5e2e1",
+                        "secondary-fixed": "#e5e2e1",
+                        "surface-variant": "#e5e2e1",
+                        "surface-container-low": "#f6f3f2",
+                        "tertiary-container": "#737373",
+                        "on-surface": "#1c1b1b",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed": "#410001",
+                        "primary-fixed": "#ffdad5",
+                        "surface-dim": "#dcd9d9",
+                        "on-primary-container": "#fff9f8",
+                        "inverse-primary": "#ffb4aa",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "primary-container": "#e21d1d",
+                        "tertiary-fixed": "#e2e2e2",
+                        "primary": "#b9000c",
+                        "on-secondary-fixed-variant": "#474746",
+                        "on-primary": "#ffffff",
+                        "on-background": "#1c1b1b",
+                        "inverse-on-surface": "#f3f0ef",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "inverse-surface": "#313030",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#f0eded",
+                        "outline": "#926e6a",
+                        "on-tertiary-container": "#fafafa",
+                        "secondary-container": "#e2dfde",
+                        "surface": "#fcf9f8",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#c0000d",
+                        "outline-variant": "#e7bdb7",
+                        "on-tertiary-fixed": "#1b1b1b",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#474747",
+                        "on-secondary-container": "#636262",
+                        "secondary": "#5f5e5e",
+                        "on-primary-fixed-variant": "#930007",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#eae7e7",
+                        "surface-bright": "#fcf9f8",
+                        "background": "#fcf9f8"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0rem", "lg": "0rem", "xl": "0rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            font-size: 20px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #e5e2e1;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="bg-surface text-on-surface font-body selection:bg-primary-fixed selection:text-primary">
+    <!-- Top Navigation Anchor -->
+    <header
+        class="fixed top-0 right-0 left-0 z-50 bg-[#fcf9f8] dark:bg-[#1c1b1b] flex justify-between items-center w-full px-10 h-20 shadow-none">
+        <div class="flex items-center gap-8">
+            <span class="text-xl font-black tracking-tighter text-[#1c1b1b] dark:text-[#fcf9f8]">BOXWAY STUDIO</span>
+            <div class="hidden md:flex items-center space-x-8">
+                <span
+                    class="font-['Inter'] tracking-tight uppercase text-[0.75rem] font-medium text-[#5d3f3b] dark:text-[#e7bdb7] hover:bg-[#f6f3f2] px-2 py-1 transition-colors duration-200 cursor-pointer">Dashboard</span>
+                <span
+                    class="font-['Inter'] tracking-tight uppercase text-[0.75rem] font-bold text-[#b9000c] border-b-2 border-[#b9000c] px-2 py-1 cursor-default">Enquiries</span>
+                <span
+                    class="font-['Inter'] tracking-tight uppercase text-[0.75rem] font-medium text-[#5d3f3b] dark:text-[#e7bdb7] hover:bg-[#f6f3f2] px-2 py-1 transition-colors duration-200 cursor-pointer">Projects</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <button
+                class="material-symbols-outlined text-on-surface p-2 hover:bg-surface-container transition-colors">more_vert</button>
+        </div>
+    </header>
+    <!-- Side Navigation Monolith -->
+    <aside
+        class="fixed left-0 top-0 h-full w-64 bg-[#313030] flex flex-col py-12 z-[60] hidden lg:flex shadow-[24px_0_48px_rgba(28,27,27,0.06)]">
+        <div class="px-8 mb-12">
+            <h1 class="text-2xl font-black text-[#fcf9f8] tracking-tighter">BOXWAY</h1>
+            <p class="font-['Inter'] uppercase text-[0.65rem] tracking-[0.1em] text-[#e7bdb7] opacity-60 mt-1">
+                Architectural CRM</p>
+        </div>
+        <nav class="flex-1 space-y-1">
+            <div
+                class="flex items-center text-[#e7bdb7] opacity-60 pl-[27px] py-4 hover:bg-[#1c1b1b] hover:opacity-100 transition-all duration-300 cursor-pointer group">
+                <span class="material-symbols-outlined mr-4">grid_view</span>
+                <span class="font-['Inter'] uppercase text-[0.75rem] tracking-[0.05em]">Dashboard</span>
+            </div>
+            <div
+                class="flex items-center text-[#e7bdb7] opacity-60 pl-[27px] py-4 hover:bg-[#1c1b1b] hover:opacity-100 transition-all duration-300 cursor-pointer group">
+                <span class="material-symbols-outlined mr-4">architecture</span>
+                <span class="font-['Inter'] uppercase text-[0.75rem] tracking-[0.05em]">Projects</span>
+            </div>
+            <div
+                class="flex items-center text-[#fcf9f8] border-l-[3px] border-[#b9000c] pl-6 py-4 bg-transparent cursor-default">
+                <span class="material-symbols-outlined mr-4 text-[#e21d1d]">description</span>
+                <span class="font-['Inter'] uppercase text-[0.75rem] tracking-[0.05em] font-bold">Enquiries</span>
+            </div>
+            <div
+                class="flex items-center text-[#e7bdb7] opacity-60 pl-[27px] py-4 hover:bg-[#1c1b1b] hover:opacity-100 transition-all duration-300 cursor-pointer group">
+                <span class="material-symbols-outlined mr-4">group</span>
+                <span class="font-['Inter'] uppercase text-[0.75rem] tracking-[0.05em]">Clients</span>
+            </div>
+            <div
+                class="flex items-center text-[#e7bdb7] opacity-60 pl-[27px] py-4 hover:bg-[#1c1b1b] hover:opacity-100 transition-all duration-300 cursor-pointer group">
+                <span class="material-symbols-outlined mr-4">inventory_2</span>
+                <span class="font-['Inter'] uppercase text-[0.75rem] tracking-[0.05em]">Archive</span>
+            </div>
+        </nav>
+        <div class="mt-auto px-8 space-y-6">
+            <div class="pt-6 border-t border-white/10 space-y-4">
+                <div
+                    class="flex items-center text-[#e7bdb7] opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+                    <span class="material-symbols-outlined mr-4">settings</span>
+                    <span class="font-['Inter'] uppercase text-[0.75rem] tracking-[0.05em]">Settings</span>
+                </div>
+            </div>
+            <div
+                class="bg-primary hover:bg-primary-container text-on-primary px-4 py-4 text-center cursor-pointer transition-colors flex items-center justify-center gap-2 group">
+                <span class="material-symbols-outlined group-hover:rotate-90 transition-transform">add</span>
+                <span class="font-['Inter'] uppercase text-[0.75rem] tracking-[0.05em] font-bold">New Project</span>
+            </div>
+        </div>
+    </aside>
+    <!-- Main Content Canvas -->
+    <main class="lg:pl-64 pt-20 min-h-screen">
+        <!-- Sticky Sub-Header (The Action Bar) -->
+        <div
+            class="sticky top-20 z-40 bg-surface/80 backdrop-blur-md border-b border-outline-variant/20 px-6 lg:px-12 py-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h2 class="text-2xl font-black text-on-surface tracking-tighter uppercase">New Enquiry / Initial Meeting
+                </h2>
+                <p class="text-[0.65rem] uppercase tracking-widest text-on-surface-variant mt-1 font-bold">Status:
+                    Drafting Phase — v1.0.4</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button
+                    class="px-6 py-3 bg-surface-container-highest text-on-surface font-['Inter'] uppercase text-[0.7rem] tracking-widest font-bold hover:bg-surface-variant transition-colors active:scale-95">Save
+                    Draft</button>
+                <button
+                    class="px-8 py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary font-['Inter'] uppercase text-[0.7rem] tracking-widest font-black transition-all active:scale-95">Submit
+                    Enquiry</button>
+            </div>
+        </div>
+        <!-- Progress Stepper -->
+        <div class="px-6 lg:px-12 py-8 overflow-x-auto no-scrollbar">
+            <div class="flex items-center gap-0 min-w-max">
+                <div class="flex items-center gap-3 pr-8 border-b-2 border-primary py-2 group cursor-pointer">
+                    <span
+                        class="w-6 h-6 flex items-center justify-center bg-primary text-white text-[10px] font-bold">01</span>
+                    <span
+                        class="font-['Inter'] uppercase text-[0.7rem] tracking-widest font-black text-primary">Client</span>
+                </div>
+                <div
+                    class="flex items-center gap-3 px-8 border-b-2 border-outline-variant/30 py-2 group cursor-pointer hover:border-outline transition-colors">
+                    <span
+                        class="w-6 h-6 flex items-center justify-center bg-surface-container-highest text-on-surface-variant text-[10px] font-bold">02</span>
+                    <span
+                        class="font-['Inter'] uppercase text-[0.7rem] tracking-widest font-bold text-on-surface-variant group-hover:text-on-surface">Project</span>
+                </div>
+                <div
+                    class="flex items-center gap-3 px-8 border-b-2 border-outline-variant/30 py-2 group cursor-pointer">
+                    <span
+                        class="w-6 h-6 flex items-center justify-center bg-surface-container-highest text-on-surface-variant text-[10px] font-bold">03</span>
+                    <span
+                        class="font-['Inter'] uppercase text-[0.7rem] tracking-widest font-bold text-on-surface-variant">Budget</span>
+                </div>
+                <div
+                    class="flex items-center gap-3 px-8 border-b-2 border-outline-variant/30 py-2 group cursor-pointer">
+                    <span
+                        class="w-6 h-6 flex items-center justify-center bg-surface-container-highest text-on-surface-variant text-[10px] font-bold">04</span>
+                    <span
+                        class="font-['Inter'] uppercase text-[0.7rem] tracking-widest font-bold text-on-surface-variant">Vision</span>
+                </div>
+                <div
+                    class="flex items-center gap-3 px-8 border-b-2 border-outline-variant/30 py-2 group cursor-pointer">
+                    <span
+                        class="w-6 h-6 flex items-center justify-center bg-surface-container-highest text-on-surface-variant text-[10px] font-bold">05</span>
+                    <span
+                        class="font-['Inter'] uppercase text-[0.7rem] tracking-widest font-bold text-on-surface-variant">Site</span>
+                </div>
+                <div
+                    class="flex items-center gap-3 px-8 border-b-2 border-outline-variant/30 py-2 group cursor-pointer">
+                    <span
+                        class="w-6 h-6 flex items-center justify-center bg-surface-container-highest text-on-surface-variant text-[10px] font-bold">06</span>
+                    <span
+                        class="font-['Inter'] uppercase text-[0.7rem] tracking-widest font-bold text-on-surface-variant">Scope</span>
+                </div>
+                <div
+                    class="flex items-center gap-3 pl-8 border-b-2 border-outline-variant/30 py-2 group cursor-pointer">
+                    <span
+                        class="w-6 h-6 flex items-center justify-center bg-surface-container-highest text-on-surface-variant text-[10px] font-bold">07</span>
+                    <span
+                        class="font-['Inter'] uppercase text-[0.7rem] tracking-widest font-bold text-on-surface-variant">Lead</span>
+                </div>
+            </div>
+        </div>
+        <div class="px-6 lg:px-12 pb-24 max-w-7xl">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                <!-- Left Column: Primary Inputs -->
+                <div class="lg:col-span-8 space-y-16">
+                    <!-- Section 1: Client Information -->
+                    <section class="space-y-8" id="client-info">
+                        <div class="flex items-center gap-4">
+                            <span
+                                class="material-symbols-outlined p-2 bg-surface-container-low text-primary">person</span>
+                            <h3
+                                class="font-['Inter'] uppercase text-[0.8rem] tracking-[0.2em] font-black text-on-surface">
+                                01. Client Information</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="group">
+                                <label
+                                    class="block text-[0.6rem] uppercase tracking-widest font-bold text-on-surface-variant mb-2 transition-colors group-focus-within:text-primary">Full
+                                    Name</label>
+                                <input
+                                    class="w-full bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary px-0 py-2 text-on-surface placeholder:text-outline-variant/50 font-medium"
+                                    placeholder="e.g. Julianne Sterling" type="text" />
+                            </div>
+                            <div class="group">
+                                <label
+                                    class="block text-[0.6rem] uppercase tracking-widest font-bold text-on-surface-variant mb-2 group-focus-within:text-primary">Email
+                                    Address</label>
+                                <input
+                                    class="w-full bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary px-0 py-2 text-on-surface placeholder:text-outline-variant/50"
+                                    placeholder="j.sterling@estate.com" type="email" />
+                            </div>
+                            <div class="group">
+                                <label
+                                    class="block text-[0.6rem] uppercase tracking-widest font-bold text-on-surface-variant mb-2 group-focus-within:text-primary">Phone
+                                    Number</label>
+                                <input
+                                    class="w-full bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary px-0 py-2 text-on-surface placeholder:text-outline-variant/50"
+                                    placeholder="+44 20 7946 0958" type="tel" />
+                            </div>
+                            <div class="group">
+                                <label
+                                    class="block text-[0.6rem] uppercase tracking-widest font-bold text-on-surface-variant mb-2 group-focus-within:text-primary">Company
+                                    / Entity</label>
+                                <input
+                                    class="w-full bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary px-0 py-2 text-on-surface placeholder:text-outline-variant/50"
+                                    placeholder="Sterling Development Group" type="text" />
+                            </div>
+                        </div>
+                        <div class="flex flex-col md:flex-row gap-8 py-4 bg-surface-container-low/30 p-4">
+                            <div class="flex-1 space-y-4">
+                                <label
+                                    class="block text-[0.6rem] uppercase tracking-widest font-bold text-on-surface-variant">Preferred
+                                    Communication</label>
+                                <select
+                                    class="w-full bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary px-0 py-2 text-on-surface appearance-none cursor-pointer">
+                                    <option>Video Call (Zoom/Teams)</option>
+                                    <option>In-Person Studio Meeting</option>
+                                    <option>Email Correspondence Only</option>
+                                    <option>On-Site Meeting</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-4 px-4 border-l border-outline-variant/20">
+                                <div
+                                    class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-surface-container-highest transition-colors duration-200 ease-in-out focus:outline-none focus:ring-0">
+                                    <span
+                                        class="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+                                </div>
+                                <span
+                                    class="text-[0.6rem] uppercase tracking-widest font-bold text-on-surface-variant">Primary
+                                    Decision Maker?</span>
+                            </div>
+                        </div>
+                        <div class="group">
+                            <label
+                                class="block text-[0.6rem] uppercase tracking-widest font-bold text-on-surface-variant mb-2">Stakeholders
+                                &amp; Key Partners</label>
+                            <textarea
+                                class="w-full bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary px-0 py-2 text-on-surface placeholder:text-outline-variant/50 resize-none"
+                                placeholder="List other involved parties, spouses, or board members..."
+                                rows="2"></textarea>
+                        </div>
+                    </section>
+                    <!-- Section 2: Project Overview -->
+                    <section class="space-y-8" id="project-overview">
+                        <div class="flex items-center gap-4">
+                            <span
+                                class="material-symbols-outlined p-2 bg-surface-container-low text-primary">architecture</span>
+                            <h3
+                                class="font-['Inter'] uppercase text-[0.8rem] tracking-[0.2em] font-black text-on-surface">
+                                02. Project Overview</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="group md:col-span-2">
+                                <label
+                                    class="block text-[0.6rem] uppercase tracking-widest font-bold text-on-surface-variant mb-2 group-focus-within:text-primary">Project
+                                    Title / Alias</label>
+                                <input
+                                    class="w-full bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary px-0 py-2 text-on-surface text-lg font-black placeholder:text-outline-variant/50"
+                                    placeholder="e.g. The Monolith Pavilion" type="text" />
+                            </div>
+                            <div class="group">
+                                <label
+                                    class="block text-[0.6rem] uppercase tracking-widest font-bold text-on-surface-variant mb-2">Project
+                                    Type</label>
+                                <select
+                                    class="w-full bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary px-0 py-2 text-on-surface">
+                                    <option>High-End Residential</option>
+                                    <option>Commercial / Retail</option>
+                                    <option>Hospitality / Boutique Hotel</option>
+                                    <option>Cultural / Institutional</option>
+                                    <option>Renovation / Restoration</option>
+                                </select>
+                            </div>
+                            <div class="group">
+                                <label
+                                    class="block text-[0.6rem] uppercase tracking-widest font-bold text-on-surface-variant mb-2">Site
+                                    Address / Coordinates</label>
+                                <input
+                                    class="w-full bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary px-0 py-2 text-on-surface"
+                                    placeholder="Street name, City, Country" type="text" />
+                            </div>
+                            <div class="group">
+                                <label
+                                    class="block text-[0.6rem] uppercase tracking-widest font-bold text-on-surface-variant mb-2">Approx.
+                                    Plot Size (sqm)</label>
+                                <input
+                                    class="w-full bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary px-0 py-2 text-on-surface"
+                                    placeholder="0.00" type="number" />
+                            </div>
+                            <div class="group">
+                                <label
+                                    class="block text-[0.6rem] uppercase tracking-widest font-bold text-on-surface-variant mb-2">Target
+                                    Built-up Area (sqm)</label>
+                                <input
+                                    class="w-full bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary px-0 py-2 text-on-surface"
+                                    placeholder="0.00" type="number" />
+                            </div>
+                        </div>
+                    </section>
+                    <!-- Section 4: Vision -->
+                    <section class="space-y-8" id="vision">
+                        <div class="flex items-center gap-4">
+                            <span
+                                class="material-symbols-outlined p-2 bg-surface-container-low text-primary">auto_awesome</span>
+                            <h3
+                                class="font-['Inter'] uppercase text-[0.8rem] tracking-[0.2em] font-black text-on-surface">
+                                04. Requirements &amp; Vision</h3>
+                        </div>
+                        <div class="space-y-8">
+                            <div class="group">
+                                <label
+                                    class="block text-[0.6rem] uppercase tracking-widest font-bold text-on-surface-variant mb-2">Core
+                                    Purpose &amp; Priorities</label>
+                                <textarea
+                                    class="w-full bg-surface-container-low border-0 border-l-2 border-primary focus:ring-0 p-4 text-on-surface placeholder:text-outline-variant/50 italic"
+                                    placeholder="Describe the soul of the project. What feeling should the space evoke?"
+                                    rows="3"></textarea>
+                            </div>
+                            <div class="space-y-4">
+                                <label
+                                    class="block text-[0.6rem] uppercase tracking-widest font-bold text-on-surface-variant">Must-Have
+                                    Design Pillars</label>
+                                <div class="flex flex-wrap gap-2">
+                                    <span
+                                        class="px-3 py-1 bg-surface-container-highest text-on-surface text-[0.65rem] font-bold border border-outline-variant/10 uppercase tracking-widest cursor-pointer hover:bg-primary hover:text-white transition-colors">Sustainable
+                                        Materials</span>
+                                    <span
+                                        class="px-3 py-1 bg-primary text-white text-[0.65rem] font-bold uppercase tracking-widest cursor-pointer">Minimalist
+                                        Void</span>
+                                    <span
+                                        class="px-3 py-1 bg-surface-container-highest text-on-surface text-[0.65rem] font-bold border border-outline-variant/10 uppercase tracking-widest cursor-pointer">Brutalist
+                                        Elements</span>
+                                    <span
+                                        class="px-3 py-1 bg-surface-container-highest text-on-surface text-[0.65rem] font-bold border border-outline-variant/10 uppercase tracking-widest cursor-pointer">Smart
+                                        Integration</span>
+                                    <button
+                                        class="px-3 py-1 border border-dashed border-outline-variant text-on-surface-variant text-[0.65rem] uppercase tracking-widest font-bold hover:bg-surface-container transition-colors">+
+                                        Add Pillar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <!-- Right Column: Secondary Metadata & Context -->
+                <div class="lg:col-span-4 space-y-12">
+                    <!-- Section 3: Budget & Timeline Overlay -->
+                    <div
+                        class="p-8 bg-inverse-surface text-inverse-on-surface space-y-8 shadow-2xl relative overflow-hidden">
+                        <div
+                            class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rotate-45 translate-x-16 -translate-y-16">
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">payments</span>
+                            <h3 class="font-['Inter'] uppercase text-[0.7rem] tracking-[0.2em] font-black">03. Budget
+                                &amp; Timeline</h3>
+                        </div>
+                        <div class="space-y-6 relative z-10">
+                            <div class="group">
+                                <label
+                                    class="block text-[0.55rem] uppercase tracking-[0.2em] font-bold text-inverse-on-surface/50 mb-3">Investment
+                                    Range</label>
+                                <select
+                                    class="w-full bg-white/10 border-0 border-b border-white/20 focus:ring-0 focus:border-primary py-2 text-xs uppercase tracking-widest font-bold appearance-none">
+                                    <option class="bg-inverse-surface">£1.5M - £3.0M</option>
+                                    <option class="bg-inverse-surface">£3.0M - £5.0M</option>
+                                    <option class="bg-inverse-surface">£5.0M - £10M+</option>
+                                </select>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <label
+                                        class="text-[0.55rem] uppercase tracking-[0.2em] font-bold text-inverse-on-surface/50">Timeline
+                                        Flexibility</label>
+                                    <span class="text-[0.6rem] font-black text-primary uppercase">Moderate</span>
+                                </div>
+                                <input
+                                    class="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-primary"
+                                    type="range" />
+                            </div>
+                            <div class="space-y-3">
+                                <label
+                                    class="block text-[0.55rem] uppercase tracking-[0.2em] font-bold text-inverse-on-surface/50">Project
+                                    Includes</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-3 cursor-pointer group">
+                                        <div
+                                            class="w-4 h-4 border-2 border-white/20 flex items-center justify-center group-hover:border-primary transition-colors">
+                                            <div class="w-2 h-2 bg-primary"></div>
+                                        </div>
+                                        <span class="text-[0.65rem] font-bold uppercase tracking-wider">Interior
+                                            Curation</span>
+                                    </label>
+                                    <label class="flex items-center gap-3 cursor-pointer group">
+                                        <div
+                                            class="w-4 h-4 border-2 border-white/20 flex items-center justify-center group-hover:border-primary transition-colors">
+                                        </div>
+                                        <span
+                                            class="text-[0.65rem] font-bold uppercase tracking-wider text-inverse-on-surface/60">Landscape
+                                            Design</span>
+                                    </label>
+                                    <label class="flex items-center gap-3 cursor-pointer group">
+                                        <div
+                                            class="w-4 h-4 border-2 border-white/20 flex items-center justify-center group-hover:border-primary transition-colors">
+                                            <div class="w-2 h-2 bg-primary"></div>
+                                        </div>
+                                        <span class="text-[0.65rem] font-bold uppercase tracking-wider">BIM
+                                            Management</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Section 5 & 6 Snippets (Condensed for Side Column) -->
+                    <div class="p-8 bg-surface-container-low space-y-8">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">inventory</span>
+                            <h3
+                                class="font-['Inter'] uppercase text-[0.7rem] tracking-[0.2em] font-black text-on-surface">
+                                05. Documentation</h3>
+                        </div>
+                        <div
+                            class="border-2 border-dashed border-outline-variant/30 p-6 flex flex-col items-center justify-center text-center gap-3 group hover:border-primary hover:bg-white transition-all cursor-pointer">
+                            <span
+                                class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">cloud_upload</span>
+                            <div>
+                                <p class="text-[0.65rem] font-black uppercase tracking-widest text-on-surface">Upload
+                                    Site Files</p>
+                                <p class="text-[0.55rem] text-on-surface-variant mt-1 uppercase tracking-tighter">CAD,
+                                    PDF, or Site Imagery</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Section 7: Lead Quality -->
+                    <div class="p-8 bg-surface-container-highest space-y-6">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">analytics</span>
+                            <h3
+                                class="font-['Inter'] uppercase text-[0.7rem] tracking-[0.2em] font-black text-on-surface">
+                                07. Internal Qualification</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label
+                                    class="block text-[0.55rem] uppercase tracking-[0.2em] font-bold text-on-surface-variant mb-2">Priority
+                                    Level</label>
+                                <div class="grid grid-cols-3 gap-1">
+                                    <button
+                                        class="py-2 text-[0.6rem] font-black uppercase tracking-widest bg-primary text-white">Hot</button>
+                                    <button
+                                        class="py-2 text-[0.6rem] font-black uppercase tracking-widest bg-surface text-on-surface-variant">Warm</button>
+                                    <button
+                                        class="py-2 text-[0.6rem] font-black uppercase tracking-widest bg-surface text-on-surface-variant">Cold</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-[0.55rem] uppercase tracking-[0.2em] font-bold text-on-surface-variant mb-2">Lead
+                                    Source</label>
+                                <input
+                                    class="w-full bg-transparent border-0 border-b border-on-surface-variant/20 focus:ring-0 focus:border-primary py-2 text-[0.65rem] uppercase font-bold text-on-surface"
+                                    placeholder="e.g. Architectural Digest / Referral" type="text" />
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Abstract Asset Block -->
+                    <div
+                        class="h-48 bg-surface-container-lowest flex items-center justify-center relative group overflow-hidden">
+                        <img alt="Architectural Blueprint"
+                            class="absolute inset-0 w-full h-full object-cover opacity-10 group-hover:scale-110 transition-transform duration-700"
+                            data-alt="Monochromatic aerial view of a clean modern architectural model"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJ3vqNl39hGKsxzfluGeaNdZCnC56kIZlxCDlTNl05EhG0kE6kQpQVicb-vJNg8xQ3Zeqq4vFPAOsglgmKIoZVf1GwxaBPZf9u96-zUgwcnT2fFtLLv2HPzb1BaMMG-Z7VeLQMTN1SACHoHnkv35r1HgZHwLrThKMdkmvWAw8TCiJr8pY5LR8yerRf2VgbiE6yoYmlkp8NgbLR9WPihA5bG_r6JMqTaS7W3BEG0QiAPagn6Lz4swhmRulB7XrKUuuzzmOCK6p9P3U" />
+                        <div class="text-center relative z-10 p-6">
+                            <span class="material-symbols-outlined text-primary text-4xl mb-4">architecture</span>
+                            <p
+                                class="text-[0.55rem] uppercase tracking-[0.3em] font-black text-on-surface opacity-40 leading-relaxed">
+                                Precision Engineering &amp;<br />Editorial Aesthetics</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Contextual FAB Suppression: Hiding as requested for Details/Transactional screens -->
+    <!-- Mobile Bottom Navigation (Hidden on Web) -->
+    <nav
+        class="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container-lowest border-t border-outline-variant/10 flex justify-around py-4 z-50">
+        <span class="material-symbols-outlined text-primary font-bold">description</span>
+        <span class="material-symbols-outlined text-on-surface-variant opacity-60">architecture</span>
+        <span class="material-symbols-outlined text-on-surface-variant opacity-60">group</span>
+        <span class="material-symbols-outlined text-on-surface-variant opacity-60">settings</span>
+    </nav>
+</body>
+
+</html>

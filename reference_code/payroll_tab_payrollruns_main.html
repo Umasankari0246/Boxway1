@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>BOXWAY - Payslips Management</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-primary": "#ffb4aa",
+                        "on-tertiary-fixed": "#1b1b1b",
+                        "surface-container-highest": "#e5e2e1",
+                        "secondary-container": "#e2dfde",
+                        "tertiary": "#5a5a5a",
+                        "primary": "#b9000c",
+                        "surface-container-high": "#eae7e7",
+                        "outline-variant": "#e7bdb7",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#e2e2e2",
+                        "surface-bright": "#fcf9f8",
+                        "surface": "#fcf9f8",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-secondary-container": "#636262",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f6f3f2",
+                        "surface-container": "#f0eded",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-secondary-fixed-variant": "#474746",
+                        "tertiary-container": "#737373",
+                        "on-primary-fixed-variant": "#930007",
+                        "background": "#fcf9f8",
+                        "tertiary-fixed-dim": "#c6c6c6",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "outline": "#926e6a",
+                        "on-primary-fixed": "#410001",
+                        "on-surface": "#1c1b1b",
+                        "error-container": "#ffdad6",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#fafafa",
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-tint": "#c0000d",
+                        "on-surface-variant": "#5d3f3b",
+                        "surface-dim": "#dcd9d9",
+                        "primary-container": "#e21d1d",
+                        "secondary": "#5f5e5e",
+                        "on-background": "#1c1b1b",
+                        "secondary-fixed": "#e5e2e1",
+                        "primary-fixed": "#ffdad5",
+                        "on-error": "#ffffff",
+                        "on-primary-container": "#fff9f8",
+                        "inverse-surface": "#313030",
+                        "on-tertiary-fixed-variant": "#474747",
+                        "surface-variant": "#e5e2e1",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0rem", "lg": "0rem", "xl": "0rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-surface text-on-surface min-h-screen">
+    <!-- SideNavBar (The Monolith) -->
+    <aside
+        class="fixed left-0 top-0 h-full z-50 flex flex-col bg-[#313030] dark:bg-[#1c1b1b] h-full w-64 left-0 top-0 border-none rounded-none">
+        <div class="p-8">
+            <div class="flex flex-col gap-1 mb-12">
+                <span class="text-xl font-black text-white tracking-widest uppercase">BOXWAY</span>
+                <span
+                    class="font-inter tracking-tight label-md uppercase font-medium text-white opacity-60 text-[10px]">Architecture
+                    Management</span>
+            </div>
+            <nav class="flex flex-col space-y-2">
+                <!-- Overview -->
+                <a class="font-inter tracking-tight label-md uppercase font-medium text-[#5d3f3b] opacity-70 pl-5 py-3 hover:text-white hover:opacity-100 transition-opacity duration-200 flex items-center gap-3"
+                    href="#">
+                    <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                    <span>Overview</span>
+                </a>
+                <!-- Studio -->
+                <a class="font-inter tracking-tight label-md uppercase font-medium text-[#5d3f3b] opacity-70 pl-5 py-3 hover:text-white hover:opacity-100 transition-opacity duration-200 flex items-center gap-3"
+                    href="#">
+                    <span class="material-symbols-outlined" data-icon="architecture">architecture</span>
+                    <span>Studio</span>
+                </a>
+                <!-- Finance (Active Parent) -->
+                <a class="font-inter tracking-tight label-md uppercase font-medium text-white border-l-4 border-[#b9000c] pl-4 py-3 bg-transparent flex items-center gap-3"
+                    href="#">
+                    <span class="material-symbols-outlined" data-icon="payments">payments</span>
+                    <span>Finance</span>
+                </a>
+                <!-- Intelligence -->
+                <a class="font-inter tracking-tight label-md uppercase font-medium text-[#5d3f3b] opacity-70 pl-5 py-3 hover:text-white hover:opacity-100 transition-opacity duration-200 flex items-center gap-3"
+                    href="#">
+                    <span class="material-symbols-outlined" data-icon="insights">insights</span>
+                    <span>Intelligence</span>
+                </a>
+            </nav>
+        </div>
+        <div class="mt-auto p-8 border-t border-white/5">
+            <button
+                class="w-full bg-primary hover:bg-primary-container text-white py-4 font-bold uppercase tracking-widest text-xs transition-colors duration-300">
+                New Project
+            </button>
+            <nav class="flex flex-col mt-6 space-y-1">
+                <a class="font-inter tracking-tight label-md uppercase font-medium text-[#5d3f3b] opacity-70 pl-5 py-2 hover:text-white hover:opacity-100 flex items-center gap-3"
+                    href="#">
+                    <span class="material-symbols-outlined text-sm" data-icon="settings">settings</span>
+                    <span>Settings</span>
+                </a>
+                <a class="font-inter tracking-tight label-md uppercase font-medium text-[#5d3f3b] opacity-70 pl-5 py-2 hover:text-white hover:opacity-100 flex items-center gap-3"
+                    href="#">
+                    <span class="material-symbols-outlined text-sm" data-icon="help_outline">help_outline</span>
+                    <span>Support</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+    <!-- TopNavBar -->
+    <header
+        class="flex justify-between items-center w-full px-12 py-6 ml-64 max-w-[calc(100%-16rem)] bg-[#fcf9f8] dark:bg-[#1c1b1b]">
+        <div class="flex items-center gap-12">
+            <h1 class="headline-sm font-inter font-bold text-[#1c1b1b]">Payroll</h1>
+            <nav class="flex gap-8">
+                <a class="text-[#5d3f3b] pb-2 font-medium hover:text-[#b9000c] transition-colors duration-200"
+                    href="#">Dashboard</a>
+                <a class="text-[#5d3f3b] pb-2 font-medium hover:text-[#b9000c] transition-colors duration-200"
+                    href="#">Payroll Runs</a>
+                <a class="text-[#1c1b1b] border-b-2 border-[#b9000c] pb-2 font-bold" href="#">Payslips</a>
+                <a class="text-[#5d3f3b] pb-2 font-medium hover:text-[#b9000c] transition-colors duration-200"
+                    href="#">Settings</a>
+            </nav>
+        </div>
+        <div class="flex items-center gap-6">
+            <span
+                class="material-symbols-outlined text-on-surface cursor-pointer hover:bg-surface-container p-2 transition-all"
+                data-icon="notifications">notifications</span>
+            <span
+                class="material-symbols-outlined text-on-surface cursor-pointer hover:bg-surface-container p-2 transition-all"
+                data-icon="schedule">schedule</span>
+            <div class="h-10 w-10 bg-surface-container-highest flex items-center justify-center font-bold text-xs">JD
+            </div>
+        </div>
+    </header>
+    <!-- Main Content -->
+    <main class="ml-64 p-12 pt-4">
+        <!-- KPI Cards (Bento Style Layout) -->
+        <section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            <div class="bg-surface-container-lowest p-8 border-l-4 border-primary">
+                <p class="label-md uppercase tracking-[0.1em] text-on-surface-variant mb-4">Total Net Pay</p>
+                <h3 class="display-sm font-bold text-on-surface">₹428,500</h3>
+                <p class="text-xs text-on-surface-variant mt-2 opacity-60">Architectural &amp; Studio Staff</p>
+            </div>
+            <div class="bg-surface-container-lowest p-8 border-l-4 border-on-surface">
+                <p class="label-md uppercase tracking-[0.1em] text-on-surface-variant mb-4">Total Employees</p>
+                <h3 class="display-sm font-bold text-on-surface">142</h3>
+                <p class="text-xs text-on-surface-variant mt-2 opacity-60">Active in current cycle</p>
+            </div>
+            <div class="bg-surface-container-lowest p-8 border-l-4 border-on-surface">
+                <p class="label-md uppercase tracking-[0.1em] text-on-surface-variant mb-4">Completion Status</p>
+                <div class="flex items-end gap-3">
+                    <h3 class="display-sm font-bold text-on-surface">98%</h3>
+                    <div class="w-full bg-surface-container h-1 mb-2">
+                        <div class="bg-primary h-1" style="width: 98%"></div>
+                    </div>
+                </div>
+                <p class="text-xs text-on-surface-variant mt-2 opacity-60">Drafts remaining: 3</p>
+            </div>
+            <div class="bg-surface-container-lowest p-8 border-l-4 border-on-surface">
+                <p class="label-md uppercase tracking-[0.1em] text-on-surface-variant mb-4">Current Batch</p>
+                <h3 class="display-sm font-bold text-on-surface uppercase">OCT '23</h3>
+                <p class="text-xs text-on-surface-variant mt-2 opacity-60 italic">Processing Phase</p>
+            </div>
+        </section>
+        <!-- Table Filters & Search -->
+        <section class="mb-6 flex justify-between items-end">
+            <div class="flex gap-8 items-center">
+                <div class="relative group w-80">
+                    <span class="absolute left-0 bottom-2 material-symbols-outlined text-on-surface-variant text-xl"
+                        data-icon="search">search</span>
+                    <input
+                        class="w-full pl-8 pb-2 bg-transparent border-0 border-b border-outline-variant focus:ring-0 focus:border-primary text-xs font-medium tracking-widest placeholder:text-on-surface-variant placeholder:opacity-40"
+                        placeholder="SEARCH EMPLOYEE..." type="text" />
+                </div>
+                <div class="flex gap-4">
+                    <button
+                        class="flex items-center gap-2 px-4 py-2 bg-surface-container-low hover:bg-surface-container-highest transition-colors text-[10px] font-bold uppercase tracking-widest">
+                        <span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span>
+                        Filter
+                    </button>
+                    <button
+                        class="flex items-center gap-2 px-4 py-2 bg-surface-container-low hover:bg-surface-container-highest transition-colors text-[10px] font-bold uppercase tracking-widest">
+                        <span class="material-symbols-outlined text-sm" data-icon="calendar_today">calendar_today</span>
+                        Period
+                    </button>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <button
+                    class="bg-on-surface text-white px-6 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-on-surface-variant transition-colors">
+                    Bulk Download
+                </button>
+                <button
+                    class="bg-primary text-white px-6 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-primary-container transition-colors">
+                    Send All Payslips
+                </button>
+            </div>
+        </section>
+        <!-- Table View -->
+        <div class="bg-surface-container-lowest shadow-[0px_24px_48px_rgba(28,27,27,0.04)]">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-surface-container-low">
+                        <th class="px-8 py-5 label-md uppercase tracking-widest text-on-surface-variant font-semibold">
+                            Employee / Intern</th>
+                        <th class="px-8 py-5 label-md uppercase tracking-widest text-on-surface-variant font-semibold">
+                            Month</th>
+                        <th class="px-8 py-5 label-md uppercase tracking-widest text-on-surface-variant font-semibold">
+                            Type</th>
+                        <th
+                            class="px-8 py-5 label-md uppercase tracking-widest text-on-surface-variant font-semibold text-right">
+                            Fixed Salary</th>
+                        <th
+                            class="px-8 py-5 label-md uppercase tracking-widest text-on-surface-variant font-semibold text-right">
+                            Bonus</th>
+                        <th
+                            class="px-8 py-5 label-md uppercase tracking-widest text-on-surface-variant font-semibold text-right">
+                            Net Pay</th>
+                        <th class="px-8 py-5 label-md uppercase tracking-widest text-on-surface-variant font-semibold">
+                            Status</th>
+                        <th
+                            class="px-8 py-5 label-md uppercase tracking-widest text-on-surface-variant font-semibold text-right">
+                            Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-container-low">
+                    <!-- Row 1 -->
+                    <tr class="hover:bg-surface-container-low transition-colors group">
+                        <td class="px-8 py-6">
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="w-10 h-10 bg-secondary-container flex items-center justify-center font-bold text-xs">
+                                    AR</div>
+                                <div>
+                                    <p class="font-bold text-on-surface text-sm">Arjun Raghav</p>
+                                    <p class="text-[10px] text-on-surface-variant uppercase tracking-tighter">Lead
+                                        Architect</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-8 py-6 text-sm text-on-surface-variant uppercase">Oct 2023</td>
+                        <td class="px-8 py-6 text-xs font-bold uppercase tracking-widest">Employee</td>
+                        <td class="px-8 py-6 text-sm font-medium text-right">₹1,20,000</td>
+                        <td class="px-8 py-6 text-sm font-medium text-right text-primary">₹15,000</td>
+                        <td class="px-8 py-6 text-sm font-bold text-right">₹1,35,000</td>
+                        <td class="px-8 py-6">
+                            <span
+                                class="px-3 py-1 bg-green-100 text-green-800 text-[10px] font-black uppercase tracking-widest">Sent</span>
+                        </td>
+                        <td class="px-8 py-6 text-right">
+                            <div class="flex justify-end gap-2 opacity-40 group-hover:opacity-100 transition-opacity">
+                                <button class="p-2 hover:bg-surface-container transition-colors"><span
+                                        class="material-symbols-outlined text-lg"
+                                        data-icon="visibility">visibility</span></button>
+                                <button class="p-2 hover:bg-surface-container transition-colors"><span
+                                        class="material-symbols-outlined text-lg"
+                                        data-icon="download">download</span></button>
+                                <button class="p-2 hover:bg-surface-container transition-colors"><span
+                                        class="material-symbols-outlined text-lg" data-icon="mail">mail</span></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Row 2 -->
+                    <tr class="hover:bg-surface-container-low transition-colors group">
+                        <td class="px-8 py-6">
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="w-10 h-10 bg-secondary-container flex items-center justify-center font-bold text-xs">
+                                    SM</div>
+                                <div>
+                                    <p class="font-bold text-on-surface text-sm">Sana Mehta</p>
+                                    <p class="text-[10px] text-on-surface-variant uppercase tracking-tighter">Design
+                                        Intern</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-8 py-6 text-sm text-on-surface-variant uppercase">Oct 2023</td>
+                        <td class="px-8 py-6 text-xs font-bold uppercase tracking-widest">Intern</td>
+                        <td class="px-8 py-6 text-sm font-medium text-right">₹25,000</td>
+                        <td class="px-8 py-6 text-sm font-medium text-right">₹0</td>
+                        <td class="px-8 py-6 text-sm font-bold text-right">₹25,000</td>
+                        <td class="px-8 py-6">
+                            <span
+                                class="px-3 py-1 bg-yellow-100 text-yellow-800 text-[10px] font-black uppercase tracking-widest">Processing</span>
+                        </td>
+                        <td class="px-8 py-6 text-right">
+                            <div class="flex justify-end gap-2 opacity-40 group-hover:opacity-100 transition-opacity">
+                                <button class="p-2 hover:bg-surface-container transition-colors"><span
+                                        class="material-symbols-outlined text-lg"
+                                        data-icon="visibility">visibility</span></button>
+                                <button class="p-2 hover:bg-surface-container transition-colors"><span
+                                        class="material-symbols-outlined text-lg"
+                                        data-icon="download">download</span></button>
+                                <button class="p-2 hover:bg-surface-container transition-colors"><span
+                                        class="material-symbols-outlined text-lg" data-icon="mail">mail</span></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Row 3 -->
+                    <tr class="hover:bg-surface-container-low transition-colors group">
+                        <td class="px-8 py-6">
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="w-10 h-10 bg-secondary-container flex items-center justify-center font-bold text-xs">
+                                    RK</div>
+                                <div>
+                                    <p class="font-bold text-on-surface text-sm">Rohan Khanna</p>
+                                    <p class="text-[10px] text-on-surface-variant uppercase tracking-tighter">Structural
+                                        Consultant</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-8 py-6 text-sm text-on-surface-variant uppercase">Oct 2023</td>
+                        <td class="px-8 py-6 text-xs font-bold uppercase tracking-widest">Consultant</td>
+                        <td class="px-8 py-6 text-sm font-medium text-right">₹85,000</td>
+                        <td class="px-8 py-6 text-sm font-medium text-right text-primary">₹5,000</td>
+                        <td class="px-8 py-6 text-sm font-bold text-right">₹90,000</td>
+                        <td class="px-8 py-6">
+                            <span
+                                class="px-3 py-1 bg-red-100 text-red-800 text-[10px] font-black uppercase tracking-widest">Pending</span>
+                        </td>
+                        <td class="px-8 py-6 text-right">
+                            <div class="flex justify-end gap-2 opacity-40 group-hover:opacity-100 transition-opacity">
+                                <button class="p-2 hover:bg-surface-container transition-colors"><span
+                                        class="material-symbols-outlined text-lg"
+                                        data-icon="visibility">visibility</span></button>
+                                <button class="p-2 hover:bg-surface-container transition-colors"><span
+                                        class="material-symbols-outlined text-lg"
+                                        data-icon="download">download</span></button>
+                                <button class="p-2 hover:bg-surface-container transition-colors"><span
+                                        class="material-symbols-outlined text-lg" data-icon="mail">mail</span></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Row 4 -->
+                    <tr class="hover:bg-surface-container-low transition-colors group">
+                        <td class="px-8 py-6">
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="w-10 h-10 bg-secondary-container flex items-center justify-center font-bold text-xs">
+                                    VK</div>
+                                <div>
+                                    <p class="font-bold text-on-surface text-sm">Vikram Kumar</p>
+                                    <p class="text-[10px] text-on-surface-variant uppercase tracking-tighter">Project
+                                        Manager</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-8 py-6 text-sm text-on-surface-variant uppercase">Oct 2023</td>
+                        <td class="px-8 py-6 text-xs font-bold uppercase tracking-widest">Employee</td>
+                        <td class="px-8 py-6 text-sm font-medium text-right">₹1,10,000</td>
+                        <td class="px-8 py-6 text-sm font-medium text-right">₹0</td>
+                        <td class="px-8 py-6 text-sm font-bold text-right">₹1,10,000</td>
+                        <td class="px-8 py-6">
+                            <span
+                                class="px-3 py-1 bg-green-100 text-green-800 text-[10px] font-black uppercase tracking-widest">Sent</span>
+                        </td>
+                        <td class="px-8 py-6 text-right">
+                            <div class="flex justify-end gap-2 opacity-40 group-hover:opacity-100 transition-opacity">
+                                <button class="p-2 hover:bg-surface-container transition-colors"><span
+                                        class="material-symbols-outlined text-lg"
+                                        data-icon="visibility">visibility</span></button>
+                                <button class="p-2 hover:bg-surface-container transition-colors"><span
+                                        class="material-symbols-outlined text-lg"
+                                        data-icon="download">download</span></button>
+                                <button class="p-2 hover:bg-surface-container transition-colors"><span
+                                        class="material-symbols-outlined text-lg" data-icon="mail">mail</span></button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- Pagination -->
+            <div class="px-8 py-6 bg-surface-container-low flex justify-between items-center">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Showing 4 of 142
+                    records</p>
+                <div class="flex gap-4">
+                    <button
+                        class="p-2 border border-outline-variant hover:bg-white transition-colors disabled:opacity-20"
+                        disabled="">
+                        <span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+                    </button>
+                    <button class="p-2 border border-outline-variant hover:bg-white transition-colors">
+                        <span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Contextual FAB (Only for specific screens) -->
+    <!-- Suppressed on Details/List Screens according to shell visibility rules, but kept if we treat this as a dashboard entry -->
+    <div class="fixed bottom-12 right-12 z-40">
+        <button
+            class="bg-primary hover:bg-primary-container text-white p-6 shadow-2xl flex items-center justify-center transition-all duration-300">
+            <span class="material-symbols-outlined text-2xl" data-icon="add">add</span>
+        </button>
+    </div>
+</body>
+
+</html>

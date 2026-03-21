@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Setup Salary Structure | BOXWAY STUDIO</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fcf9f8;
+            color: #1c1b1b;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #b9000c !important;
+            box-shadow: none !important;
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-container-highest": "#e5e2e1",
+                        "outline-variant": "#e7bdb7",
+                        "surface-container": "#f0eded",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#5d3f3b",
+                        "surface-tint": "#c0000d",
+                        "primary-container": "#e21d1d",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#e5e2e1",
+                        "tertiary-container": "#737373",
+                        "on-primary-container": "#fff9f8",
+                        "secondary-fixed": "#e5e2e1",
+                        "on-tertiary-container": "#fafafa",
+                        "secondary": "#5f5e5e",
+                        "surface": "#fcf9f8",
+                        "inverse-surface": "#313030",
+                        "surface-container-high": "#eae7e7",
+                        "on-tertiary-fixed": "#1b1b1b",
+                        "on-primary": "#ffffff",
+                        "primary-fixed": "#ffdad5",
+                        "error": "#ba1a1a",
+                        "background": "#fcf9f8",
+                        "surface-dim": "#dcd9d9",
+                        "surface-container-low": "#f6f3f2",
+                        "inverse-primary": "#ffb4aa",
+                        "secondary-container": "#e2dfde",
+                        "on-secondary-fixed-variant": "#474746",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#c6c6c6",
+                        "primary": "#b9000c",
+                        "on-primary-fixed": "#410001",
+                        "on-secondary-container": "#636262",
+                        "tertiary-fixed": "#e2e2e2",
+                        "on-secondary": "#ffffff",
+                        "surface-bright": "#fcf9f8",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-primary-fixed-variant": "#930007",
+                        "on-background": "#1c1b1b",
+                        "tertiary": "#5a5a5a",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "outline": "#926e6a",
+                        "on-tertiary-fixed-variant": "#474747",
+                        "on-surface": "#1c1b1b"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body class="bg-surface text-on-surface antialiased overflow-hidden">
+    <!-- Sidebar (The Monolith) -->
+    <aside class="flex flex-col h-screen w-64 fixed left-0 top-0 z-40 bg-[#313030] dark:bg-[#1c1b1b]">
+        <div class="px-8 py-10">
+            <h1 class="text-xl font-bold tracking-tighter text-white">BOXWAY STUDIO</h1>
+            <p
+                class="font-['Inter'] tracking-tight label-md uppercase text-[0.75rem] font-medium text-[#ece0df] opacity-70 mt-1">
+                Payroll Module</p>
+        </div>
+        <nav class="flex-1 space-y-1">
+            <a class="text-[#ece0df] opacity-70 pl-4 py-3 hover:opacity-100 transition-opacity flex items-center space-x-4 hover:bg-white/5"
+                href="#">
+                <span class="material-symbols-outlined text-lg" data-icon="dashboard">dashboard</span>
+                <span
+                    class="font-['Inter'] tracking-tight label-md uppercase text-[0.75rem] font-medium">Overview</span>
+            </a>
+            <a class="relative text-white border-l-[3px] border-[#b9000c] pl-4 py-3 bg-transparent flex items-center space-x-4 hover:bg-white/5"
+                href="#">
+                <span class="material-symbols-outlined text-lg" data-icon="potted_plant">potted_plant</span>
+                <span class="font-['Inter'] tracking-tight label-md uppercase text-[0.75rem] font-medium">Studio</span>
+            </a>
+            <a class="text-[#ece0df] opacity-70 pl-4 py-3 hover:opacity-100 transition-opacity flex items-center space-x-4 hover:bg-white/5"
+                href="#">
+                <span class="material-symbols-outlined text-lg" data-icon="payments">payments</span>
+                <span class="font-['Inter'] tracking-tight label-md uppercase text-[0.75rem] font-medium">Finance</span>
+            </a>
+            <a class="text-[#ece0df] opacity-70 pl-4 py-3 hover:opacity-100 transition-opacity flex items-center space-x-4 hover:bg-white/5"
+                href="#">
+                <span class="material-symbols-outlined text-lg" data-icon="insights">insights</span>
+                <span
+                    class="font-['Inter'] tracking-tight label-md uppercase text-[0.75rem] font-medium">Intelligence</span>
+            </a>
+        </nav>
+    </aside>
+    <!-- Main Content Canvas -->
+    <main class="ml-64 min-h-screen flex flex-col relative bg-surface">
+        <!-- Top Navigation -->
+        <header
+            class="flex justify-between items-center h-20 px-8 w-full bg-opacity-80 backdrop-blur-md z-30 border-b border-[#e7bdb7]/15">
+            <div class="flex items-center space-x-8">
+                <span class="text-lg font-bold text-[#1c1b1b] dark:text-white uppercase tracking-widest">Payroll</span>
+                <nav class="flex space-x-8 h-20 items-end">
+                    <a class="text-[#5d3f3b] dark:text-[#ece0df] pb-8 hover:text-[#1c1b1b] font-['Inter'] text-sm font-medium transition-colors"
+                        href="#">Dashboard</a>
+                    <a class="text-[#b9000c] font-bold border-b-2 border-[#b9000c] pb-8 font-['Inter'] text-sm"
+                        href="#">Payroll Runs</a>
+                    <a class="text-[#5d3f3b] dark:text-[#ece0df] pb-8 hover:text-[#1c1b1b] font-['Inter'] text-sm font-medium transition-colors"
+                        href="#">Payslips</a>
+                    <a class="text-[#5d3f3b] dark:text-[#ece0df] pb-8 hover:text-[#1c1b1b] font-['Inter'] text-sm font-medium transition-colors"
+                        href="#">Settings</a>
+                </nav>
+            </div>
+            <div class="flex items-center space-x-6">
+                <button
+                    class="material-symbols-outlined text-on-surface hover:bg-surface-container p-2 transition-colors"
+                    data-icon="schedule">schedule</button>
+                <button
+                    class="material-symbols-outlined text-on-surface hover:bg-surface-container p-2 transition-colors relative"
+                    data-icon="notifications">
+                    notifications
+                    <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-primary"></span>
+                </button>
+                <div class="w-8 h-8 bg-surface-container-highest">
+                    <img alt="User Profile" class="w-full h-full object-cover"
+                        data-alt="Portrait of a professional male manager"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpNtTMCCMeUi70xTSin5h7TuKk-qYzQwVBi3TGxKkaiVeRxlFlCf2M5erw_j18Z00T2hQEV4BRx_gAmx-TafTLzzp9HrIe4peKeziSgTpwLFqw8PPKubBDvGjWY6JQYxf-NCOinlWfa7XL2hm0zz9IPcLeqlwjS_2dbSj0iCvI_LeKeh5-J4BvpfTl9NBwFnb4Q_lzlpecmDP2BOvbBUlgWL85YoktPF7KDOmchFmp-pU4nM87xKdlLTsF7eIZ0FS3JFO6OnUD3g0" />
+                </div>
+            </div>
+        </header>
+        <!-- Task Overlay (Modal View) -->
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/40 backdrop-blur-sm px-4">
+            <div
+                class="bg-surface w-full max-w-5xl h-[921px] flex flex-col shadow-[0px_24px_48px_rgba(28,27,27,0.06)] relative overflow-hidden">
+                <!-- Modal Header & Stepper -->
+                <div class="px-10 pt-10 pb-6 bg-surface-container-low flex justify-between items-start">
+                    <div class="space-y-1">
+                        <h2 class="text-3xl font-extrabold tracking-tighter text-on-surface uppercase leading-none">
+                            Generate Payroll</h2>
+                        <p class="text-on-surface-variant font-medium text-sm">Setup Salary Structure for Individual
+                            Employee</p>
+                    </div>
+                    <!-- Stepper -->
+                    <div class="flex items-center space-x-12">
+                        <div class="flex flex-col items-center">
+                            <div
+                                class="w-8 h-8 bg-on-surface text-white flex items-center justify-center text-xs font-bold mb-2">
+                                <span class="material-symbols-outlined text-sm" data-icon="check">check</span>
+                            </div>
+                            <span
+                                class="label-md uppercase text-[0.65rem] font-bold tracking-widest text-on-surface-variant">Select
+                                Employee</span>
+                        </div>
+                        <div class="w-16 h-[1px] bg-outline-variant/30 -mt-6"></div>
+                        <div class="flex flex-col items-center">
+                            <div
+                                class="w-8 h-8 border-2 border-primary bg-primary text-white flex items-center justify-center text-xs font-bold mb-2">
+                                02</div>
+                            <span class="label-md uppercase text-[0.65rem] font-bold tracking-widest text-primary">Setup
+                                Salary</span>
+                        </div>
+                        <div class="w-16 h-[1px] bg-outline-variant/30 -mt-6"></div>
+                        <div class="flex flex-col items-center">
+                            <div
+                                class="w-8 h-8 border-2 border-outline-variant text-outline-variant flex items-center justify-center text-xs font-bold mb-2">
+                                03</div>
+                            <span
+                                class="label-md uppercase text-[0.65rem] font-bold tracking-widest text-outline-variant opacity-50">Review</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal Body (Scrollable) -->
+                <div class="flex-1 overflow-y-auto no-scrollbar p-10 bg-surface">
+                    <div class="grid grid-cols-12 gap-10">
+                        <!-- Left Column: Pre-filled Base Card -->
+                        <div class="col-span-12 lg:col-span-5 space-y-8">
+                            <div class="bg-surface-container-lowest p-8 border-l-4 border-primary space-y-6">
+                                <div class="flex items-center space-x-4 border-b border-outline-variant/15 pb-6">
+                                    <div class="w-14 h-14 bg-surface-container-high overflow-hidden">
+                                        <img alt="Employee" class="w-full h-full object-cover"
+                                            data-alt="Close up portrait of employee Liam Vance"
+                                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCW0jx3KvAYY_JCBvVcTQ7lJXDmUMj2ow94HO2YTY7_s7Wvss3CwHPZrcr_9chnGda1P67z8z1drToJ779l3UbLryOw95dR26wN_1ubaDNqqKRwlz6wO14A0xFyM3i00UmEPxgHZLDF1h6liMr7mj8IDt4cB0SfNZ_pZCc4zcK6LgIrLqu2-OVzQnTynRUXsjgKCxUt-5OnVGvgRuwnFjLjc63NmLd7EGJnEqniVu9LkIhURe3uJo0cOvjmzFK4NmXuQXzh1ETVYvg" />
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-lg text-on-surface">Liam Vance</h3>
+                                        <p
+                                            class="text-on-surface-variant text-xs font-medium uppercase tracking-widest">
+                                            Lead Architect • ID: BX-902</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-4">
+                                    <h4
+                                        class="label-md uppercase text-[0.7rem] font-bold tracking-[0.15em] text-on-surface-variant">
+                                        Standard Monthly Base</h4>
+                                    <div class="flex justify-between items-center py-2">
+                                        <span class="text-sm font-medium">Basic Pay</span>
+                                        <span class="font-bold text-on-surface">$ 8,500.00</span>
+                                    </div>
+                                    <div class="flex justify-between items-center py-2">
+                                        <span class="text-sm font-medium">HRA (Fixed)</span>
+                                        <span class="font-bold text-on-surface">$ 1,200.00</span>
+                                    </div>
+                                    <div class="flex justify-between items-center py-2">
+                                        <span class="text-sm font-medium">Fixed Conveyance</span>
+                                        <span class="font-bold text-on-surface">$ 350.00</span>
+                                    </div>
+                                    <div class="flex justify-between items-center py-2 text-error">
+                                        <span class="text-sm font-medium">Standard Deductions (PF)</span>
+                                        <span class="font-bold">- $ 420.00</span>
+                                    </div>
+                                </div>
+                                <div class="pt-6 border-t border-outline-variant/30 flex justify-between items-center">
+                                    <span class="label-md uppercase font-bold text-on-surface-variant">Net
+                                        Pre-Adjustment</span>
+                                    <span class="text-2xl font-black text-on-surface tracking-tighter">$ 9,630.00</span>
+                                </div>
+                            </div>
+                            <div class="bg-primary/5 p-6 border-l-2 border-primary/20">
+                                <p class="text-xs leading-relaxed text-on-surface-variant">
+                                    <span class="font-bold text-primary">NOTE:</span> Base amounts are locked based on
+                                    current contract terms. Use the form on the right for ad-hoc adjustments and
+                                    performance incentives for this payroll run.
+                                </p>
+                            </div>
+                        </div>
+                        <!-- Right Column: Editable Forms -->
+                        <div class="col-span-12 lg:col-span-7 space-y-10">
+                            <!-- Ad-Hoc Adjustments -->
+                            <section class="space-y-6">
+                                <h4
+                                    class="text-sm font-black uppercase tracking-[0.2em] border-b-2 border-on-surface pb-2 w-max">
+                                    Run-Specific Adjustments</h4>
+                                <div class="grid grid-cols-2 gap-8">
+                                    <div class="space-y-2">
+                                        <label
+                                            class="label-md uppercase text-[0.65rem] font-bold tracking-widest text-on-surface-variant">Performance
+                                            Bonus</label>
+                                        <div class="relative group">
+                                            <span class="absolute left-0 bottom-2 text-on-surface font-bold">$</span>
+                                            <input
+                                                class="w-full bg-transparent border-0 border-b border-outline-variant py-2 pl-4 text-on-surface font-bold text-lg focus:ring-0"
+                                                type="text" value="1,500.00" />
+                                        </div>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label
+                                            class="label-md uppercase text-[0.65rem] font-bold tracking-widest text-on-surface-variant">Other
+                                            Ad Hoc Payment</label>
+                                        <div class="relative group">
+                                            <span class="absolute left-0 bottom-2 text-on-surface font-bold">$</span>
+                                            <input
+                                                class="w-full bg-transparent border-0 border-b border-outline-variant py-2 pl-4 text-on-surface font-bold text-lg focus:ring-0"
+                                                placeholder="0.00" type="text" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <label
+                                        class="label-md uppercase text-[0.65rem] font-bold tracking-widest text-on-surface-variant">Adjustment
+                                        Reason</label>
+                                    <input
+                                        class="w-full bg-transparent border-0 border-b border-outline-variant py-2 text-sm text-on-surface focus:ring-0"
+                                        placeholder="e.g. Project Completion Incentive" type="text" />
+                                    <p class="text-[0.65rem] text-error flex items-center mt-1">
+                                        <span class="material-symbols-outlined text-[10px] mr-1"
+                                            data-icon="error">error</span>
+                                        Description required for bonuses exceeding $1,000
+                                    </p>
+                                </div>
+                            </section>
+                            <!-- Project Linking -->
+                            <section class="space-y-6">
+                                <h4
+                                    class="text-sm font-black uppercase tracking-[0.2em] border-b-2 border-on-surface pb-2 w-max">
+                                    Cost Allocation</h4>
+                                <div class="space-y-4">
+                                    <label
+                                        class="label-md uppercase text-[0.65rem] font-bold tracking-widest text-on-surface-variant">Link
+                                        to Active Project</label>
+                                    <div class="relative">
+                                        <select
+                                            class="w-full bg-transparent border-0 border-b border-outline-variant py-2 pr-10 text-sm font-medium text-on-surface focus:ring-0 appearance-none cursor-pointer">
+                                            <option>AX-098: The Monolith Plaza</option>
+                                            <option>VY-212: Urban Void Gallery</option>
+                                            <option>General Studio Overhead</option>
+                                        </select>
+                                        <span
+                                            class="material-symbols-outlined absolute right-0 bottom-2 pointer-events-none"
+                                            data-icon="expand_more">expand_more</span>
+                                    </div>
+                                </div>
+                            </section>
+                            <!-- Total Summary Row -->
+                            <div class="mt-12 bg-surface-container-low p-6 flex items-center justify-between">
+                                <div>
+                                    <span
+                                        class="label-md uppercase text-[0.65rem] font-bold tracking-widest text-on-surface-variant">Adjusted
+                                        Payout Total</span>
+                                    <div class="text-3xl font-black text-primary tracking-tighter mt-1">$ 11,130.00
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span
+                                        class="label-md uppercase text-[0.65rem] font-bold tracking-widest text-on-surface-variant">Status</span>
+                                    <div class="flex items-center text-on-surface font-bold text-sm mt-1">
+                                        <div class="w-2 h-2 bg-primary mr-2"></div>
+                                        Awaiting Review
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Sticky Footer -->
+                <div class="px-10 py-8 bg-surface border-t border-outline-variant/15 flex justify-between items-center">
+                    <button
+                        class="bg-surface-container-highest px-8 py-3 text-on-surface font-bold text-xs uppercase tracking-widest hover:bg-surface-container-high transition-colors">
+                        Back to Select
+                    </button>
+                    <div class="flex items-center space-x-6">
+                        <div class="text-right">
+                            <p class="text-[0.65rem] font-bold text-error uppercase tracking-widest">1 Validation Error
+                            </p>
+                            <p class="text-[0.6rem] text-on-surface-variant italic">Please provide adjustment reason</p>
+                        </div>
+                        <button
+                            class="bg-primary text-on-primary px-10 py-3 font-bold text-xs uppercase tracking-[0.2em] shadow-lg shadow-primary/20 hover:bg-primary-container transition-all">
+                            Next Step: Review
+                        </button>
+                    </div>
+                </div>
+                <!-- Close Button -->
+                <button
+                    class="absolute top-6 right-6 w-10 h-10 flex items-center justify-center hover:bg-surface-container-low transition-colors">
+                    <span class="material-symbols-outlined text-on-surface" data-icon="close">close</span>
+                </button>
+            </div>
+        </div>
+        <!-- Content Canvas (Locked Background Content) -->
+        <div class="flex-1 p-10 opacity-20 pointer-events-none">
+            <h1 class="display-lg tracking-tighter font-black text-on-surface uppercase mb-12">Payroll Runs</h1>
+            <div class="grid grid-cols-3 gap-8">
+                <div class="bg-surface-container-low aspect-[4/3] h-64"></div>
+                <div class="bg-surface-container-low aspect-[4/3] h-64"></div>
+                <div class="bg-surface-container-low aspect-[4/3] h-64"></div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

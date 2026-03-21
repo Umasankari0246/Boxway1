@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BOXWAY | Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f20d0d", // Red from theme
+                        "secondary": "#000000", // Black
+                        "background-light": "#ffffff",
+                        "accent": "#f20d0d",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "4px",
+                        "lg": "8px",
+                        "xl": "12px",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-[#fcfcfc] text-black overflow-hidden h-screen">
+<div class="flex h-full">
+<!-- Sidebar Navigation -->
+<aside class="w-60 flex-shrink-0 bg-black text-white flex flex-col">
+<div class="p-6 flex items-center gap-3">
+<div class="bg-primary text-white w-8 h-8 rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px] font-bold">box</span>
+</div>
+<div>
+<h1 class="text-xl font-black tracking-tighter">BOXWAY</h1>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto no-scrollbar px-4 py-2 space-y-6"><!-- Overview Section -->
+<div>
+<p class="px-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Overview</p>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded bg-primary text-white font-medium" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="text-sm">Employees</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">person_pin</span>
+<span class="text-sm">Clients</span>
+</a>
+</div>
+</div>
+<!-- Studio Section -->
+<div>
+<p class="px-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Studio</p>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">description</span>
+<span class="text-sm">Proposals</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">architecture</span>
+<span class="text-sm">Projects</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">folder</span>
+<span class="text-sm">Documents</span>
+</a>
+</div>
+</div>
+<!-- Finance Section -->
+<div>
+<p class="px-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Finance</p>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">receipt_long</span>
+<span class="text-sm">Invoices</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+<span class="text-sm">Expenses</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+<span class="text-sm">Payroll</span>
+</a>
+</div>
+</div>
+<!-- Intelligence Section -->
+<div>
+<p class="px-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Intelligence</p>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">monitoring</span>
+<span class="text-sm">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">psychology</span>
+<span class="text-sm">AI Insights</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="text-sm">Settings</span>
+</a>
+</div>
+</div></nav>
+<div class="p-4 border-t border-zinc-800">
+<div class="flex items-center gap-3 p-2 bg-zinc-900 rounded">
+<img alt="Profile" class="w-8 h-8 rounded object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxoYW-4TjeiytGwvBQhTY-W-72H7sdqYt5m_Y8_2vEucuWz8PTlozZiUmFFdAWSul54rVVsAhCNSK6ZXF4CHLVBy8ELDOKF-WO4lIsiz95SCk7QFJAWu7gKgW55Ef0A2Q2TXhtlLzdBAso_utFaxrG05oxgCJkB9HhTDWfCwrt4-pKZ5jZkSUT02kdSUCEX-oEb6ZCP6YwUqQgHLpYYOLdDqIfTli1PW_Z9bVGRIvE6C6uVGlBWRp82_9Hr-sprT7hQrgRf_8ieDI"/>
+<div class="flex-1 min-w-0">
+<p class="text-xs font-bold truncate">David Sullivan</p>
+<p class="text-[10px] text-zinc-500 uppercase">Admin</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col h-screen overflow-hidden">
+<!-- Header -->
+<header class="h-14 flex-shrink-0 flex items-center justify-between px-8 bg-white border-b border-zinc-100">
+<div class="flex items-center gap-4">
+<h2 class="text-base font-black uppercase tracking-tight">Dashboard</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="text-xs font-bold text-zinc-400 tabular-nums uppercase">10:42 AM</div>
+<button class="relative p-1 text-black hover:bg-zinc-50 transition-colors">
+<span class="material-symbols-outlined text-[22px]">notifications</span>
+<span class="absolute top-1 right-1 w-1.5 h-1.5 bg-primary rounded-full"></span>
+</button>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="flex-1 p-6 overflow-y-auto no-scrollbar space-y-6">
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+<div class="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
+<div>
+<p class="text-[10px] text-zinc-400 font-black uppercase mb-1">Active Projects</p>
+<h3 class="text-2xl font-black">12</h3>
+</div>
+<div class="text-primary"><span class="material-symbols-outlined text-[28px]">box</span></div>
+</div>
+<div class="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
+<div>
+<p class="text-[10px] text-zinc-400 font-black uppercase mb-1">Revenue</p>
+<h3 class="text-2xl font-black">$84,200</h3>
+</div>
+<div class="text-black"><span class="material-symbols-outlined text-[28px]">payments</span></div>
+</div>
+<div class="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
+<div>
+<p class="text-[10px] text-zinc-400 font-black uppercase mb-1">Pending</p>
+<h3 class="text-2xl font-black">05</h3>
+</div>
+<div class="text-primary"><span class="material-symbols-outlined text-[28px]">pending_actions</span></div>
+</div>
+<div class="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
+<div>
+<p class="text-[10px] text-zinc-400 font-black uppercase mb-1">Team</p>
+<h3 class="text-2xl font-black">28</h3>
+</div>
+<div class="text-black"><span class="material-symbols-outlined text-[28px]">groups</span></div>
+</div>
+</div>
+<!-- Main Grid Section -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Left Column -->
+<div class="lg:col-span-2 space-y-6">
+<!-- Project Progress Overview -->
+<section class="bg-white p-6 border border-zinc-100 shadow-sm">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h3 class="text-xs font-black uppercase tracking-tight">Project Progress Overview</h3>
+<p class="text-[10px] text-zinc-500 uppercase mt-0.5">Tracking current status of top architectural projects</p>
+</div>
+<button class="text-[10px] font-bold text-primary hover:underline uppercase">View All</button>
+</div>
+<div class="space-y-6">
+<!-- Project 1 -->
+<div class="space-y-2">
+<div class="flex items-center justify-between text-[11px] font-bold">
+<div class="flex items-center gap-3">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span>Modern Villa Design - Palm Jumeirah</span>
+</div>
+<span class="text-zinc-500 uppercase">Phase: Concept (75%)</span>
+</div>
+<div class="h-1 bg-zinc-100 overflow-hidden">
+<div class="h-full bg-primary" style="width: 75%"></div>
+</div>
+</div>
+<!-- Project 2 -->
+<div class="space-y-2">
+<div class="flex items-center justify-between text-[11px] font-bold">
+<div class="flex items-center gap-3">
+<span class="w-1.5 h-1.5 rounded-full bg-black"></span>
+<span>Skyline Office Tower - Central Plaza</span>
+</div>
+<span class="text-zinc-500 uppercase">Phase: Documentation (40%)</span>
+</div>
+<div class="h-1 bg-zinc-100 overflow-hidden">
+<div class="h-full bg-black" style="width: 40%"></div>
+</div>
+</div>
+<!-- Project 3 -->
+<div class="space-y-2">
+<div class="flex items-center justify-between text-[11px] font-bold">
+<div class="flex items-center gap-3">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span>Urban Park Renovation - Sector 4</span>
+</div>
+<span class="text-zinc-500 uppercase">Phase: Construction (90%)</span>
+</div>
+<div class="h-1 bg-zinc-100 overflow-hidden">
+<div class="h-full bg-primary" style="width: 90%"></div>
+</div>
+</div>
+<!-- Project 4 -->
+<div class="space-y-2">
+<div class="flex items-center justify-between text-[11px] font-bold">
+<div class="flex items-center gap-3">
+<span class="w-1.5 h-1.5 rounded-full bg-zinc-300"></span>
+<span>Coastal Resort Planning - Blue Bay</span>
+</div>
+<span class="text-zinc-500 uppercase">Phase: Planning (20%)</span>
+</div>
+<div class="h-1 bg-zinc-100 overflow-hidden">
+<div class="h-full bg-zinc-300" style="width: 20%"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Financial Summary -->
+<section class="bg-white p-6 border border-zinc-100 shadow-sm">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h3 class="text-xs font-black uppercase tracking-tight">Financial Summary</h3>
+<p class="text-[10px] text-zinc-500 uppercase mt-0.5">Revenue vs Expenditures trend</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5"><span class="w-2 h-2 bg-primary"></span><span class="text-[10px] font-bold uppercase">Revenue</span></div>
+<div class="flex items-center gap-1.5"><span class="w-2 h-2 bg-black/10"></span><span class="text-[10px] font-bold uppercase">Expenses</span></div>
+<div class="h-4 w-[1px] bg-zinc-200"></div>
+<span class="text-[10px] font-bold text-zinc-400 uppercase">Last 6 Months</span>
+</div>
+</div>
+<div class="h-48 flex items-end justify-between gap-4 px-2"><div class="flex-1 flex flex-col justify-end gap-1"><div class="bg-black w-full h-[30%]"></div><div class="bg-primary w-full h-[60%]"></div></div><div class="flex-1 flex flex-col justify-end gap-1"><div class="bg-black w-full h-[40%]"></div><div class="bg-primary w-full h-[80%]"></div></div><div class="flex-1 flex flex-col justify-end gap-1"><div class="bg-black w-full h-[20%]"></div><div class="bg-primary w-full h-[50%]"></div></div><div class="flex-1 flex flex-col justify-end gap-1"><div class="bg-black w-full h-[35%]"></div><div class="bg-primary w-full h-[70%]"></div></div><div class="flex-1 flex flex-col justify-end gap-1"><div class="bg-black w-full h-[50%]"></div><div class="bg-primary w-full h-[90%]"></div></div><div class="flex-1 flex flex-col justify-end gap-1"><div class="bg-black w-full h-[30%]"></div><div class="bg-primary w-full h-[85%]"></div></div></div>
+<div class="flex justify-between mt-4 text-[10px] font-bold text-zinc-400">
+<span>JAN</span><span>FEB</span><span>MAR</span><span>APR</span><span>MAY</span><span>JUN</span>
+</div>
+</section>
+</div>
+<!-- Right Column -->
+<div class="space-y-6">
+<!-- Upcoming Deadlines -->
+<section class="bg-white p-6 border border-zinc-100 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-xs font-black uppercase">Upcoming Deadlines</h3>
+<span class="material-symbols-outlined text-[18px] text-zinc-300">calendar_today</span>
+</div>
+<div class="space-y-3">
+<!-- Deadline 1 -->
+<div class="p-3 border-l-4 border-primary bg-zinc-50">
+<div class="flex justify-between items-start">
+<h4 class="text-xs font-black">Submit DA - Villa 4</h4>
+<span class="text-[9px] font-black bg-primary text-white px-1.5 py-0.5 uppercase">High</span>
+</div>
+<p class="text-[10px] text-zinc-500 mt-1 uppercase">Modern Villa Design</p>
+<p class="text-[9px] text-zinc-400 mt-2 font-bold uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">schedule</span> Oct 24, 2023
+                                    </p>
+</div>
+<!-- Deadline 2 -->
+<div class="p-3 border-l-4 border-black bg-zinc-50">
+<div class="flex justify-between items-start">
+<h4 class="text-xs font-black">Structural Review</h4>
+<span class="text-[9px] font-black bg-black text-white px-1.5 py-0.5 uppercase">Mid</span>
+</div>
+<p class="text-[10px] text-zinc-500 mt-1 uppercase">Skyline Office Tower</p>
+<p class="text-[9px] text-zinc-400 mt-2 font-bold uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">schedule</span> Oct 28, 2023
+                                    </p>
+</div>
+<!-- Deadline 3 -->
+<div class="p-3 border-l-4 border-zinc-200 bg-zinc-50">
+<div class="flex justify-between items-start">
+<h4 class="text-xs font-black">Client Meeting</h4>
+<span class="text-[9px] font-black bg-zinc-200 text-zinc-600 px-1.5 py-0.5 uppercase">Low</span>
+</div>
+<p class="text-[10px] text-zinc-500 mt-1 uppercase">Urban Park Renovation</p>
+<p class="text-[9px] text-zinc-400 mt-2 font-bold uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">schedule</span> Nov 02, 2023
+                                    </p>
+</div>
+</div>
+<button class="w-full mt-4 py-2 border border-zinc-100 text-[10px] font-bold text-primary hover:bg-zinc-50 uppercase tracking-widest transition-colors">
+                                View Full Calendar
+                            </button>
+</section>
+<!-- Recent Activity -->
+<section class="bg-white p-6 border border-zinc-100 shadow-sm">
+<h3 class="text-xs font-black uppercase mb-6">Recent Activity</h3>
+<div class="space-y-6 relative">
+<div class="absolute left-[13px] top-2 bottom-4 w-[1px] bg-zinc-100"></div>
+<div class="flex gap-4 relative">
+<div class="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center shrink-0 z-10">
+<span class="material-symbols-outlined text-[14px]">upload_file</span>
+</div>
+<div>
+<p class="text-[11px] font-bold">Sarah Chen <span class="text-zinc-500 font-normal">uploaded Floor_Plan_v3.pdf</span></p>
+<p class="text-[9px] text-zinc-400 font-bold uppercase mt-1">2 hours ago</p>
+</div>
+</div>
+<div class="flex gap-4 relative">
+<div class="w-7 h-7 rounded-full bg-black text-white flex items-center justify-center shrink-0 z-10">
+<span class="material-symbols-outlined text-[14px]">chat</span>
+</div>
+<div>
+<p class="text-[11px] font-bold">Marcus T. <span class="text-zinc-500 font-normal">commented on Concept Slides</span></p>
+<p class="text-[9px] text-zinc-400 font-bold uppercase mt-1">4 hours ago</p>
+</div>
+</div>
+<div class="flex gap-4 relative">
+<div class="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center shrink-0 z-10">
+<span class="material-symbols-outlined text-[14px]">done_all</span>
+</div>
+<div>
+<p class="text-[11px] font-bold">Project Bot <span class="text-zinc-500 font-normal">marked Site Survey complete</span></p>
+<p class="text-[9px] text-zinc-400 font-bold uppercase mt-1">6 hours ago</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="h-10 flex-shrink-0 px-8 border-t border-zinc-100 bg-white flex items-center justify-between">
+<p class="text-[9px] font-black text-zinc-300 uppercase tracking-widest">© 2023 BOXWAY DIGITAL SYSTEMS</p>
+<div class="flex gap-4">
+<a class="text-[9px] font-black text-zinc-400 hover:text-primary uppercase" href="#">Security</a>
+<a class="text-[9px] font-black text-zinc-400 hover:text-primary uppercase" href="#">Privacy</a>
+</div>
+</footer>
+</main>
+</div>
+</body></html>

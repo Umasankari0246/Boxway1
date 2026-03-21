@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-primary": "#ffb4aa",
+                        "on-tertiary-fixed": "#1b1b1b",
+                        "surface-container-highest": "#e5e2e1",
+                        "secondary-container": "#e2dfde",
+                        "tertiary": "#5a5a5a",
+                        "primary": "#b9000c",
+                        "surface-container-high": "#eae7e7",
+                        "outline-variant": "#e7bdb7",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#e2e2e2",
+                        "surface-bright": "#fcf9f8",
+                        "surface": "#fcf9f8",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-secondary-container": "#636262",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f6f3f2",
+                        "surface-container": "#f0eded",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-secondary-fixed-variant": "#474746",
+                        "tertiary-container": "#737373",
+                        "on-primary-fixed-variant": "#930007",
+                        "background": "#fcf9f8",
+                        "tertiary-fixed-dim": "#c6c6c6",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "outline": "#926e6a",
+                        "on-primary-fixed": "#410001",
+                        "on-surface": "#1c1b1b",
+                        "error-container": "#ffdad6",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#fafafa",
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-tint": "#c0000d",
+                        "on-surface-variant": "#5d3f3b",
+                        "surface-dim": "#dcd9d9",
+                        "primary-container": "#e21d1d",
+                        "secondary": "#5f5e5e",
+                        "on-background": "#1c1b1b",
+                        "secondary-fixed": "#e5e2e1",
+                        "primary-fixed": "#ffdad5",
+                        "on-error": "#ffffff",
+                        "on-primary-container": "#fff9f8",
+                        "inverse-surface": "#313030",
+                        "on-tertiary-fixed-variant": "#474747",
+                        "surface-variant": "#e5e2e1",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-surface text-on-surface overflow-x-hidden">
+    <!-- SideNavBar (The Monolith) -->
+    <aside
+        class="fixed left-0 top-0 h-full z-50 flex flex-col bg-[#313030] dark:bg-[#1c1b1b] w-64 border-none rounded-none">
+        <div class="px-6 py-8 flex items-center gap-3">
+            <div class="w-8 h-8 bg-primary flex items-center justify-center">
+                <span class="material-symbols-outlined text-white text-lg" data-icon="architecture">architecture</span>
+            </div>
+            <div>
+                <h1 class="text-xl font-black text-white tracking-widest uppercase">BOXWAY</h1>
+                <p class="text-[10px] text-white/50 uppercase tracking-tighter">Architecture Management</p>
+            </div>
+        </div>
+        <nav class="flex-1 mt-6">
+            <div class="flex flex-col">
+                <!-- Overview -->
+                <a class="text-[#5d3f3b] opacity-70 pl-5 py-3 font-inter tracking-tight text-[0.75rem] uppercase font-medium hover:text-white hover:opacity-100 transition-opacity duration-200"
+                    href="#">
+                    <span class="flex items-center gap-3">
+                        <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                        Overview
+                    </span>
+                </a>
+                <!-- Studio -->
+                <a class="text-[#5d3f3b] opacity-70 pl-5 py-3 font-inter tracking-tight text-[0.75rem] uppercase font-medium hover:text-white hover:opacity-100 transition-opacity duration-200"
+                    href="#">
+                    <span class="flex items-center gap-3">
+                        <span class="material-symbols-outlined" data-icon="architecture">architecture</span>
+                        Studio
+                    </span>
+                </a>
+                <!-- Finance (Active parent) -->
+                <a class="text-white border-l-4 border-[#b9000c] pl-4 py-3 bg-transparent font-inter tracking-tight text-[0.75rem] uppercase font-medium"
+                    href="#">
+                    <span class="flex items-center gap-3">
+                        <span class="material-symbols-outlined" data-icon="payments">payments</span>
+                        Finance
+                    </span>
+                </a>
+                <!-- Intelligence -->
+                <a class="text-[#5d3f3b] opacity-70 pl-5 py-3 font-inter tracking-tight text-[0.75rem] uppercase font-medium hover:text-white hover:opacity-100 transition-opacity duration-200"
+                    href="#">
+                    <span class="flex items-center gap-3">
+                        <span class="material-symbols-outlined" data-icon="insights">insights</span>
+                        Intelligence
+                    </span>
+                </a>
+            </div>
+        </nav>
+        <div class="px-6 pb-8 space-y-4">
+            <button
+                class="w-full bg-primary text-white py-3 font-bold text-sm tracking-widest uppercase hover:bg-primary-container transition-colors">
+                New Project
+            </button>
+            <div class="pt-6 border-t border-white/10 flex flex-col gap-2">
+                <a class="text-[#5d3f3b] opacity-70 flex items-center gap-3 font-inter tracking-tight text-[0.75rem] uppercase font-medium hover:text-white transition-opacity"
+                    href="#">
+                    <span class="material-symbols-outlined text-sm" data-icon="settings">settings</span>
+                    Settings
+                </a>
+                <a class="text-[#5d3f3b] opacity-70 flex items-center gap-3 font-inter tracking-tight text-[0.75rem] uppercase font-medium hover:text-white transition-opacity"
+                    href="#">
+                    <span class="material-symbols-outlined text-sm" data-icon="help_outline">help_outline</span>
+                    Support
+                </a>
+            </div>
+        </div>
+    </aside>
+    <!-- TopNavBar -->
+    <header
+        class="flex justify-between items-center w-full px-12 py-6 ml-64 max-w-[calc(100%-16rem)] bg-[#fcf9f8] dark:bg-[#1c1b1b]">
+        <div class="flex items-center gap-12">
+            <h2 class="headline-sm font-inter font-bold text-[#1c1b1b]">Payroll</h2>
+            <nav class="flex gap-8">
+                <a class="text-[#5d3f3b] pb-2 font-medium hover:text-[#b9000c] transition-colors duration-200"
+                    href="#">Dashboard</a>
+                <a class="text-[#5d3f3b] pb-2 font-medium hover:text-[#b9000c] transition-colors duration-200"
+                    href="#">Payroll Runs</a>
+                <a class="text-[#5d3f3b] pb-2 font-medium hover:text-[#b9000c] transition-colors duration-200"
+                    href="#">Payslips</a>
+                <a class="text-[#1c1b1b] border-b-2 border-[#b9000c] pb-2 font-bold" href="#">Settings</a>
+            </nav>
+        </div>
+        <div class="flex items-center gap-6">
+            <button class="text-on-surface hover:bg-surface-container rounded-full p-2 transition-colors">
+                <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+            </button>
+            <button class="text-on-surface hover:bg-surface-container rounded-full p-2 transition-colors">
+                <span class="material-symbols-outlined" data-icon="schedule">schedule</span>
+            </button>
+            <div class="w-8 h-8 bg-surface-container-highest flex items-center justify-center overflow-hidden">
+                <img alt="User Profile" data-alt="User profile avatar silhouette"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDamzKM1OZPYDoFmfB7D7gn15MorY_FAn7q4m1uPbS8a82_icw0jW_2dwFXRKTWlT6JJkMZsQ-5r3ubJlRhTIOdrCkxlpXud7GD3x1lbKmj9QNQqUu9tDdE1hWk-kR8lqHZ88tekekdg5czk3_mJbgrd3DLuN-bTedNadov_jamOCw03AJKaC4Je6_16UO6Ky7KLKfnM-ZZw5bXJSEQVe3qkPzOXkVN-GCvCjp6Y1Oap62LB_GRtiiII-AG1P5Uz9NP7k_E0juefpE" />
+            </div>
+        </div>
+    </header>
+    <!-- Main Content (The Void) -->
+    <main class="ml-64 p-12 min-h-screen">
+        <div class="max-w-6xl space-y-12">
+            <!-- Header Section -->
+            <section class="space-y-2">
+                <span class="label-md uppercase tracking-[0.2em] text-primary font-bold">Configuration Center</span>
+                <h1 class="text-5xl font-extrabold tracking-tighter text-on-surface">Payroll Settings</h1>
+                <p class="text-on-surface-variant max-w-2xl leading-relaxed">
+                    Define structural templates, approval hierarchies, and payment frequencies for architectural staff
+                    and consultants.
+                </p>
+            </section>
+            <!-- Grid Layout -->
+            <div class="grid grid-cols-12 gap-8">
+                <!-- 1. Salary Structure Templates -->
+                <div
+                    class="col-span-12 lg:col-span-8 bg-surface-container-low p-8 flex flex-col group hover:bg-surface-container-lowest transition-colors duration-300">
+                    <div class="flex justify-between items-start mb-10">
+                        <div class="space-y-1">
+                            <h3 class="headline-sm font-bold">Salary Structure Templates</h3>
+                            <p class="text-sm text-on-surface-variant">Manage hierarchical earnings for technical roles
+                            </p>
+                        </div>
+                        <button
+                            class="text-primary font-bold label-md uppercase tracking-widest border-b border-primary/0 hover:border-primary transition-all">Edit</button>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <!-- Principal -->
+                        <div class="bg-surface-container p-6 space-y-4">
+                            <h4 class="font-bold text-sm tracking-widest uppercase text-primary">Principal Architect
+                            </h4>
+                            <div class="space-y-2">
+                                <div
+                                    class="flex justify-between text-[11px] uppercase tracking-tighter text-on-surface-variant">
+                                    <span>Basic</span> <span>60%</span></div>
+                                <div
+                                    class="flex justify-between text-[11px] uppercase tracking-tighter text-on-surface-variant">
+                                    <span>HRA</span> <span>30%</span></div>
+                                <div
+                                    class="flex justify-between text-[11px] uppercase tracking-tighter text-on-surface-variant">
+                                    <span>Allowances</span> <span>10%</span></div>
+                            </div>
+                        </div>
+                        <!-- Senior -->
+                        <div class="bg-surface-container p-6 space-y-4">
+                            <h4 class="font-bold text-sm tracking-widest uppercase text-on-surface">Senior Architect
+                            </h4>
+                            <div class="space-y-2">
+                                <div
+                                    class="flex justify-between text-[11px] uppercase tracking-tighter text-on-surface-variant">
+                                    <span>Basic</span> <span>55%</span></div>
+                                <div
+                                    class="flex justify-between text-[11px] uppercase tracking-tighter text-on-surface-variant">
+                                    <span>HRA</span> <span>25%</span></div>
+                                <div
+                                    class="flex justify-between text-[11px] uppercase tracking-tighter text-on-surface-variant">
+                                    <span>Allowances</span> <span>20%</span></div>
+                            </div>
+                        </div>
+                        <!-- Junior -->
+                        <div class="bg-surface-container p-6 space-y-4">
+                            <h4 class="font-bold text-sm tracking-widest uppercase text-on-surface">Junior Architect
+                            </h4>
+                            <div class="space-y-2">
+                                <div
+                                    class="flex justify-between text-[11px] uppercase tracking-tighter text-on-surface-variant">
+                                    <span>Basic</span> <span>50%</span></div>
+                                <div
+                                    class="flex justify-between text-[11px] uppercase tracking-tighter text-on-surface-variant">
+                                    <span>HRA</span> <span>25%</span></div>
+                                <div
+                                    class="flex justify-between text-[11px] uppercase tracking-tighter text-on-surface-variant">
+                                    <span>Allowances</span> <span>25%</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 2. Ad Hoc Settings -->
+                <div
+                    class="col-span-12 lg:col-span-4 bg-surface-container-low p-8 flex flex-col hover:bg-surface-container-lowest transition-colors duration-300">
+                    <div class="flex justify-between items-start mb-8">
+                        <div class="space-y-1">
+                            <h3 class="headline-sm font-bold">Ad Hoc Settings</h3>
+                            <p class="text-sm text-on-surface-variant">Specialized disbursements</p>
+                        </div>
+                        <button
+                            class="text-primary font-bold label-md uppercase tracking-widest border-b border-primary/0 hover:border-primary transition-all">Edit</button>
+                    </div>
+                    <div class="space-y-4 flex-1">
+                        <div class="p-4 bg-surface flex justify-between items-center">
+                            <span class="text-sm font-medium">Intern Stipends</span>
+                            <span class="text-xs font-mono text-on-surface-variant">Flat Rate</span>
+                        </div>
+                        <div class="p-4 bg-surface flex justify-between items-center">
+                            <span class="text-sm font-medium">Consultant Fees</span>
+                            <span class="text-xs font-mono text-on-surface-variant">Hourly/Fixed</span>
+                        </div>
+                        <div class="p-4 bg-surface flex justify-between items-center">
+                            <span class="text-sm font-medium">Misc. Payments</span>
+                            <span class="text-xs font-mono text-on-surface-variant">On-demand</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- 3. Payment Defaults -->
+                <div
+                    class="col-span-12 lg:col-span-4 bg-surface-container-low p-8 flex flex-col hover:bg-surface-container-lowest transition-colors duration-300">
+                    <div class="flex justify-between items-start mb-8">
+                        <div class="space-y-1">
+                            <h3 class="headline-sm font-bold">Payment Defaults</h3>
+                            <p class="text-sm text-on-surface-variant">Global distribution rules</p>
+                        </div>
+                        <button
+                            class="text-primary font-bold label-md uppercase tracking-widest border-b border-primary/0 hover:border-primary transition-all">Edit</button>
+                    </div>
+                    <div class="space-y-8">
+                        <div>
+                            <span
+                                class="label-md uppercase text-on-surface-variant tracking-wider block mb-2">Cycle</span>
+                            <div class="text-2xl font-black">Monthly</div>
+                        </div>
+                        <div>
+                            <span
+                                class="label-md uppercase text-on-surface-variant tracking-wider block mb-2">Method</span>
+                            <div class="text-2xl font-black">Bank Transfer</div>
+                        </div>
+                        <div>
+                            <span
+                                class="label-md uppercase text-on-surface-variant tracking-wider block mb-2">Currency</span>
+                            <div class="text-2xl font-black">USD ($)</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 4. Approval Workflow -->
+                <div class="col-span-12 lg:col-span-8 bg-inverse-surface p-8 text-white flex flex-col">
+                    <div class="flex justify-between items-start mb-10">
+                        <div class="space-y-1">
+                            <h3 class="text-2xl font-bold">Approval Workflow</h3>
+                            <p class="text-sm opacity-60">Linear chain of financial authorization</p>
+                        </div>
+                        <button class="text-primary font-bold label-md uppercase tracking-widest">Edit</button>
+                    </div>
+                    <div class="relative flex items-center justify-between gap-4">
+                        <!-- Step 1 -->
+                        <div class="relative z-10 bg-white/5 border border-white/10 p-6 flex-1 text-center">
+                            <div class="w-10 h-10 bg-primary mx-auto mb-4 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-white" data-icon="person">person</span>
+                            </div>
+                            <span class="label-md uppercase tracking-[0.2em] opacity-50 block mb-1">Level 01</span>
+                            <h5 class="font-bold text-sm">Principal Architect</h5>
+                        </div>
+                        <div class="h-[2px] w-8 bg-white/20"></div>
+                        <!-- Step 2 -->
+                        <div class="relative z-10 bg-white/5 border border-white/10 p-6 flex-1 text-center">
+                            <div class="w-10 h-10 bg-white/10 mx-auto mb-4 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-white"
+                                    data-icon="admin_panel_settings">admin_panel_settings</span>
+                            </div>
+                            <span class="label-md uppercase tracking-[0.2em] opacity-50 block mb-1">Level 02</span>
+                            <h5 class="font-bold text-sm">Finance Admin</h5>
+                        </div>
+                        <div class="h-[2px] w-8 bg-white/20"></div>
+                        <!-- Final -->
+                        <div class="relative z-10 bg-primary p-6 flex-1 text-center">
+                            <div class="w-10 h-10 bg-white/20 mx-auto mb-4 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-white" data-icon="done_all">done_all</span>
+                            </div>
+                            <span class="label-md uppercase tracking-[0.2em] text-white/60 block mb-1">Final</span>
+                            <h5 class="font-bold text-sm">Payout Trigger</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Bottom Note -->
+            <footer class="pt-12 border-t border-outline-variant/30 flex justify-between items-center">
+                <p class="text-xs text-on-surface-variant uppercase tracking-widest">Boxway System — Finance Module V4.2
+                </p>
+                <div class="flex gap-4">
+                    <button
+                        class="bg-surface-container-highest px-8 py-3 font-bold label-md uppercase tracking-widest text-on-surface hover:bg-secondary-container transition-colors">Export
+                        Logs</button>
+                    <button
+                        class="bg-primary text-white px-8 py-3 font-bold label-md uppercase tracking-widest hover:bg-primary-container transition-colors">Apply
+                        Changes</button>
+                </div>
+            </footer>
+        </div>
+    </main>
+</body>
+
+</html>

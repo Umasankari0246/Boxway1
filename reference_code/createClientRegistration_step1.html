@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#dc2626", // Red accent as requested
+                        "background-light": "#f7f7f6",
+                        "background-dark": "#181b17",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+    <title>BOXWAY - Client Registration</title>
+</head>
+
+<body class="bg-slate-200 font-display text-slate-900">
+    <!-- Modal Backdrop -->
+    <div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+        <!-- Modal Container -->
+        <div
+            class="relative flex h-full max-h-[900px] w-full max-w-[960px] flex-col bg-white overflow-hidden shadow-2xl rounded-lg">
+            <div class="layout-container flex h-full grow flex-col">
+                <div class="flex flex-1 justify-center py-5 overflow-y-auto">
+                    <div class="layout-content-container flex flex-col w-full max-w-[800px] flex-1">
+                        <!-- Header Component -->
+                        <header
+                            class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-100 px-10 py-4">
+                            <div class="flex items-center gap-4 text-slate-900">
+                                <div class="size-6 text-primary">
+                                    <svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                        <g clip-path="url(#clip0_6_319)">
+                                            <path
+                                                d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z">
+                                            </path>
+                                        </g>
+                                        <defs>
+                                            <clippath id="clip0_6_319">
+                                                <rect fill="white" height="48" width="48"></rect>
+                                            </clippath>
+                                        </defs>
+                                    </svg>
+                                </div>
+                                <h2 class="text-slate-900 text-xl font-bold leading-tight tracking-tight uppercase">
+                                    BOXWAY</h2>
+                            </div>
+                            <button
+                                class="flex items-center justify-center rounded-full h-10 w-10 hover:bg-slate-100 transition-colors text-slate-900">
+                                <span class="material-symbols-outlined">close</span>
+                            </button>
+                        </header>
+                        <!-- Content Area -->
+                        <div class="px-10 py-6">
+                            <div class="flex flex-wrap justify-between gap-3 mb-6">
+                                <div class="flex min-w-72 flex-col gap-1">
+                                    <p class="text-slate-900 tracking-tight text-3xl font-bold leading-tight">BOXWAY
+                                        Client Registration - Step 1</p>
+                                    <p class="text-slate-500 text-sm font-normal">Step 1 of 2: Basic Information</p>
+                                </div>
+                            </div>
+                            <!-- Progress Bar -->
+                            <div class="flex flex-col gap-3 mb-8">
+                                <div class="flex gap-6 justify-between">
+                                    <p class="text-slate-900 text-base font-semibold">Registration Progress</p>
+                                    <p class="text-slate-900 text-sm font-medium">50%</p>
+                                </div>
+                                <div class="rounded-full bg-slate-100 h-2 overflow-hidden">
+                                    <div class="h-full bg-primary" style="width: 50%;"></div>
+                                </div>
+                            </div>
+                            <!-- Registration Form Fields -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+                                <label class="flex flex-col">
+                                    <p class="text-slate-900 text-sm font-semibold pb-2">Client / Company Name</p>
+                                    <input
+                                        class="form-input flex w-full rounded border border-slate-200 bg-white focus:border-primary focus:ring-1 focus:ring-primary h-12 px-4 text-base transition-all placeholder:text-slate-400"
+                                        placeholder="Enter company name" type="text" />
+                                </label>
+                                <label class="flex flex-col">
+                                    <p class="text-slate-900 text-sm font-semibold pb-2">Contact Person</p>
+                                    <input
+                                        class="form-input flex w-full rounded border border-slate-200 bg-white focus:border-primary focus:ring-1 focus:ring-primary h-12 px-4 text-base transition-all placeholder:text-slate-400"
+                                        placeholder="Enter full name" type="text" />
+                                </label>
+                                <label class="flex flex-col">
+                                    <p class="text-slate-900 text-sm font-semibold pb-2">Email Address</p>
+                                    <input
+                                        class="form-input flex w-full rounded border border-slate-200 bg-white focus:border-primary focus:ring-1 focus:ring-primary h-12 px-4 text-base transition-all placeholder:text-slate-400"
+                                        placeholder="name@company.com" type="email" />
+                                </label>
+                                <label class="flex flex-col">
+                                    <p class="text-slate-900 text-sm font-semibold pb-2">Phone Number</p>
+                                    <input
+                                        class="form-input flex w-full rounded border border-slate-200 bg-white focus:border-primary focus:ring-1 focus:ring-primary h-12 px-4 text-base transition-all placeholder:text-slate-400"
+                                        placeholder="+1 (555) 000-0000" type="tel" />
+                                </label>
+                                <label class="flex flex-col md:col-span-2">
+                                    <p class="text-slate-900 text-sm font-semibold pb-2">Location / Address</p>
+                                    <input
+                                        class="form-input flex w-full rounded border border-slate-200 bg-white focus:border-primary focus:ring-1 focus:ring-primary h-12 px-4 text-base transition-all placeholder:text-slate-400"
+                                        placeholder="Street address, City, Country" type="text" />
+                                </label>
+                                <label class="flex flex-col">
+                                    <p class="text-slate-900 text-sm font-semibold pb-2">Project Type</p>
+                                    <select
+                                        class="form-select flex w-full rounded border border-slate-200 bg-white focus:border-primary focus:ring-1 focus:ring-primary h-12 px-4 text-base transition-all">
+                                        <option disabled="" selected="" value="">Select project type</option>
+                                        <option value="residential">Residential</option>
+                                        <option value="commercial">Commercial</option>
+                                        <option value="industrial">Industrial</option>
+                                        <option value="mixed-use">Mixed-Use</option>
+                                    </select>
+                                </label>
+                                <label class="flex flex-col">
+                                    <p class="text-slate-900 text-sm font-semibold pb-2">Estimated Budget</p>
+                                    <div class="relative">
+                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">$</span>
+                                        <input
+                                            class="form-input flex w-full rounded border border-slate-200 bg-white focus:border-primary focus:ring-1 focus:ring-primary h-12 pl-8 pr-4 text-base transition-all placeholder:text-slate-400"
+                                            placeholder="0.00" type="number" />
+                                    </div>
+                                </label>
+                                <label class="flex flex-col md:col-span-2">
+                                    <p class="text-slate-900 text-sm font-semibold pb-2">Timeline</p>
+                                    <input
+                                        class="form-input flex w-full rounded border border-slate-200 bg-white focus:border-primary focus:ring-1 focus:ring-primary h-12 px-4 text-base transition-all placeholder:text-slate-400"
+                                        placeholder="Expected completion or duration (e.g., 6 months)" type="text" />
+                                </label>
+                            </div>
+                            <!-- Footer Buttons -->
+                            <div class="flex justify-end items-center gap-4 mt-12 mb-6">
+                                <button
+                                    class="px-6 h-12 text-slate-600 font-bold text-sm uppercase tracking-wider hover:bg-slate-50 rounded transition-colors">
+                                    Cancel
+                                </button>
+                                <button
+                                    class="px-8 h-12 bg-primary text-white font-bold text-sm uppercase tracking-wider hover:bg-red-700 rounded transition-colors shadow-lg shadow-primary/20">
+                                    Continue to Step 2
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

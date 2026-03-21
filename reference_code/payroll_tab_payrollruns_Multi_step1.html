@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>BOXWAY STUDIO - Generate Payroll</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-container-highest": "#e5e2e1",
+                        "outline-variant": "#e7bdb7",
+                        "surface-container": "#f0eded",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#5d3f3b",
+                        "surface-tint": "#c0000d",
+                        "primary-container": "#e21d1d",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#e5e2e1",
+                        "tertiary-container": "#737373",
+                        "on-primary-container": "#fff9f8",
+                        "secondary-fixed": "#e5e2e1",
+                        "on-tertiary-container": "#fafafa",
+                        "secondary": "#5f5e5e",
+                        "surface": "#fcf9f8",
+                        "inverse-surface": "#313030",
+                        "surface-container-high": "#eae7e7",
+                        "on-tertiary-fixed": "#1b1b1b",
+                        "on-primary": "#ffffff",
+                        "primary-fixed": "#ffdad5",
+                        "error": "#ba1a1a",
+                        "background": "#fcf9f8",
+                        "surface-dim": "#dcd9d9",
+                        "surface-container-low": "#f6f3f2",
+                        "inverse-primary": "#ffb4aa",
+                        "secondary-container": "#e2dfde",
+                        "on-secondary-fixed-variant": "#474746",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#c6c6c6",
+                        "primary": "#b9000c",
+                        "on-primary-fixed": "#410001",
+                        "on-secondary-container": "#636262",
+                        "tertiary-fixed": "#e2e2e2",
+                        "on-secondary": "#ffffff",
+                        "surface-bright": "#fcf9f8",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-primary-fixed-variant": "#930007",
+                        "on-background": "#1c1b1b",
+                        "tertiary": "#5a5a5a",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "outline": "#926e6a",
+                        "on-tertiary-fixed-variant": "#474747",
+                        "on-surface": "#1c1b1b"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fcf9f8;
+        }
+
+        /* Hide scrollbar but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="text-on-surface">
+    <!-- Sidebar (The Monolith) -->
+    <aside class="flex flex-col h-screen w-64 fixed left-0 top-0 z-40 bg-[#313030] dark:bg-[#1c1b1b]">
+        <div class="px-6 py-8">
+            <h1 class="text-xl font-bold tracking-tighter text-white">BOXWAY STUDIO</h1>
+            <p
+                class="font-['Inter'] tracking-tight label-md uppercase text-[0.75rem] font-medium text-[#ece0df] opacity-60">
+                Payroll Module</p>
+        </div>
+        <nav class="flex-1">
+            <div class="space-y-1">
+                <a class="flex items-center space-x-3 text-[#ece0df] opacity-70 pl-6 py-3 hover:opacity-100 transition-opacity font-['Inter'] tracking-tight label-md uppercase text-[0.75rem] font-medium"
+                    href="#">
+                    <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                    <span>Overview</span>
+                </a>
+                <a class="flex items-center space-x-3 text-[#ece0df] opacity-70 pl-6 py-3 hover:opacity-100 transition-opacity font-['Inter'] tracking-tight label-md uppercase text-[0.75rem] font-medium"
+                    href="#">
+                    <span class="material-symbols-outlined" data-icon="potted_plant">potted_plant</span>
+                    <span>Studio</span>
+                </a>
+                <a class="relative flex items-center space-x-3 text-white border-l-[3px] border-[#b9000c] pl-[21px] py-3 bg-transparent font-['Inter'] tracking-tight label-md uppercase text-[0.75rem] font-medium"
+                    href="#">
+                    <span class="material-symbols-outlined" data-icon="payments">payments</span>
+                    <span>Finance</span>
+                </a>
+                <a class="flex items-center space-x-3 text-[#ece0df] opacity-70 pl-6 py-3 hover:opacity-100 transition-opacity font-['Inter'] tracking-tight label-md uppercase text-[0.75rem] font-medium"
+                    href="#">
+                    <span class="material-symbols-outlined" data-icon="insights">insights</span>
+                    <span>Intelligence</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+    <!-- Header (The Anchor) -->
+    <header
+        class="flex justify-between items-center h-20 px-8 w-[calc(100%-16rem)] ml-64 bg-[#fcf9f8] bg-opacity-80 backdrop-blur-md z-30 sticky top-0 border-b border-[#e7bdb7]/15">
+        <div class="flex items-center space-x-8">
+            <span class="text-lg font-bold text-[#1c1b1b] dark:text-white uppercase tracking-widest">Payroll</span>
+            <nav class="hidden md:flex space-x-6">
+                <a class="font-['Inter'] text-sm font-medium text-[#5d3f3b] dark:text-[#ece0df] pb-4 hover:text-[#1c1b1b]"
+                    href="#">Dashboard</a>
+                <a class="font-['Inter'] text-sm font-bold text-[#b9000c] border-b-2 border-[#b9000c] pb-4"
+                    href="#">Payroll Runs</a>
+                <a class="font-['Inter'] text-sm font-medium text-[#5d3f3b] dark:text-[#ece0df] pb-4 hover:text-[#1c1b1b]"
+                    href="#">Payslips</a>
+                <a class="font-['Inter'] text-sm font-medium text-[#5d3f3b] dark:text-[#ece0df] pb-4 hover:text-[#1c1b1b]"
+                    href="#">Settings</a>
+            </nav>
+        </div>
+        <div class="flex items-center space-x-4">
+            <button class="p-2 hover:bg-surface-container rounded-full transition-colors">
+                <span class="material-symbols-outlined text-on-surface" data-icon="schedule">schedule</span>
+            </button>
+            <button class="p-2 hover:bg-surface-container rounded-full transition-colors relative">
+                <span class="material-symbols-outlined text-on-surface" data-icon="notifications">notifications</span>
+                <span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full"></span>
+            </button>
+            <div class="w-8 h-8 bg-surface-container-highest overflow-hidden">
+                <img alt="User Profile" class="w-full h-full object-cover"
+                    data-alt="Close up professional headshot portrait"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXh0Chi_tx8_iwkcGE3inagsZYcKtXQMmzHaVDl7bYpczrhGMoIR1XVVCGcse6HGgfNUCsUfbbiurIRGLjKKy7f6LNzIBWTaVsOEKm63Oo3-lSFi_V-84jJ4wIQ3exUEO-0FN8O_9O4SOaaCfgqAsjc_EB6BbyDdJtLdc57T7Ok8ShwTIoKqOUgVwHSTKnRPKUu5X5CnwL4D539w8wrN-qDtGexnj1lvn--VqTp5aBxHu4gR8tEWmli48l8FzAq_GLvqIkqAywbbg" />
+            </div>
+        </div>
+    </header>
+    <!-- Main Workspace (The Void) -->
+    <main class="ml-64 p-12 min-h-screen bg-surface">
+        <!-- Modal Wrapper (Simulated as the page content) -->
+        <div
+            class="max-w-5xl mx-auto bg-surface-container-lowest border border-outline-variant/10 shadow-[0px_24px_48px_rgba(28,27,27,0.06)] relative flex flex-col min-h-[819px]">
+            <!-- Modal Header & Stepper -->
+            <div class="px-10 py-8 border-b border-outline-variant/15">
+                <div class="flex justify-between items-start mb-10">
+                    <div>
+                        <h2 class="text-3xl font-extrabold tracking-tight text-on-surface mb-1">Generate Payroll</h2>
+                        <p class="text-on-surface-variant text-sm">Review and select eligible employees for the current
+                            cycle.</p>
+                    </div>
+                    <button class="text-on-surface-variant hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined" data-icon="close">close</span>
+                    </button>
+                </div>
+                <!-- Progress Stepper -->
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <span
+                            class="w-8 h-8 flex items-center justify-center bg-primary text-on-primary font-bold text-xs">01</span>
+                        <span class="text-xs font-bold uppercase tracking-wider text-primary">Select Employees</span>
+                    </div>
+                    <div class="h-[1px] w-12 bg-outline-variant/30"></div>
+                    <div class="flex items-center space-x-2 opacity-40">
+                        <span
+                            class="w-8 h-8 flex items-center justify-center bg-surface-container-highest text-on-surface font-bold text-xs">02</span>
+                        <span class="text-xs font-bold uppercase tracking-wider">Setup Payroll</span>
+                    </div>
+                    <div class="h-[1px] w-12 bg-outline-variant/30"></div>
+                    <div class="flex items-center space-x-2 opacity-40">
+                        <span
+                            class="w-8 h-8 flex items-center justify-center bg-surface-container-highest text-on-surface font-bold text-xs">03</span>
+                        <span class="text-xs font-bold uppercase tracking-wider">Review</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Content Area: Filters and Table -->
+            <div class="flex-1 px-10 py-8">
+                <!-- Search & Filters -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                    <div class="relative flex-1 max-w-md">
+                        <span
+                            class="material-symbols-outlined absolute left-0 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl"
+                            data-icon="search">search</span>
+                        <input
+                            class="w-full bg-transparent border-0 border-b border-outline-variant/50 focus:ring-0 focus:border-primary pl-8 py-2 text-sm placeholder:text-on-surface-variant/50"
+                            placeholder="Search by name or ID..." type="text" />
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2">
+                            <span
+                                class="text-[0.65rem] uppercase font-bold tracking-widest text-on-surface-variant">Role</span>
+                            <select
+                                class="bg-surface-container-low border-0 text-sm focus:ring-0 py-1.5 px-3 min-w-[140px]">
+                                <option>All Roles</option>
+                                <option>Architect</option>
+                                <option>Structural Lead</option>
+                                <option>Studio Manager</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span
+                                class="text-[0.65rem] uppercase font-bold tracking-widest text-on-surface-variant">Type</span>
+                            <select
+                                class="bg-surface-container-low border-0 text-sm focus:ring-0 py-1.5 px-3 min-w-[140px]">
+                                <option>All Types</option>
+                                <option>Full-time</option>
+                                <option>Contract</option>
+                                <option>Freelance</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-outline-variant/20">
+                                <th class="py-4 px-2 w-10">
+                                    <input checked=""
+                                        class="w-4 h-4 border-outline-variant text-primary focus:ring-0 rounded-none cursor-pointer"
+                                        type="checkbox" />
+                                </th>
+                                <th
+                                    class="py-4 px-4 font-bold uppercase text-[0.65rem] tracking-widest text-on-surface-variant">
+                                    Employee Name</th>
+                                <th
+                                    class="py-4 px-4 font-bold uppercase text-[0.65rem] tracking-widest text-on-surface-variant">
+                                    Employee ID</th>
+                                <th
+                                    class="py-4 px-4 font-bold uppercase text-[0.65rem] tracking-widest text-on-surface-variant">
+                                    Role</th>
+                                <th
+                                    class="py-4 px-4 font-bold uppercase text-[0.65rem] tracking-widest text-on-surface-variant text-right">
+                                    Department</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-outline-variant/10">
+                            <!-- Row 1 -->
+                            <tr class="hover:bg-surface-container-low transition-colors group">
+                                <td class="py-5 px-2">
+                                    <input checked=""
+                                        class="w-4 h-4 border-outline-variant text-primary focus:ring-0 rounded-none cursor-pointer"
+                                        type="checkbox" />
+                                </td>
+                                <td class="py-5 px-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-9 h-9 bg-surface-container-highest">
+                                            <img alt="Julian V." class="w-full h-full object-cover"
+                                                data-alt="Portrait of a male professional"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeOwrHrx_l0hvvF2pVd25f7kz150mGLpaC6T2R-Wk5SjJEF0HioRizcbyzAcNDTIF56EykPpGj4H_PkKM5yNpR0uyVEZm1LSDf04LaU0JKQZsOCu9amw-tgfuxcU0bcBbIx7w8LRrqjc-ARs91hba4XDlWG9mOy5JdnGEOX9ECN7nJq0G_QArIwoQHFIm6ULpoVwkFirHsFtnHijb3U3zHCUOr0QuxV4j1cMDgVOiLDhQktL3c1XQH6S9JQUdLiXzu4VaXTmuoaY8" />
+                                        </div>
+                                        <span class="font-semibold text-sm">Julian Voss</span>
+                                    </div>
+                                </td>
+                                <td class="py-5 px-4 text-sm text-on-surface-variant font-mono">BW-9021</td>
+                                <td class="py-5 px-4">
+                                    <span
+                                        class="px-2 py-1 bg-surface-container text-[10px] uppercase font-bold tracking-tighter">Lead
+                                        Architect</span>
+                                </td>
+                                <td class="py-5 px-4 text-right text-sm font-medium">Design Studio</td>
+                            </tr>
+                            <!-- Row 2 -->
+                            <tr class="hover:bg-surface-container-low transition-colors group">
+                                <td class="py-5 px-2">
+                                    <input checked=""
+                                        class="w-4 h-4 border-outline-variant text-primary focus:ring-0 rounded-none cursor-pointer"
+                                        type="checkbox" />
+                                </td>
+                                <td class="py-5 px-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-9 h-9 bg-surface-container-highest">
+                                            <img alt="Elena R." class="w-full h-full object-cover"
+                                                data-alt="Portrait of a female professional"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2cMIomeDISCX0hs_oiwRfQLUcxub8ODi36yic97AhlKDetG2X-PSo1_xmQDboITRxY2IzWJY5RBf31FtOozFnbLdFDHhOMC3x5SZN2iS4RWbtEQ5XcMZJsG_SijETCLW_3SwAAP5MyhSYkjmRNle_wPbwfcNSKnJj4W0qTlO_rtJtvB4CmKohYxf5894KQw4LQVnGvv_UsqLqTt9TbRobZBc2LQs1a-FJt1JvvnhBw-XZ4_DqpcGjyTJSVIteQv-C9NeHOXTjFBo" />
+                                        </div>
+                                        <span class="font-semibold text-sm">Elena Rodriguez</span>
+                                    </div>
+                                </td>
+                                <td class="py-5 px-4 text-sm text-on-surface-variant font-mono">BW-8842</td>
+                                <td class="py-5 px-4">
+                                    <span
+                                        class="px-2 py-1 bg-surface-container text-[10px] uppercase font-bold tracking-tighter">BIM
+                                        Coordinator</span>
+                                </td>
+                                <td class="py-5 px-4 text-right text-sm font-medium">Operations</td>
+                            </tr>
+                            <!-- Row 3 -->
+                            <tr class="hover:bg-surface-container-low transition-colors group">
+                                <td class="py-5 px-2">
+                                    <input checked=""
+                                        class="w-4 h-4 border-outline-variant text-primary focus:ring-0 rounded-none cursor-pointer"
+                                        type="checkbox" />
+                                </td>
+                                <td class="py-5 px-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-9 h-9 bg-surface-container-highest">
+                                            <img alt="Marcus T." class="w-full h-full object-cover"
+                                                data-alt="Portrait of a male professional"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7Bk_9A97Zqhm3296mWhk1KwllH_FldppqtiJ8RBUIsOA5TdRUlJ1rOvhQtkQDIjhNryViux5BEvwm49j9chDFQEXZPuSHbEarrOnWQue3c7eKKrO-lBK3uioNU2i33P_kNVZorgcA7GyAmGJcuPXLnvCzyP_Djwrhx2Rzw9od1n7Svu39v_4PqzwAdXshsvudEnIp3qNkoRK2sOjwH7gyVGLRN1hwM9HA1bMwTNmwGQiFMBs7imB4Jq8QXtzu7etwhybXylQ0r7k" />
+                                        </div>
+                                        <span class="font-semibold text-sm">Marcus Thorne</span>
+                                    </div>
+                                </td>
+                                <td class="py-5 px-4 text-sm text-on-surface-variant font-mono">BW-7231</td>
+                                <td class="py-5 px-4">
+                                    <span
+                                        class="px-2 py-1 bg-surface-container text-[10px] uppercase font-bold tracking-tighter">Structural
+                                        Eng.</span>
+                                </td>
+                                <td class="py-5 px-4 text-right text-sm font-medium">Engineering</td>
+                            </tr>
+                            <!-- Row 4 -->
+                            <tr class="hover:bg-surface-container-low transition-colors group">
+                                <td class="py-5 px-2">
+                                    <input
+                                        class="w-4 h-4 border-outline-variant text-primary focus:ring-0 rounded-none cursor-pointer"
+                                        type="checkbox" />
+                                </td>
+                                <td class="py-5 px-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-9 h-9 bg-surface-container-highest">
+                                            <img alt="Sonia K." class="w-full h-full object-cover"
+                                                data-alt="Portrait of a female professional"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvfpiu0umqYYmfpnln2Ea6olDoWp0bz3zca1NE8O4NqPmAt9LXBp6LwqT_Dg6SWv_aUBh_bHEAeNTwIHh6adDYj41mAtoNN0N6x8Ff4GyQrrlRWK5nUBtCetYsxXr-2NwZJbjx2uahO56CRCj6yAQLP0dhlU2zqW_PB_1dyGYJvW1Sjw1e3sTnD2MAgOlGHpfezT2CNV6dXSkv3weBhfyBiKb9npU6ipWdcAIFKPBL0EB92j8wayTg_EGoHIApVK-YeVP08azQ_5g" />
+                                        </div>
+                                        <span class="font-semibold text-sm opacity-60">Sonia Kessler</span>
+                                    </div>
+                                </td>
+                                <td class="py-5 px-4 text-sm text-on-surface-variant font-mono opacity-60">BW-1102</td>
+                                <td class="py-5 px-4 opacity-60">
+                                    <span
+                                        class="px-2 py-1 bg-surface-container text-[10px] uppercase font-bold tracking-tighter">Jr.
+                                        Drafter</span>
+                                </td>
+                                <td class="py-5 px-4 text-right text-sm font-medium opacity-60">Design Studio</td>
+                            </tr>
+                            <!-- Row 5 -->
+                            <tr class="hover:bg-surface-container-low transition-colors group">
+                                <td class="py-5 px-2">
+                                    <input checked=""
+                                        class="w-4 h-4 border-outline-variant text-primary focus:ring-0 rounded-none cursor-pointer"
+                                        type="checkbox" />
+                                </td>
+                                <td class="py-5 px-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div
+                                            class="w-9 h-9 bg-surface-container-highest flex items-center justify-center">
+                                            <span class="text-xs font-bold text-on-surface-variant">AA</span>
+                                        </div>
+                                        <span class="font-semibold text-sm">Aris Afolayan</span>
+                                    </div>
+                                </td>
+                                <td class="py-5 px-4 text-sm text-on-surface-variant font-mono">BW-9920</td>
+                                <td class="py-5 px-4">
+                                    <span
+                                        class="px-2 py-1 bg-surface-container text-[10px] uppercase font-bold tracking-tighter">Visualizer</span>
+                                </td>
+                                <td class="py-5 px-4 text-right text-sm font-medium">Creative</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Sticky Footer (Step Action) -->
+            <div
+                class="sticky bottom-0 bg-surface-container-lowest px-10 py-6 border-t border-outline-variant/15 flex justify-between items-center">
+                <div class="flex flex-col">
+                    <span class="text-[0.65rem] uppercase font-bold tracking-widest text-on-surface-variant">Selection
+                        Summary</span>
+                    <span class="text-sm font-bold">12 Employees Selected</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button
+                        class="px-8 py-3 bg-surface-container-highest text-on-surface text-sm font-bold uppercase tracking-widest transition-all active:scale-95">
+                        Cancel
+                    </button>
+                    <button
+                        class="px-8 py-3 bg-primary text-on-primary text-sm font-bold uppercase tracking-widest bg-gradient-to-br from-primary to-primary-container shadow-[0px_8px_16px_rgba(185,0,12,0.15)] transition-all hover:brightness-110 active:scale-95">
+                        Next Step
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Background Context Elements (Asymmetric Layout Props) -->
+        <div
+            class="fixed top-1/4 -right-12 w-64 h-64 border border-outline-variant/10 -rotate-12 pointer-events-none opacity-50">
+        </div>
+        <div class="fixed bottom-10 left-80 w-32 h-32 bg-surface-container-low pointer-events-none opacity-30"></div>
+    </main>
+</body>
+
+</html>

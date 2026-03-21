@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-container-highest": "#e5e2e1",
+                        "outline-variant": "#e7bdb7",
+                        "surface-container": "#f0eded",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#5d3f3b",
+                        "surface-tint": "#c0000d",
+                        "primary-container": "#e21d1d",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#e5e2e1",
+                        "tertiary-container": "#737373",
+                        "on-primary-container": "#fff9f8",
+                        "secondary-fixed": "#e5e2e1",
+                        "on-tertiary-container": "#fafafa",
+                        "secondary": "#5f5e5e",
+                        "surface": "#fcf9f8",
+                        "inverse-surface": "#313030",
+                        "surface-container-high": "#eae7e7",
+                        "on-tertiary-fixed": "#1b1b1b",
+                        "on-primary": "#ffffff",
+                        "primary-fixed": "#ffdad5",
+                        "error": "#ba1a1a",
+                        "background": "#fcf9f8",
+                        "surface-dim": "#dcd9d9",
+                        "surface-container-low": "#f6f3f2",
+                        "inverse-primary": "#ffb4aa",
+                        "secondary-container": "#e2dfde",
+                        "on-secondary-fixed-variant": "#474746",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#c6c6c6",
+                        "primary": "#b9000c",
+                        "on-primary-fixed": "#410001",
+                        "on-secondary-container": "#636262",
+                        "tertiary-fixed": "#e2e2e2",
+                        "on-secondary": "#ffffff",
+                        "surface-bright": "#fcf9f8",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-primary-fixed-variant": "#930007",
+                        "on-background": "#1c1b1b",
+                        "tertiary": "#5a5a5a",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "outline": "#926e6a",
+                        "on-tertiary-fixed-variant": "#474747",
+                        "on-surface": "#1c1b1b"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-surface text-on-surface">
+    <!-- The Monolith: SideNavBar -->
+    <aside class="flex flex-col h-screen w-64 fixed left-0 top-0 z-40 bg-[#313030] dark:bg-[#1c1b1b] border-r-0">
+        <div class="p-8">
+            <h1 class="text-xl font-bold tracking-tighter text-white">BOXWAY STUDIO</h1>
+            <p
+                class="font-['Inter'] tracking-tight label-md uppercase text-[0.75rem] font-medium text-[#ece0df] opacity-70">
+                Payroll Module</p>
+        </div>
+        <nav class="flex-1 mt-4">
+            <a class="flex items-center gap-4 text-[#ece0df] opacity-70 pl-4 py-3 hover:opacity-100 transition-opacity hover:bg-white/5 font-['Inter'] tracking-tight label-md uppercase text-[0.75rem] font-medium"
+                href="#">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span>Overview</span>
+            </a>
+            <a class="flex items-center gap-4 text-[#ece0df] opacity-70 pl-4 py-3 hover:opacity-100 transition-opacity hover:bg-white/5 font-['Inter'] tracking-tight label-md uppercase text-[0.75rem] font-medium"
+                href="#">
+                <span class="material-symbols-outlined">potted_plant</span>
+                <span>Studio</span>
+            </a>
+            <a class="flex items-center gap-4 relative text-white border-l-[3px] border-[#b9000c] pl-4 py-3 bg-transparent font-['Inter'] tracking-tight label-md uppercase text-[0.75rem] font-medium"
+                href="#">
+                <span class="material-symbols-outlined">payments</span>
+                <span>Finance</span>
+            </a>
+            <a class="flex items-center gap-4 text-[#ece0df] opacity-70 pl-4 py-3 hover:opacity-100 transition-opacity hover:bg-white/5 font-['Inter'] tracking-tight label-md uppercase text-[0.75rem] font-medium"
+                href="#">
+                <span class="material-symbols-outlined">insights</span>
+                <span>Intelligence</span>
+            </a>
+        </nav>
+    </aside>
+    <!-- The TopNavBar -->
+    <header
+        class="flex justify-between items-center h-20 px-8 w-[calc(100%-16rem)] ml-64 bg-opacity-80 backdrop-blur-md z-30 sticky top-0 bg-[#fcf9f8] dark:bg-[#1c1b1b] border-b border-[#e7bdb7]/15">
+        <div class="flex items-center gap-8">
+            <span class="text-lg font-bold text-[#1c1b1b] dark:text-white">Payroll</span>
+            <nav class="hidden md:flex gap-6 items-center h-full pt-4">
+                <a class="text-[#5d3f3b] dark:text-[#ece0df] pb-4 hover:text-[#1c1b1b] font-['Inter'] text-sm font-medium border-b-2 border-transparent"
+                    href="#">Dashboard</a>
+                <a class="text-[#b9000c] font-bold border-b-2 border-[#b9000c] pb-4 font-['Inter'] text-sm"
+                    href="#">Payroll Runs</a>
+                <a class="text-[#5d3f3b] dark:text-[#ece0df] pb-4 hover:text-[#1c1b1b] font-['Inter'] text-sm font-medium border-b-2 border-transparent"
+                    href="#">Payslips</a>
+                <a class="text-[#5d3f3b] dark:text-[#ece0df] pb-4 hover:text-[#1c1b1b] font-['Inter'] text-sm font-medium border-b-2 border-transparent"
+                    href="#">Settings</a>
+            </nav>
+        </div>
+        <div class="flex items-center gap-4">
+            <button class="p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors">
+                <span class="material-symbols-outlined">schedule</span>
+            </button>
+            <button
+                class="p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors relative">
+                <span class="material-symbols-outlined">notifications</span>
+                <span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full"></span>
+            </button>
+            <div class="w-8 h-8 bg-surface-container-highest flex items-center justify-center overflow-hidden ml-2">
+                <img class="w-full h-full object-cover" data-alt="Headshot of a professional male user"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbuL7yyQtNQZCAyzygX2a5-U0-azhHOTTGr12U9ougTjR6e1V5EYxzstK65x1SogPQj6sSONEFbeF-QyIPhdsVnTAE0jzm5aVqA34r-ZJCgLi2GrbY98duR3izSI855MC_CYj5Zv_voHl3jIxB8nhLkqT-1F383_W6MLoH6A3m-IQJOt-Eg1P1lshHwkB-foZCra5gXYkHXCJEfoP_9Puz89ypGHUT3V65xv3Y2PCQ86ydBCAE5fK8_slJEgm1KQHBhrkpbR_O4C0" />
+            </div>
+        </div>
+    </header>
+    <!-- Main Content Canvas (The Void) -->
+    <main class="ml-64 p-20 min-h-[calc(100vh-5rem)]">
+        <!-- Modal Overlay Mock -->
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-on-surface/10 backdrop-blur-sm px-4">
+            <div
+                class="bg-surface w-full max-w-5xl h-[870px] flex flex-col relative overflow-hidden shadow-[0px_24px_48px_rgba(28,27,27,0.06)]">
+                <!-- Stepper Header -->
+                <div class="p-10 pb-6 bg-surface">
+                    <div class="flex justify-between items-center mb-10">
+                        <h2 class="text-3xl font-bold tracking-tight text-on-surface">Generate Payroll</h2>
+                        <button class="text-on-surface-variant hover:text-on-surface">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
+                    <!-- Step Indicator -->
+                    <div class="flex items-center gap-0 w-full">
+                        <div class="flex items-center gap-3 flex-1">
+                            <div
+                                class="w-8 h-8 bg-primary text-on-primary flex items-center justify-center text-xs font-bold">
+                                01</div>
+                            <span class="font-bold text-sm tracking-tight uppercase">Select Employee</span>
+                            <div class="h-[1px] flex-1 bg-primary mx-4"></div>
+                        </div>
+                        <div class="flex items-center gap-3 flex-1 opacity-30">
+                            <div
+                                class="w-8 h-8 bg-surface-container-highest text-on-surface flex items-center justify-center text-xs font-bold">
+                                02</div>
+                            <span class="font-medium text-sm tracking-tight uppercase">Setup Salary</span>
+                            <div class="h-[1px] flex-1 bg-on-surface mx-4"></div>
+                        </div>
+                        <div class="flex items-center gap-3 opacity-30">
+                            <div
+                                class="w-8 h-8 bg-surface-container-highest text-on-surface flex items-center justify-center text-xs font-bold">
+                                03</div>
+                            <span class="font-medium text-sm tracking-tight uppercase">Review</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Table & Content Area -->
+                <div class="flex-1 overflow-y-auto px-10 pb-20">
+                    <!-- Search and Filter -->
+                    <div class="mb-8 flex justify-between items-end border-b border-outline-variant/20 pb-4">
+                        <div class="relative w-full max-w-md">
+                            <span
+                                class="material-symbols-outlined absolute left-0 bottom-2 text-on-surface-variant">search</span>
+                            <input
+                                class="w-full bg-transparent border-0 border-b border-outline-variant py-2 pl-8 focus:ring-0 focus:border-primary placeholder:text-on-surface-variant/50 text-sm"
+                                placeholder="Search by name, role or ID..." type="text" />
+                        </div>
+                        <div class="flex gap-4">
+                            <button
+                                class="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-on-surface-variant hover:text-on-surface">
+                                <span class="material-symbols-outlined text-sm">filter_list</span> Filter
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Table -->
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-[0.65rem] font-bold uppercase tracking-[0.1em] text-on-surface-variant/60">
+                                <th class="pb-4 font-bold">Employee</th>
+                                <th class="pb-4 font-bold">Designation</th>
+                                <th class="pb-4 font-bold">Salary Template</th>
+                                <th class="pb-4 font-bold">Payment Type</th>
+                                <th class="pb-4 w-10"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-outline-variant/10">
+                            <!-- Row 1 -->
+                            <tr class="group hover:bg-surface-container-low transition-colors cursor-pointer">
+                                <td class="py-5">
+                                    <div class="flex items-center gap-4">
+                                        <div
+                                            class="w-10 h-10 bg-surface-container-highest flex items-center justify-center">
+                                            <img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
+                                                data-alt="Portrait of employee Alexander Wright"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHMk30i1Hpztw7D-wAHUvzD9i-dfVJWz--cA3n94E-7CBVWGWvLijc-Q9MEdYjBf53Os2xtbMW0EmBWJjDMaWdLbZd2YhzXJMVygs0AJ1ZL9PSyXen_nVOW-9sv2CJ3RR9hNge1i-FIfyAEUZsIQB2i241zBLWVbdMkNgeeN7GB6U7HXBQErkYFH4q0X7wz8Zl5A7cR_OJh5A6aaXP5STy5BmKEcPkgUzJYW41Jr3So470K6ZyRcQSjA6MqZAs5oZN9ZQV8818RRw" />
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-bold text-on-surface">Alexander Wright</div>
+                                            <div class="text-[0.7rem] text-on-surface-variant">EMP-88291</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-5">
+                                    <span class="text-xs font-medium text-on-surface-variant">Senior Structural
+                                        Lead</span>
+                                </td>
+                                <td class="py-5">
+                                    <span
+                                        class="text-xs px-2 py-1 bg-surface-container text-on-surface border border-outline-variant/20">Executive_Level_A</span>
+                                </td>
+                                <td class="py-5">
+                                    <div class="flex items-center gap-2">
+                                        <span
+                                            class="material-symbols-outlined text-[1rem] text-on-surface-variant">account_balance</span>
+                                        <span class="text-xs text-on-surface-variant">Direct Deposit</span>
+                                    </div>
+                                </td>
+                                <td class="py-5 text-right">
+                                    <div
+                                        class="w-4 h-4 border-2 border-outline-variant group-hover:border-primary transition-colors flex items-center justify-center">
+                                        <div
+                                            class="w-2 h-2 bg-primary scale-0 group-hover:scale-100 transition-transform">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- Row 2 -->
+                            <tr class="group hover:bg-surface-container-low transition-colors cursor-pointer">
+                                <td class="py-5">
+                                    <div class="flex items-center gap-4">
+                                        <div
+                                            class="w-10 h-10 bg-surface-container-highest flex items-center justify-center">
+                                            <img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
+                                                data-alt="Portrait of employee Elena Moretti"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpP7g_yY5f6VJoBKaaA7Um7EdAZemLMQ1cUZqX9LFL_KkkUYYtCStlbVlSBYrxZtTPSQljFyRIGJy7Ahblurm8BaN58G3RKKRJjV8LJghK6SUK53CyJdykg0IbJUydCYGB2yZhyutMYttU4JIOcq3BEbFres3iSG-QsO1IFjK-km4Yk_1LLCVgXf4vO5pBH4TLNMdNhDzSWBAybDsJSLyEd2FAphnBjlTkQKA_BpNEoMTv7lumVHTB7bSl2y0qquO1oQplpClsGIU" />
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-bold text-on-surface">Elena Moretti</div>
+                                            <div class="text-[0.7rem] text-on-surface-variant">EMP-88402</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-5">
+                                    <span class="text-xs font-medium text-on-surface-variant">Interior Architect</span>
+                                </td>
+                                <td class="py-5">
+                                    <span
+                                        class="text-xs px-2 py-1 bg-surface-container text-on-surface border border-outline-variant/20">Studio_Standard_Full</span>
+                                </td>
+                                <td class="py-5">
+                                    <div class="flex items-center gap-2">
+                                        <span
+                                            class="material-symbols-outlined text-[1rem] text-on-surface-variant">account_balance</span>
+                                        <span class="text-xs text-on-surface-variant">Direct Deposit</span>
+                                    </div>
+                                </td>
+                                <td class="py-5 text-right">
+                                    <div
+                                        class="w-4 h-4 border-2 border-outline-variant flex items-center justify-center">
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- Row 3 -->
+                            <tr class="group hover:bg-surface-container-low transition-colors cursor-pointer">
+                                <td class="py-5">
+                                    <div class="flex items-center gap-4">
+                                        <div
+                                            class="w-10 h-10 bg-surface-container-highest flex items-center justify-center">
+                                            <img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
+                                                data-alt="Portrait of employee Julian Chen"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEhRKpnA6tGVaFE59tLRUWVjqdDnCVbxbKOYlUF31amszGr_SbeHgzKPGzrRCIDLquEvYZO-XniJlk7qFxv7LKJtRjwUDM9ruJhXgrbYZWPYwMYPiVK6rekDK2JxJyIR9CEFqpPd-KNTuwcUwmX9Zao2vdCneqa1dg5goNDKKzvHEyl24gRWBGQDLJQwBdxCJy5zIOlDnt0EtGcYnkOG2bOGUksvYYtB0xTrRtYFqe0kWIIp77gi5TvtJwsaLHAAPXLax1aTV5hNo" />
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-bold text-on-surface">Julian Chen</div>
+                                            <div class="text-[0.7rem] text-on-surface-variant">EMP-89012</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-5">
+                                    <span class="text-xs font-medium text-on-surface-variant">Junior Drafter</span>
+                                </td>
+                                <td class="py-5">
+                                    <span
+                                        class="text-xs px-2 py-1 bg-surface-container text-on-surface border border-outline-variant/20">Hourly_Contract_B</span>
+                                </td>
+                                <td class="py-5">
+                                    <div class="flex items-center gap-2">
+                                        <span
+                                            class="material-symbols-outlined text-[1rem] text-on-surface-variant">payments</span>
+                                        <span class="text-xs text-on-surface-variant">Check Payment</span>
+                                    </div>
+                                </td>
+                                <td class="py-5 text-right">
+                                    <div
+                                        class="w-4 h-4 border-2 border-outline-variant flex items-center justify-center">
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- Row 4 -->
+                            <tr class="group hover:bg-surface-container-low transition-colors cursor-pointer">
+                                <td class="py-5">
+                                    <div class="flex items-center gap-4">
+                                        <div
+                                            class="w-10 h-10 bg-surface-container-highest flex items-center justify-center">
+                                            <img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
+                                                data-alt="Portrait of employee Sarah Jenkins"
+                                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBi2bHVsbnZmyoZ5OL54izVP6tvPGbTiTIHsOd_CeWYWc1Ue0v7SVLgPee2rtiLsL6NcJuCneVuFirE-LtFdUbYjvssmLc-06uG9G_bpSj9vrjlSTKW62Cd43lj-Z047uiZvoo4SPt4jcxw9cxLj9ugOaTXeByc_NO6XDbfFVgmDzIZwxSiSfswUMLeYb9SS1E1DIN9WL5Vus0kj-Lw2L61AhxhlXWeR0BZUcpTKtfIcmXM_MgxTaMaZc9sbqe1dskoDqKxkGIhPfM" />
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-bold text-on-surface">Sarah Jenkins</div>
+                                            <div class="text-[0.7rem] text-on-surface-variant">EMP-87554</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-5">
+                                    <span class="text-xs font-medium text-on-surface-variant">Site Supervisor</span>
+                                </td>
+                                <td class="py-5">
+                                    <span
+                                        class="text-xs px-2 py-1 bg-surface-container text-on-surface border border-outline-variant/20">Studio_Standard_Full</span>
+                                </td>
+                                <td class="py-5">
+                                    <div class="flex items-center gap-2">
+                                        <span
+                                            class="material-symbols-outlined text-[1rem] text-on-surface-variant">account_balance</span>
+                                        <span class="text-xs text-on-surface-variant">Direct Deposit</span>
+                                    </div>
+                                </td>
+                                <td class="py-5 text-right">
+                                    <div
+                                        class="w-4 h-4 border-2 border-outline-variant flex items-center justify-center">
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Sticky Footer -->
+                <div
+                    class="p-8 bg-surface-container-lowest border-t border-outline-variant/15 flex justify-between items-center z-10">
+                    <div class="flex flex-col">
+                        <span class="text-[0.6rem] font-bold uppercase tracking-widest text-on-surface-variant">Selected
+                            Employee</span>
+                        <span class="text-sm font-bold text-on-surface">—</span>
+                    </div>
+                    <div class="flex gap-4">
+                        <button
+                            class="px-8 py-3 bg-surface-container-highest text-on-surface text-xs font-bold uppercase tracking-widest hover:bg-surface-container transition-colors">
+                            Cancel
+                        </button>
+                        <button
+                            class="px-10 py-3 bg-primary text-on-primary text-xs font-bold uppercase tracking-widest flex items-center gap-4 group transition-all">
+                            Next Step
+                            <span
+                                class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Background Page Content (Simulated Dashboard) -->
+        <div class="opacity-40 pointer-events-none">
+            <div class="grid grid-cols-12 gap-8 mb-12">
+                <div class="col-span-12">
+                    <h1 class="text-5xl font-extrabold tracking-tighter text-on-surface leading-none mb-2">RUN PAYROLL
+                    </h1>
+                    <p class="text-on-surface-variant uppercase tracking-[0.2em] text-xs font-medium">Cycle: October
+                        2023 • Batch ID: 4492-X</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-8 mb-12">
+                <div class="bg-surface-container-low p-8">
+                    <div class="text-[0.65rem] font-bold uppercase tracking-[0.1em] text-on-surface-variant mb-4">Total
+                        Net Pay</div>
+                    <div class="text-4xl font-light tracking-tight text-on-surface">$248,500.00</div>
+                </div>
+                <div class="bg-surface-container-low p-8">
+                    <div class="text-[0.65rem] font-bold uppercase tracking-[0.1em] text-on-surface-variant mb-4">Tax
+                        Withholding</div>
+                    <div class="text-4xl font-light tracking-tight text-on-surface">$42,120.45</div>
+                </div>
+                <div class="bg-surface-container-low p-8 border-l-4 border-primary">
+                    <div class="text-[0.65rem] font-bold uppercase tracking-[0.1em] text-primary mb-4">Pending Approvals
+                    </div>
+                    <div class="text-4xl font-light tracking-tight text-on-surface">12</div>
+                </div>
+            </div>
+            <div class="grid grid-cols-4 gap-8">
+                <div class="col-span-3 bg-surface-container-low h-96"></div>
+                <div class="col-span-1 bg-surface-container-low h-96"></div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

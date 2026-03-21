@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-on-surface": "#f3f0ef",
+              "surface-container-highest": "#e5e2e1",
+              "outline-variant": "#e7bdb7",
+              "surface-container": "#f0eded",
+              "on-tertiary": "#ffffff",
+              "primary-fixed-dim": "#ffb4aa",
+              "error-container": "#ffdad6",
+              "on-surface-variant": "#5d3f3b",
+              "surface-tint": "#c0000d",
+              "primary-container": "#e21d1d",
+              "on-error-container": "#93000a",
+              "surface-variant": "#e5e2e1",
+              "tertiary-container": "#737373",
+              "on-primary-container": "#fff9f8",
+              "secondary-fixed": "#e5e2e1",
+              "on-tertiary-container": "#fafafa",
+              "secondary": "#5f5e5e",
+              "surface": "#fcf9f8",
+              "inverse-surface": "#313030",
+              "surface-container-high": "#eae7e7",
+              "on-tertiary-fixed": "#1b1b1b",
+              "on-primary": "#ffffff",
+              "primary-fixed": "#ffdad5",
+              "error": "#ba1a1a",
+              "background": "#fcf9f8",
+              "surface-dim": "#dcd9d9",
+              "surface-container-low": "#f6f3f2",
+              "inverse-primary": "#ffb4aa",
+              "secondary-container": "#e2dfde",
+              "on-secondary-fixed-variant": "#474746",
+              "on-error": "#ffffff",
+              "tertiary-fixed-dim": "#c6c6c6",
+              "primary": "#b9000c",
+              "on-primary-fixed": "#410001",
+              "on-secondary-container": "#636262",
+              "tertiary-fixed": "#e2e2e2",
+              "on-secondary": "#ffffff",
+              "surface-bright": "#fcf9f8",
+              "surface-container-lowest": "#ffffff",
+              "on-secondary-fixed": "#1c1b1b",
+              "on-primary-fixed-variant": "#930007",
+              "on-background": "#1c1b1b",
+              "tertiary": "#5a5a5a",
+              "secondary-fixed-dim": "#c8c6c5",
+              "outline": "#926e6a",
+              "on-tertiary-fixed-variant": "#474747",
+              "on-surface": "#1c1b1b"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased overflow-hidden">
+<!-- The Monolith: SideNavBar -->
+<aside class="flex flex-col h-screen w-64 fixed left-0 top-0 z-40 bg-[#313030] dark:bg-[#1c1b1b]">
+<div class="px-6 py-8">
+<h1 class="text-xl font-bold tracking-tighter text-white">BOXWAY STUDIO</h1>
+<p class="font-['Inter'] tracking-tight label-md uppercase text-[0.75rem] font-medium text-[#ece0df] opacity-50 mt-1">Payroll Module</p>
+</div>
+<nav class="flex-1 mt-4">
+<div class="flex flex-col gap-1">
+<a class="text-[#ece0df] opacity-70 pl-4 py-3 hover:opacity-100 transition-opacity hover:bg-white/5 flex items-center gap-3" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-['Inter'] tracking-tight label-md uppercase text-[0.75rem] font-medium">Overview</span>
+</a>
+<a class="relative text-white border-l-[3px] border-[#b9000c] pl-4 py-3 bg-transparent flex items-center gap-3" href="#">
+<span class="material-symbols-outlined text-[#b9000c]" data-icon="potted_plant">potted_plant</span>
+<span class="font-['Inter'] tracking-tight label-md uppercase text-[0.75rem] font-medium">Studio</span>
+</a>
+<a class="text-[#ece0df] opacity-70 pl-4 py-3 hover:opacity-100 transition-opacity hover:bg-white/5 flex items-center gap-3" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-['Inter'] tracking-tight label-md uppercase text-[0.75rem] font-medium">Finance</span>
+</a>
+<a class="text-[#ece0df] opacity-70 pl-4 py-3 hover:opacity-100 transition-opacity hover:bg-white/5 flex items-center gap-3" href="#">
+<span class="material-symbols-outlined" data-icon="insights">insights</span>
+<span class="font-['Inter'] tracking-tight label-md uppercase text-[0.75rem] font-medium">Intelligence</span>
+</a>
+</div>
+</nav>
+</aside>
+<!-- TopNavBar -->
+<header class="flex justify-between items-center h-20 px-8 w-[calc(100%-16rem)] ml-64 bg-[#fcf9f8] bg-opacity-80 backdrop-blur-md z-30 sticky top-0 border-b border-[#e7bdb7]/15">
+<div class="flex items-center gap-8">
+<span class="text-lg font-bold text-[#1c1b1b] dark:text-white uppercase tracking-tight">Payroll</span>
+<nav class="hidden md:flex gap-6 items-center h-full">
+<a class="text-[#5d3f3b] dark:text-[#ece0df] pb-4 hover:text-[#1c1b1b] font-['Inter'] text-sm font-medium border-b-2 border-transparent" href="#">Dashboard</a>
+<a class="text-[#b9000c] font-bold border-b-2 border-[#b9000c] pb-4 font-['Inter'] text-sm font-medium" href="#">Payroll Runs</a>
+<a class="text-[#5d3f3b] dark:text-[#ece0df] pb-4 hover:text-[#1c1b1b] font-['Inter'] text-sm font-medium border-b-2 border-transparent" href="#">Payslips</a>
+<a class="text-[#5d3f3b] dark:text-[#ece0df] pb-4 hover:text-[#1c1b1b] font-['Inter'] text-sm font-medium border-b-2 border-transparent" href="#">Settings</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="schedule">schedule</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="w-8 h-8 bg-surface-container-highest overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Portrait of a male business executive" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABvnOQLUkNNKEgmJSp-euVgt1Lttcd-cRNk3VL4hsj3Vr9DuGqRpiMHsENn90x2JHzb7RWohZlgXa86k-g21gWp1gqSRWmGfhh5EiTksU4ZfZsg9tjmyzd4k0rQPNy5-e1t2S8F3KnawxBsWiLTbSVWCNg0fDS9X8RuCsecHE_Eov3qyG3zQ_O7sxqQfgzOlc8duPamF40Rywp7Xmk7emNLnlhfDO6CYLblVueZNUcU0CpSJepWE92UQHjPekuW7d0QVrsZ-ZbDx0"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 p-8 min-h-[calc(100vh-5rem)] bg-surface relative">
+<!-- Modal Overlay Mockup -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-8 bg-inverse-surface/40 backdrop-blur-sm">
+<div class="bg-surface w-full max-w-6xl h-full max-h-[921px] flex flex-col shadow-[0px_24px_48px_rgba(28,27,27,0.06)]">
+<!-- Modal Header -->
+<div class="px-10 py-8 border-b border-outline-variant/15 flex justify-between items-end">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<span class="px-2 py-0.5 bg-primary text-[10px] text-white font-bold tracking-widest uppercase">Step 3 of 3</span>
+<span class="text-on-surface-variant text-[10px] font-bold tracking-widest uppercase">Review &amp; Confirm</span>
+</div>
+<h2 class="text-4xl font-extrabold tracking-tighter text-on-surface">GENERATE PAYROLL</h2>
+</div>
+<div class="text-right">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Total Net Pay</p>
+<p class="text-4xl font-black text-primary tracking-tighter">$142,850.00</p>
+</div>
+</div>
+<!-- Modal Content Scrollable Area -->
+<div class="flex-1 overflow-y-auto px-10 py-8">
+<!-- Validation Section -->
+<section class="mb-10">
+<div class="bg-error-container/30 p-6 border-l-4 border-error flex items-start gap-4">
+<span class="material-symbols-outlined text-error" data-icon="warning">warning</span>
+<div class="flex-1">
+<h3 class="text-sm font-bold text-on-error-container uppercase tracking-tight mb-2">Critical Validation Required</h3>
+<ul class="space-y-2">
+<li class="text-xs text-on-error-container/80 flex items-center gap-2">
+<span class="w-1 h-1 bg-error rounded-full"></span>
+                                        Missing bank information for <strong>Elena Rodriguez</strong> (Employee ID: #BX-092)
+                                    </li>
+<li class="text-xs text-on-error-container/80 flex items-center gap-2">
+<span class="w-1 h-1 bg-error rounded-full"></span>
+                                        Negative adjustment detected for <strong>Marcus Thorne</strong> ($ -150.00 Ad Hoc)
+                                    </li>
+</ul>
+</div>
+<button class="text-xs font-bold text-error uppercase border-b border-error/30 hover:border-error transition-all">Fix All Issues</button>
+</div>
+</section>
+<!-- Summary Table -->
+<section>
+<h3 class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-6">Employee Breakdown</h3>
+<div class="w-full overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant/15">
+<th class="py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Employee Name</th>
+<th class="py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest text-right">Fixed Salary</th>
+<th class="py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest text-right">Bonus</th>
+<th class="py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest text-right">Ad Hoc</th>
+<th class="py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest text-right">Deductions</th>
+<th class="py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest text-right">Net Pay</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="Portrait of Elena Rodriguez, employee" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6uSXHXAnEnrOHayMwNv5BpfEXe9FmctnDmuqFzedy-j4DjClgbAfcuMEef05m7kZlGuqRB0RAXLqipsuh7YExxAPGZyKUCY4F2GCcW9kwCcZpl2tW4iQBOI8NodbArPji4VgOwqYXzdpCZlUXBbuIx4WdS_EQbY8XwMQIuaFgUF0fmDLzwBptXAI6b-Wy8Y0xrkgqveVg4JHvlRPTFqRvsIDxADPjlM8RRBEB3sk0qAkTLRJhYJNzA6TxFYQojpu1VSUya8sjJt0"/>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Elena Rodriguez</p>
+<p class="text-[10px] text-error font-bold uppercase tracking-tighter">Missing Bank Info</p>
+</div>
+</div>
+</td>
+<td class="py-5 text-sm font-medium text-on-surface text-right font-mono">$8,500.00</td>
+<td class="py-5 text-sm font-medium text-on-surface text-right font-mono">$1,200.00</td>
+<td class="py-5 text-sm font-medium text-on-surface text-right font-mono">$0.00</td>
+<td class="py-5 text-sm font-medium text-on-surface-variant text-right font-mono">-$420.00</td>
+<td class="py-5 text-sm font-bold text-on-surface text-right font-mono">$9,280.00</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="Portrait of Marcus Thorne, employee" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzs4iMLW08ERi0-_6wPaHd40vNMLcWb6GvTq8OuEhmAATL7j9nPsYwqFSdZ75RtSpfSQujI5q0mDjsW3ER6fHmUX4pxhaaqB_zB_uorkrLFDTVQAic0IWFnr7XSQkmo6MQRBZnax8sJCDCnz_lj9nr9TWCbeV5mqA6dxfS9HM0puJ_c9S7Lte1iqfwD197dRNVXLuZSnCXEhM7sO55u7NctC39w14nNk4YXjZ2igtY7Zd8s6RM0dEgqmFPdKXMzfMLW4nPI_8zpjk"/>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Marcus Thorne</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest">Architectural Lead</p>
+</div>
+</div>
+</td>
+<td class="py-5 text-sm font-medium text-on-surface text-right font-mono">$12,000.00</td>
+<td class="py-5 text-sm font-medium text-on-surface text-right font-mono">$0.00</td>
+<td class="py-5 text-sm font-bold text-error text-right font-mono">-$150.00</td>
+<td class="py-5 text-sm font-medium text-on-surface-variant text-right font-mono">-$850.00</td>
+<td class="py-5 text-sm font-bold text-on-surface text-right font-mono">$11,000.00</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="Portrait of Sarah Jenkins, employee" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiWB6DLTi2dMfYF6uyV66j9RT55k3UPfu-e9rgBKAi_RPF7B7UuHYot7Q5JrnTrE6PZW9VHYr27P6pIHSrowJhw_r1bwG7GqRUjzRswxIqabxtaooYqbhEkehgSD8yP5KUatHpwhQuMEOBBWRkaeRBeYl-paoUnIKMwOhAfECSKK84gpvUgltuo0Twi9lvEPtKC5n46K63WVlx_FMEhMz--F--FerVP-VtpI8bn7ze5m5DKLCzEtD4IVuJME2eyQgdjglJFZOVcP8"/>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Sarah Jenkins</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest">Studio Manager</p>
+</div>
+</div>
+</td>
+<td class="py-5 text-sm font-medium text-on-surface text-right font-mono">$9,800.00</td>
+<td class="py-5 text-sm font-medium text-on-surface text-right font-mono">$500.00</td>
+<td class="py-5 text-sm font-medium text-on-surface text-right font-mono">$250.00</td>
+<td class="py-5 text-sm font-medium text-on-surface-variant text-right font-mono">-$610.00</td>
+<td class="py-5 text-sm font-bold text-on-surface text-right font-mono">$9,940.00</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="Portrait of Julian Chen, employee" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvdPGiZtGwKYfac_QkFCzy87A9EpnWKvSmje6ofP2u3WSBH0OPZwJX7GZwoIfGj8oxmRepfbc7AXJ912efDUlx35Y987sMbnj1KtI5vEgjkgqQS5RuKaMWbrk-0Q0vTwNXa3xtMToeWhBTrVW2Dmh7IDI23CEhO1HG3CSO5zpU5GEqNW1INC6fqocKwf7o18mCMIttOYS4Iz9agmik0MMVEOFzOpYPF_hqKTYDqgDEEtjlGb56ta3GsCtBc9jWoIxoDHd_ko-uumQ"/>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Julian Chen</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest">Visualizer</p>
+</div>
+</div>
+</td>
+<td class="py-5 text-sm font-medium text-on-surface text-right font-mono">$7,200.00</td>
+<td class="py-5 text-sm font-medium text-on-surface text-right font-mono">$0.00</td>
+<td class="py-5 text-sm font-medium text-on-surface text-right font-mono">$0.00</td>
+<td class="py-5 text-sm font-medium text-on-surface-variant text-right font-mono">-$300.00</td>
+<td class="py-5 text-sm font-bold text-on-surface text-right font-mono">$6,900.00</td>
+</tr>
+</tbody>
+<tfoot>
+<tr class="border-t-2 border-on-surface">
+<td class="py-6 text-sm font-black text-on-surface uppercase tracking-tighter">Grand Total</td>
+<td class="py-6 text-sm font-black text-on-surface text-right font-mono">$37,500.00</td>
+<td class="py-6 text-sm font-black text-on-surface text-right font-mono">$1,700.00</td>
+<td class="py-6 text-sm font-black text-on-surface text-right font-mono">$100.00</td>
+<td class="py-6 text-sm font-black text-on-surface text-right font-mono">-$2,180.00</td>
+<td class="py-6 text-xl font-black text-primary text-right font-mono">$37,120.00</td>
+</tr>
+</tfoot>
+</table>
+</div>
+</section>
+</div>
+<!-- Sticky Footer -->
+<div class="px-10 py-6 bg-surface-container-low border-t border-outline-variant/15 flex items-center justify-between">
+<button class="flex items-center gap-2 px-6 py-3 bg-surface-container-highest text-on-surface text-[10px] font-bold uppercase tracking-widest hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="arrow_back">arrow_back</span>
+                        Back
+                    </button>
+<div class="flex gap-4">
+<button class="px-8 py-3 bg-white border border-outline-variant/30 text-on-surface text-[10px] font-bold uppercase tracking-widest hover:bg-surface-container-lowest transition-all">
+                            Save Draft
+                        </button>
+<button class="px-10 py-3 bg-primary text-white text-[10px] font-bold uppercase tracking-widest shadow-[0_10px_20px_-5px_rgba(185,0,12,0.3)] hover:scale-[1.02] transition-all">
+                            Confirm &amp; Generate Payroll
+                        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Background Page Content (Behind Modal) -->
+<div class="opacity-10 pointer-events-none">
+<div class="grid grid-cols-12 gap-8">
+<div class="col-span-12">
+<h2 class="text-6xl font-black tracking-tighter text-on-surface mb-4">PAYROLL RUNS</h2>
+<div class="h-1 w-24 bg-primary mb-12"></div>
+</div>
+<div class="col-span-8 h-96 bg-surface-container-low"></div>
+<div class="col-span-4 h-96 bg-surface-container-highest"></div>
+</div>
+</div>
+</main>
+</body></html>

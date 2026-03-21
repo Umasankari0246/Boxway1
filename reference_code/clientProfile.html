@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>BOXWAY | Client Profile - Alistair Morgan</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f20d0d", // Red from theme
+                        "secondary": "#000000", // Black
+                        "background-light": "#ffffff",
+                        "accent": "#f20d0d",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "4px",
+                        "lg": "8px",
+                        "xl": "12px",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="bg-[#fcfcfc] text-black overflow-hidden h-screen font-display">
+    <div class="flex h-full">
+        <!-- Sidebar Navigation (Uniform with SCREEN_11) -->
+        <aside class="w-60 flex-shrink-0 bg-black text-white flex flex-col">
+            <div class="p-6 flex items-center gap-3">
+                <div class="bg-primary text-white w-8 h-8 rounded flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[20px] font-bold">box</span>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black tracking-tighter uppercase">BOXWAY</h1>
+                </div>
+            </div>
+            <nav class="flex-1 overflow-y-auto no-scrollbar px-4 py-2 space-y-6">
+                <!-- Overview Section -->
+                <div>
+                    <p class="px-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Overview</p>
+                    <div class="space-y-1">
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                            <span class="text-sm">Dashboard</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">group</span>
+                            <span class="text-sm">Employees</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-3 py-2 rounded bg-primary text-white font-medium" href="#">
+                            <span class="material-symbols-outlined text-[20px]">person_pin</span>
+                            <span class="text-sm">Clients</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- Studio Section -->
+                <div>
+                    <p class="px-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Studio</p>
+                    <div class="space-y-1">
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">description</span>
+                            <span class="text-sm">Proposals</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">architecture</span>
+                            <span class="text-sm">Projects</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">folder</span>
+                            <span class="text-sm">Documents</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- Finance Section -->
+                <div>
+                    <p class="px-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Finance</p>
+                    <div class="space-y-1">
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">receipt_long</span>
+                            <span class="text-sm">Invoices</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">payments</span>
+                            <span class="text-sm">Expenses</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+                            <span class="text-sm">Payroll</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- Intelligence Section -->
+                <div>
+                    <p class="px-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Intelligence</p>
+                    <div class="space-y-1">
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">monitoring</span>
+                            <span class="text-sm">Analytics</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">psychology</span>
+                            <span class="text-sm">AI Insights</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-3 py-2 rounded text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+                            href="#">
+                            <span class="material-symbols-outlined text-[20px]">settings</span>
+                            <span class="text-sm">Settings</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+            <div class="p-4 border-t border-zinc-800">
+                <div class="flex items-center gap-3 p-2 bg-zinc-900 rounded">
+                    <img alt="Profile" class="w-8 h-8 rounded object-cover"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxoYW-4TjeiytGwvBQhTY-W-72H7sdqYt5m_Y8_2vEucuWz8PTlozZiUmFFdAWSul54rVVsAhCNSK6ZXF4CHLVBy8ELDOKF-WO4lIsiz95SCk7QFJAWu7gKgW55Ef0A2Q2TXhtlLzdBAso_utFaxrG05oxgCJkB9HhTDWfCwrt4-pKZ5jZkSUT02kdSUCEX-oEb6ZCP6YwUqQgHLpYYOLdDqIfTli1PW_Z9bVGRIvE6C6uVGlBWRp82_9Hr-sprT7hQrgRf_8ieDI" />
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-bold truncate">David Sullivan</p>
+                        <p class="text-[10px] text-zinc-500 uppercase">Admin</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col h-screen overflow-hidden">
+            <!-- Header (Streamlined as requested) -->
+            <header class="h-14 flex-shrink-0 flex items-center justify-between px-8 bg-white border-b border-zinc-100">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-base font-black uppercase tracking-tight">Client Profile</h2>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="text-xs font-bold text-zinc-400 tabular-nums uppercase">10:45 AM</div>
+                    <button class="relative p-1 text-black hover:bg-zinc-50 transition-colors">
+                        <span class="material-symbols-outlined text-[22px]">notifications</span>
+                        <span class="absolute top-1 right-1 w-1.5 h-1.5 bg-primary rounded-full"></span>
+                    </button>
+                </div>
+            </header>
+            <!-- Page Content -->
+            <div class="flex-1 p-6 overflow-y-auto no-scrollbar space-y-6">
+                <!-- Client Hero Section -->
+                <div
+                    class="flex flex-col lg:flex-row justify-between items-start gap-6 bg-white p-8 border border-zinc-100 shadow-sm">
+                    <div class="flex items-center gap-6">
+                        <div
+                            class="w-20 h-20 bg-zinc-100 rounded flex items-center justify-center text-2xl font-black text-zinc-400">
+                            AM
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-3">
+                                <h1 class="text-3xl font-black tracking-tighter uppercase">Alistair Morgan</h1>
+                                <span
+                                    class="px-2 py-0.5 text-[10px] font-black uppercase bg-emerald-100 text-emerald-700">Active
+                                    Client</span>
+                            </div>
+                            <p class="text-lg font-bold text-zinc-500 mt-1">Morgan &amp; Sons Dev.</p>
+                            <div class="flex items-center gap-6 mt-4">
+                                <span
+                                    class="flex items-center gap-1.5 text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
+                                    <span class="material-symbols-outlined text-[16px]">location_on</span> London, UK
+                                </span>
+                                <span
+                                    class="flex items-center gap-1.5 text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
+                                    <span class="material-symbols-outlined text-[16px]">fingerprint</span> BW-5529
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button
+                            class="px-5 py-2.5 bg-black text-white text-[10px] font-black uppercase tracking-widest hover:bg-primary transition-colors">
+                            Edit Profile
+                        </button>
+                        <button
+                            class="px-5 py-2.5 border border-zinc-200 text-black text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors">
+                            Message
+                        </button>
+                    </div>
+                </div>
+                <!-- KPI Cards (Stats Cards) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white p-5 border border-zinc-100 shadow-sm">
+                        <p class="text-[10px] text-zinc-400 font-black uppercase mb-1">Total Spent</p>
+                        <h3 class="text-2xl font-black">$248,500</h3>
+                        <div class="mt-2 w-full h-1 bg-zinc-50 overflow-hidden">
+                            <div class="bg-primary h-full w-[70%]"></div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 border border-zinc-100 shadow-sm">
+                        <p class="text-[10px] text-zinc-400 font-black uppercase mb-1">Open Balance</p>
+                        <h3 class="text-2xl font-black text-primary">$12,400</h3>
+                        <p class="text-[9px] font-bold text-zinc-400 uppercase mt-1">1 Overdue Invoice</p>
+                    </div>
+                    <div class="bg-white p-5 border border-zinc-100 shadow-sm">
+                        <p class="text-[10px] text-zinc-400 font-black uppercase mb-1">Active Projects</p>
+                        <h3 class="text-2xl font-black">04</h3>
+                        <p class="text-[9px] font-bold text-zinc-400 uppercase mt-1">2 in design phase</p>
+                    </div>
+                    <div class="bg-white p-5 border border-zinc-100 shadow-sm">
+                        <p class="text-[10px] text-zinc-400 font-black uppercase mb-1">Pending Documents</p>
+                        <h3 class="text-2xl font-black">02</h3>
+                        <p class="text-[9px] font-bold text-zinc-400 uppercase mt-1">Signature required</p>
+                    </div>
+                </div>
+                <!-- Tabbed Sections Navigation -->
+                <div class="border-b border-zinc-200 flex gap-8">
+                    <button
+                        class="pb-4 text-[11px] font-black uppercase tracking-widest border-b-2 border-primary text-primary">Overview</button>
+                    <button
+                        class="pb-4 text-[11px] font-black uppercase tracking-widest border-b-2 border-transparent text-zinc-400 hover:text-black transition-colors">Projects</button>
+                    <button
+                        class="pb-4 text-[11px] font-black uppercase tracking-widest border-b-2 border-transparent text-zinc-400 hover:text-black transition-colors">Documents</button>
+                    <button
+                        class="pb-4 text-[11px] font-black uppercase tracking-widest border-b-2 border-transparent text-zinc-400 hover:text-black transition-colors">Communication</button>
+                </div>
+                <!-- Tab Content: Overview (Personal & Company Info) -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Personal & Company Information -->
+                        <div class="bg-white border border-zinc-100 shadow-sm p-8">
+                            <div class="flex items-center justify-between mb-8">
+                                <h3 class="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[18px]">badge</span> Personal &amp;
+                                    Company Details
+                                </h3>
+                                <button
+                                    class="text-[10px] font-bold text-zinc-400 hover:text-primary transition-colors uppercase">Edit
+                                    Details</button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-12">
+                                <div>
+                                    <p class="text-[10px] font-black text-zinc-400 uppercase mb-1">Contact Person</p>
+                                    <p class="text-sm font-bold">Alistair Morgan</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-black text-zinc-400 uppercase mb-1">Job Title</p>
+                                    <p class="text-sm font-bold">Senior Developer / Owner</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-black text-zinc-400 uppercase mb-1">Direct Phone</p>
+                                    <p class="text-sm font-bold">+44 20 7946 0123</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-black text-zinc-400 uppercase mb-1">Email Address</p>
+                                    <p class="text-sm font-bold text-primary">alistair@morgansons.co.uk</p>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <p class="text-[10px] font-black text-zinc-400 uppercase mb-1">Registered Address
+                                    </p>
+                                    <p class="text-sm font-bold">12 Canary Wharf, Floor 42, London, E14 5AB, UK</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Project Preference Summary -->
+                        <div class="bg-white border border-zinc-100 shadow-sm p-8">
+                            <h3 class="text-xs font-black uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">architecture</span> Project
+                                Standards
+                            </h3>
+                            <div class="bg-zinc-50 p-6 border-l-4 border-primary">
+                                <p class="text-[10px] font-black uppercase text-zinc-400 mb-2">Preferred Project Type
+                                </p>
+                                <p class="text-sm font-bold italic">Luxury Residential Developments with sustainable
+                                    energy integration and high-spec architectural finishes.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right Sidebar: Quick Actions & Files -->
+                    <div class="space-y-6">
+                        <!-- Essential Files -->
+                        <div class="bg-white border border-zinc-100 shadow-sm">
+                            <div class="p-4 border-b border-zinc-50 bg-zinc-50/30 flex items-center justify-between">
+                                <h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-400">Essential
+                                    Files</h3>
+                                <span class="material-symbols-outlined text-[16px] text-zinc-300">folder_open</span>
+                            </div>
+                            <div class="divide-y divide-zinc-50">
+                                <div
+                                    class="p-4 flex items-center gap-3 hover:bg-zinc-50 transition-colors cursor-pointer group">
+                                    <span
+                                        class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">picture_as_pdf</span>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-[11px] font-black truncate uppercase">MSA_MORGAN_2023.pdf</p>
+                                        <p class="text-[9px] font-bold text-zinc-400 uppercase">Master Service Agreement
+                                        </p>
+                                    </div>
+                                    <span
+                                        class="material-symbols-outlined text-[16px] text-zinc-300 group-hover:text-black">download</span>
+                                </div>
+                                <div
+                                    class="p-4 flex items-center gap-3 hover:bg-zinc-50 transition-colors cursor-pointer group">
+                                    <span class="material-symbols-outlined text-zinc-400">description</span>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-[11px] font-black truncate uppercase">Brief_Thames_Project.docx
+                                        </p>
+                                        <p class="text-[9px] font-bold text-zinc-400 uppercase">Project Briefing</p>
+                                    </div>
+                                    <span
+                                        class="material-symbols-outlined text-[16px] text-zinc-300 group-hover:text-black">visibility</span>
+                                </div>
+                            </div>
+                            <div class="p-4 bg-zinc-50/50">
+                                <button
+                                    class="w-full py-2 border-2 border-dashed border-zinc-200 text-[10px] font-black uppercase text-zinc-400 hover:border-primary hover:text-primary transition-colors">
+                                    Upload Document
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Communication Timeline Brief -->
+                        <div class="bg-white border border-zinc-100 shadow-sm p-6">
+                            <h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-4">Latest
+                                Communication</h3>
+                            <div class="space-y-4">
+                                <div class="flex gap-3">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5"></div>
+                                    <div>
+                                        <p class="text-[11px] font-bold">Email: Budget Approval Sent</p>
+                                        <p class="text-[9px] text-zinc-400 uppercase">Yesterday, 4:30 PM</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-3">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-zinc-200 mt-1.5"></div>
+                                    <div>
+                                        <p class="text-[11px] font-bold">Call: Project Milestone Review</p>
+                                        <p class="text-[9px] text-zinc-400 uppercase">Oct 12, 10:00 AM</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer (Uniform with SCREEN_11) -->
+            <footer class="h-10 flex-shrink-0 px-8 border-t border-zinc-100 bg-white flex items-center justify-between">
+                <p class="text-[9px] font-black text-zinc-300 uppercase tracking-widest">© 2023 BOXWAY DIGITAL SYSTEMS
+                </p>
+                <div class="flex gap-4">
+                    <a class="text-[9px] font-black text-zinc-400 hover:text-primary uppercase" href="#">Security</a>
+                    <a class="text-[9px] font-black text-zinc-400 hover:text-primary uppercase" href="#">Privacy</a>
+                </div>
+            </footer>
+        </main>
+    </div>
+</body>
+
+</html>

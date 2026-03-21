@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>BOXWAY - Employee Registration Step 3</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4a6841",
+                        "background-light": "#f7f7f6",
+                        "background-dark": "#181b17",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body class="bg-slate-200 font-display flex items-center justify-center min-h-screen p-4">
+    <!-- Modal Container -->
+    <div
+        class="bg-background-light dark:bg-background-dark w-full max-w-[560px] shadow-2xl rounded-xl overflow-hidden flex flex-col">
+        <!-- Header -->
+        <header class="flex items-center justify-between border-b border-primary/10 px-6 py-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-primary p-1.5 rounded text-white flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[20px]">package_2</span>
+                </div>
+                <h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold tracking-tight">BOXWAY</h2>
+            </div>
+            <button
+                class="flex h-8 w-8 items-center justify-center rounded-full hover:bg-primary/10 text-slate-500 transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </header>
+        <!-- Progress Indicator -->
+        <div class="px-6 pt-6 pb-2">
+            <div class="flex justify-between items-end mb-2">
+                <p class="text-slate-900 dark:text-slate-100 text-sm font-semibold uppercase tracking-wider">Step 3 of
+                    4: Experience</p>
+                <p class="text-primary text-sm font-bold">75%</p>
+            </div>
+            <div class="w-full bg-primary/20 h-2 rounded-full overflow-hidden">
+                <div class="bg-primary h-full rounded-full" style="width: 75%;"></div>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="px-6 py-4 flex-1 overflow-y-auto max-h-[614px]">
+            <div class="mb-6">
+                <h1 class="text-slate-900 dark:text-slate-100 text-2xl font-bold mb-1">Work History</h1>
+                <p class="text-slate-500 text-sm">Tell us about your professional background and previous roles.</p>
+            </div>
+            <!-- Experience Entry -->
+            <div class="space-y-5 border-b border-primary/10 pb-6 mb-6">
+                <!-- Company Name -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Previous Company</label>
+                    <input
+                        class="w-full h-12 px-4 rounded border border-primary/20 bg-white dark:bg-background-dark/50 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                        placeholder="e.g. Global Logistics Inc." type="text" />
+                </div>
+                <!-- Designation -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Designation</label>
+                    <input
+                        class="w-full h-12 px-4 rounded border border-primary/20 bg-white dark:bg-background-dark/50 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                        placeholder="e.g. Warehouse Operations Manager" type="text" />
+                </div>
+                <!-- Dates Grid -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Start Date</label>
+                        <input
+                            class="w-full h-12 px-4 rounded border border-primary/20 bg-white dark:bg-background-dark/50 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                            type="date" />
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold">End Date</label>
+                        <input
+                            class="w-full h-12 px-4 rounded border border-primary/20 bg-white dark:bg-background-dark/50 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                            type="date" />
+                    </div>
+                </div>
+                <!-- Responsibilities -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold">Key Responsibilities</label>
+                    <textarea
+                        class="w-full p-4 rounded border border-primary/20 bg-white dark:bg-background-dark/50 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none"
+                        placeholder="Describe your main achievements and daily tasks..." rows="3"></textarea>
+                </div>
+            </div>
+            <!-- Add More Button -->
+            <button
+                class="flex items-center gap-2 text-primary hover:text-primary/80 font-bold text-sm transition-colors group">
+                <span
+                    class="material-symbols-outlined text-[20px] bg-primary/10 p-1 rounded group-hover:bg-primary group-hover:text-white transition-all">add</span>
+                Add Another Experience
+            </button>
+        </div>
+        <!-- Footer -->
+        <footer
+            class="flex items-center justify-between px-6 py-6 border-t border-primary/10 bg-slate-50 dark:bg-background-dark/30">
+            <button
+                class="flex items-center gap-2 px-6 h-12 text-slate-600 dark:text-slate-400 font-bold hover:text-primary transition-colors">
+                <span class="material-symbols-outlined">arrow_back</span>
+                Back
+            </button>
+            <button
+                class="flex items-center gap-2 px-8 h-12 bg-red-600 hover:bg-red-700 text-white font-bold rounded shadow-lg shadow-red-200 dark:shadow-none transition-all transform active:scale-95">
+                Next Step
+                <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+        </footer>
+    </div>
+</body>
+
+</html>

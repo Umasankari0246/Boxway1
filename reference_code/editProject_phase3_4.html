@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>BOXWAY - Edit Project</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4a6841",
+                        "background-light": "#f7f7f6",
+                        "background-dark": "#181b17",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 transition-colors">
+    <div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+        <!-- Top Navigation Bar -->
+        <header
+            class="flex items-center justify-between border-b border-primary/10 bg-white dark:bg-slate-900/50 px-10 py-3 sticky top-0 z-50">
+            <div class="flex items-center gap-4">
+                <div class="size-6 text-primary">
+                    <svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z">
+                        </path>
+                    </svg>
+                </div>
+                <h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight">BOXWAY
+                </h2>
+            </div>
+            <div class="flex flex-1 justify-end gap-8">
+                <nav class="flex items-center gap-9">
+                    <a class="text-slate-700 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
+                        href="#">Projects</a>
+                    <a class="text-slate-700 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
+                        href="#">Dashboard</a>
+                </nav>
+                <div class="flex gap-2">
+                    <button
+                        class="flex items-center justify-center rounded h-10 w-10 bg-primary/10 text-primary hover:bg-primary/20 transition-all">
+                        <span class="material-symbols-outlined text-[20px]">notifications</span>
+                    </button>
+                    <button
+                        class="flex items-center justify-center rounded h-10 w-10 bg-primary/10 text-primary hover:bg-primary/20 transition-all">
+                        <span class="material-symbols-outlined text-[20px]">account_circle</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+        <div class="flex flex-1">
+            <!-- Sidebar Navigation -->
+            <aside
+                class="w-64 border-r border-primary/10 p-6 flex flex-col gap-6 hidden lg:flex bg-white/50 dark:bg-slate-900/20">
+                <div class="flex flex-col">
+                    <h1 class="text-slate-900 dark:text-slate-100 text-base font-bold">PROJECT EDITOR</h1>
+                    <p class="text-primary text-xs font-semibold tracking-wider uppercase">BOXWAY-722</p>
+                </div>
+                <nav class="flex flex-col gap-1">
+                    <a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-primary/5 rounded transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined text-xl">home</span>
+                        <span class="text-sm font-medium">Overview</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-primary/5 rounded transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined text-xl">info</span>
+                        <span class="text-sm font-medium">Details</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2 bg-primary text-white rounded shadow-sm" href="#">
+                        <span class="material-symbols-outlined text-xl">description</span>
+                        <span class="text-sm font-medium">Agreement &amp; Concept</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-primary/5 rounded transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined text-xl">edit_note</span>
+                        <span class="text-sm font-medium">Planning</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-primary/5 rounded transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined text-xl">verified</span>
+                        <span class="text-sm font-medium">Review</span>
+                    </a>
+                </nav>
+                <div class="mt-auto p-4 bg-primary/5 rounded-lg border border-primary/10">
+                    <div class="flex justify-between items-end mb-2">
+                        <p class="text-slate-900 dark:text-slate-100 text-xs font-bold uppercase">Progress</p>
+                        <p class="text-primary text-xs font-bold">40%</p>
+                    </div>
+                    <div class="h-1.5 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                        <div class="h-full bg-primary" style="width: 40%;"></div>
+                    </div>
+                    <p class="text-slate-500 dark:text-slate-400 text-[10px] mt-2 italic text-center">Step 2 of 5</p>
+                </div>
+            </aside>
+            <!-- Main Content Area -->
+            <main class="flex-1 max-w-5xl mx-auto w-full p-8 md:p-12">
+                <!-- Header Section -->
+                <div class="mb-10 flex flex-wrap justify-between items-end gap-4">
+                    <div class="flex flex-col gap-1">
+                        <h2
+                            class="text-slate-900 dark:text-slate-100 text-4xl font-extrabold tracking-tight leading-none">
+                            Edit Project</h2>
+                        <p class="text-primary font-medium">Step 2: Agreement &amp; Concept</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button
+                            class="px-5 py-2.5 rounded-lg border border-primary/20 text-slate-600 dark:text-slate-300 font-semibold text-sm hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">Save
+                            Draft</button>
+                        <button
+                            class="px-5 py-2.5 rounded-lg bg-primary text-white font-semibold text-sm hover:opacity-90 transition-opacity">Next
+                            Step</button>
+                    </div>
+                </div>
+                <!-- Stage 3 Form Section -->
+                <div class="bg-white dark:bg-slate-900/40 rounded-xl border border-primary/10 p-8 mb-8 shadow-sm">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div
+                            class="flex items-center justify-center h-8 w-8 rounded-full bg-primary text-white text-sm font-bold">
+                            3</div>
+                        <h3 class="text-slate-900 dark:text-slate-100 text-xl font-bold">Stage 3: Agreement Finalisation
+                        </h3>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Status Field -->
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Status</label>
+                            <select
+                                class="form-select w-full rounded-lg border-primary/20 bg-background-light dark:bg-slate-800 focus:ring-primary focus:border-primary text-slate-900 dark:text-slate-100 h-11 transition-all">
+                                <option>In Progress</option>
+                                <option>Awaiting Signature</option>
+                                <option>Under Legal Review</option>
+                                <option>Completed</option>
+                            </select>
+                        </div>
+                        <!-- Contract Upload Field -->
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Signed Contract
+                                Upload</label>
+                            <div class="flex items-center justify-center w-full">
+                                <label
+                                    class="flex flex-col items-center justify-center w-full h-32 border-2 border-primary/20 border-dashed rounded-lg cursor-pointer bg-primary/5 hover:bg-primary/10 transition-colors">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <span class="material-symbols-outlined text-primary mb-2">upload_file</span>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400"><span
+                                                class="font-bold">Click to upload</span> or drag and drop</p>
+                                        <p class="text-[10px] text-slate-400">PDF, DOCX (MAX. 10MB)</p>
+                                    </div>
+                                    <input class="hidden" type="file" />
+                                </label>
+                            </div>
+                        </div>
+                        <!-- Legal Review Notes -->
+                        <div class="md:col-span-2 flex flex-col gap-2">
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Legal Review
+                                Notes</label>
+                            <textarea
+                                class="form-textarea w-full rounded-lg border-primary/20 bg-background-light dark:bg-slate-800 focus:ring-primary focus:border-primary text-slate-900 dark:text-slate-100 transition-all"
+                                placeholder="Enter comments or specific legal stipulations..." rows="4"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <!-- Stage 4 Form Section -->
+                <div class="bg-white dark:bg-slate-900/40 rounded-xl border border-primary/10 p-8 shadow-sm">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div
+                            class="flex items-center justify-center h-8 w-8 rounded-full bg-primary text-white text-sm font-bold">
+                            4</div>
+                        <h3 class="text-slate-900 dark:text-slate-100 text-xl font-bold">Stage 4: Concept Design</h3>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Design Status -->
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Status</label>
+                            <select
+                                class="form-select w-full rounded-lg border-primary/20 bg-background-light dark:bg-slate-800 focus:ring-primary focus:border-primary text-slate-900 dark:text-slate-100 h-11 transition-all">
+                                <option>Not Started</option>
+                                <option>Drafting Concept</option>
+                                <option>Review Phase</option>
+                                <option>Approved</option>
+                            </select>
+                        </div>
+                        <!-- Presentation Date -->
+                        <div class="flex flex-col gap-2">
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Presentation
+                                Date</label>
+                            <div class="relative">
+                                <input
+                                    class="form-input w-full rounded-lg border-primary/20 bg-background-light dark:bg-slate-800 focus:ring-primary focus:border-primary text-slate-900 dark:text-slate-100 h-11 transition-all"
+                                    type="date" />
+                            </div>
+                        </div>
+                        <!-- Design Boards Upload -->
+                        <div class="md:col-span-2 flex flex-col gap-2">
+                            <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Design Boards
+                                Upload</label>
+                            <div class="flex items-center justify-center w-full">
+                                <label
+                                    class="flex flex-col items-center justify-center w-full h-48 border-2 border-primary/20 border-dashed rounded-lg cursor-pointer bg-primary/5 hover:bg-primary/10 transition-colors">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <span
+                                            class="material-symbols-outlined text-primary text-4xl mb-3">cloud_upload</span>
+                                        <p class="mb-2 text-sm text-slate-600 dark:text-slate-300"><span
+                                                class="font-bold">Drop design files</span> or click to browse</p>
+                                        <p class="text-xs text-slate-400">SVG, PNG, JPG (MAX. 800x400px)</p>
+                                    </div>
+                                    <input class="hidden" multiple="" type="file" />
+                                </label>
+                            </div>
+                            <!-- Preview Grid Placeholder -->
+                            <div class="grid grid-cols-4 gap-4 mt-4">
+                                <div
+                                    class="aspect-video bg-slate-200 dark:bg-slate-800 rounded-lg flex items-center justify-center border border-primary/10 overflow-hidden relative group">
+                                    <div class="w-full h-full bg-slate-200 dark:bg-slate-800"
+                                        data-alt="Abstract gradient placeholder for design board"
+                                        style="background-image: linear-gradient(135deg, #4a6841 0%, #231e10 100%)">
+                                    </div>
+                                    <div
+                                        class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span class="material-symbols-outlined text-white cursor-pointer">delete</span>
+                                    </div>
+                                </div>
+                                <div
+                                    class="aspect-video bg-slate-100 dark:bg-slate-800 rounded-lg border-2 border-dashed border-primary/10 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-primary/30">add</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Navigation Buttons Bottom -->
+                <div class="mt-12 flex justify-between">
+                    <button
+                        class="flex items-center gap-2 px-6 py-3 rounded-lg border border-primary/20 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                        Previous
+                    </button>
+                    <button
+                        class="flex items-center gap-2 px-8 py-3 rounded-lg bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:translate-y-[-1px] active:translate-y-0 transition-all">
+                        Continue to Planning
+                        <span class="material-symbols-outlined">arrow_forward</span>
+                    </button>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+
+</html>

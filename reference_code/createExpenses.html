@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>New Expense - BOXWAY STUDIO</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e11d48", // Using a professional Red as requested for key actions
+                        "background-light": "#f8f9fa",
+                        "background-dark": "#111111",
+                        "sidebar-dark": "#0a0a0a",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-sidebar-dark text-white flex flex-col shrink-0">
+            <div class="p-6">
+                <h1 class="text-xl font-bold tracking-tight text-white">BOXWAY STUDIO</h1>
+                <p class="text-xs text-slate-400 mt-1 uppercase tracking-widest">Management Portal</p>
+            </div>
+            <nav class="flex-1 px-4 space-y-1 mt-4">
+                <a class="flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:text-white hover:bg-white/5 rounded transition-colors"
+                    href="#">
+                    <span class="material-symbols-outlined text-[22px]">dashboard</span>
+                    <span class="text-sm font-medium">Overview</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:text-white hover:bg-white/5 rounded transition-colors"
+                    href="#">
+                    <span class="material-symbols-outlined text-[22px]">layers</span>
+                    <span class="text-sm font-medium">Studio</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2.5 bg-primary text-white rounded transition-colors" href="#">
+                    <span class="material-symbols-outlined text-[22px]">account_balance_wallet</span>
+                    <span class="text-sm font-medium">Finance</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:text-white hover:bg-white/5 rounded transition-colors"
+                    href="#">
+                    <span class="material-symbols-outlined text-[22px]">psychology</span>
+                    <span class="text-sm font-medium">Intelligence</span>
+                </a>
+            </nav>
+            <div class="p-4 border-t border-white/10">
+                <div class="flex items-center gap-3 px-2">
+                    <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-xs font-bold">AD
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-sm font-medium truncate">Alex Designer</p>
+                        <p class="text-xs text-slate-500 truncate">Lead Architect</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col overflow-hidden relative">
+            <!-- Header -->
+            <header
+                class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark flex items-center justify-between px-8 shrink-0">
+                <h2 class="text-xl font-bold">New Expense</h2>
+                <div class="flex items-center gap-6">
+                    <span class="text-sm font-medium text-slate-500">14:32 PM</span>
+                    <button
+                        class="relative p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 rounded-full">
+                        <span class="material-symbols-outlined">notifications</span>
+                        <span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full"></span>
+                    </button>
+                </div>
+            </header>
+            <!-- Scrollable Form Area -->
+            <div class="flex-1 overflow-y-auto p-8 bg-slate-50 dark:bg-background-dark/50 no-scrollbar pb-32">
+                <div class="max-w-5xl mx-auto space-y-6">
+                    <!-- 1. Header Card -->
+                    <section
+                        class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+                        <div class="flex flex-wrap items-center justify-between mb-6 gap-4">
+                            <div>
+                                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Expense
+                                    ID</span>
+                                <h3 class="text-lg font-bold">EXP-2024-8842 <span
+                                        class="ml-3 px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 text-xs rounded uppercase">Draft</span>
+                                </h3>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="w-40">
+                                    <label class="block text-xs font-medium text-slate-500 mb-1">Expense Date</label>
+                                    <input
+                                        class="w-full text-sm border-slate-200 dark:border-slate-700 bg-transparent rounded focus:ring-primary focus:border-primary"
+                                        type="date" value="2024-10-24" />
+                                </div>
+                                <div class="w-40">
+                                    <label class="block text-xs font-medium text-slate-500 mb-1">Payment Date</label>
+                                    <input
+                                        class="w-full text-sm border-slate-200 dark:border-slate-700 bg-transparent rounded focus:ring-primary focus:border-primary"
+                                        type="date" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium mb-1.5">Linked Project</label>
+                                <select
+                                    class="w-full text-sm border-slate-200 dark:border-slate-700 bg-transparent rounded focus:ring-primary focus:border-primary py-2.5">
+                                    <option>Select Project</option>
+                                    <option>Zen Residence - Mumbai</option>
+                                    <option>The Loft Studio - Delhi</option>
+                                    <option>Urban Garden Pavilion</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1.5">Category</label>
+                                <select
+                                    class="w-full text-sm border-slate-200 dark:border-slate-700 bg-transparent rounded focus:ring-primary focus:border-primary py-2.5">
+                                    <option>Select Category</option>
+                                    <option>Material Procurement</option>
+                                    <option>Consultant Fee</option>
+                                    <option>Travel &amp; Logistics</option>
+                                    <option>Office Supplies</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Left Column (Wider) -->
+                        <div class="lg:col-span-2 space-y-6">
+                            <!-- 2. Category & Details Card -->
+                            <section
+                                class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+                                <h4 class="text-sm font-bold mb-4 uppercase tracking-tight text-slate-400">Expense
+                                    Details</h4>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1.5">Expense Title</label>
+                                        <input
+                                            class="w-full text-sm border-slate-200 dark:border-slate-700 bg-transparent rounded focus:ring-primary focus:border-primary py-2.5"
+                                            placeholder="e.g., Premium Italian Marble Slabs" type="text" />
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1.5">Detailed Description</label>
+                                        <textarea
+                                            class="w-full text-sm border-slate-200 dark:border-slate-700 bg-transparent rounded focus:ring-primary focus:border-primary"
+                                            placeholder="Specify details like quantity, unit price, or purpose..."
+                                            rows="3"></textarea>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium mb-1.5">Vendor Name</label>
+                                            <input
+                                                class="w-full text-sm border-slate-200 dark:border-slate-700 bg-transparent rounded focus:ring-primary focus:border-primary py-2.5"
+                                                placeholder="Search or Enter Vendor" type="text" />
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium mb-1.5">Payment Method</label>
+                                            <div class="flex gap-2">
+                                                <button
+                                                    class="flex-1 py-2 text-xs font-semibold border border-slate-200 dark:border-slate-700 rounded hover:bg-slate-50 dark:hover:bg-white/5">Cash</button>
+                                                <button
+                                                    class="flex-1 py-2 text-xs font-semibold bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded">Bank</button>
+                                                <button
+                                                    class="flex-1 py-2 text-xs font-semibold border border-slate-200 dark:border-slate-700 rounded hover:bg-slate-50 dark:hover:bg-white/5">UPI</button>
+                                                <button
+                                                    class="flex-1 py-2 text-xs font-semibold border border-slate-200 dark:border-slate-700 rounded hover:bg-slate-50 dark:hover:bg-white/5">Card</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            <!-- 4. Receipt Upload Card -->
+                            <section
+                                class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+                                <h4 class="text-sm font-bold mb-4 uppercase tracking-tight text-slate-400">Receipts
+                                    &amp; Documentation</h4>
+                                <div
+                                    class="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl p-10 flex flex-col items-center justify-center bg-slate-50/50 dark:bg-white/5">
+                                    <span
+                                        class="material-symbols-outlined text-4xl text-slate-300 mb-3">cloud_upload</span>
+                                    <p class="text-sm font-medium">Drag &amp; drop files here</p>
+                                    <p class="text-xs text-slate-400 mt-1">Supports PDF, JPG, PNG (Max 10MB per file)
+                                    </p>
+                                    <button
+                                        class="mt-4 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold rounded shadow-sm">Browse
+                                        Files</button>
+                                </div>
+                            </section>
+                            <!-- 6. Notes Card -->
+                            <section
+                                class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+                                <h4 class="text-sm font-bold mb-4 uppercase tracking-tight text-slate-400">Internal
+                                    Notes</h4>
+                                <textarea
+                                    class="w-full text-sm border-slate-200 dark:border-slate-700 bg-transparent rounded focus:ring-primary focus:border-primary"
+                                    placeholder="Private notes for the finance team..." rows="2"></textarea>
+                            </section>
+                        </div>
+                        <!-- Right Column -->
+                        <div class="space-y-6">
+                            <!-- 3. Amount Details Card -->
+                            <section class="bg-slate-900 text-white p-6 rounded-xl shadow-lg">
+                                <h4 class="text-xs font-bold mb-4 uppercase tracking-widest text-slate-400">Amount
+                                    Summary</h4>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-400 mb-1">Base Amount
+                                            (₹)</label>
+                                        <input
+                                            class="w-full text-xl font-bold bg-transparent border-b border-white/20 focus:border-white focus:ring-0 p-0 mb-2"
+                                            type="number" value="0.00" />
+                                    </div>
+                                    <div class="flex justify-between items-center text-sm">
+                                        <span class="text-slate-400">Tax (%)</span>
+                                        <input class="w-16 bg-white/10 border-0 rounded text-right py-1 text-xs"
+                                            type="number" value="18" />
+                                    </div>
+                                    <div class="pt-4 mt-4 border-t border-white/10 flex justify-between items-end">
+                                        <span class="text-sm font-medium text-slate-400">Total Amount</span>
+                                        <span class="text-2xl font-black text-primary">₹ 0.00</span>
+                                    </div>
+                                </div>
+                            </section>
+                            <!-- 5. Project Allocation Card -->
+                            <section
+                                class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+                                <h4 class="text-sm font-bold mb-4 uppercase tracking-tight text-slate-400">Project
+                                    Allocation</h4>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-500 mb-1">Project
+                                            Name</label>
+                                        <div class="text-sm font-semibold">Zen Residence - Mumbai</div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1.5">Project Stage</label>
+                                        <select
+                                            class="w-full text-sm border-slate-200 dark:border-slate-700 bg-transparent rounded focus:ring-primary focus:border-primary py-2">
+                                            <option>Concept</option>
+                                            <option>Design</option>
+                                            <option selected="">Execution</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex items-center justify-between pt-2">
+                                        <span class="text-sm font-medium">Allocate to budget</span>
+                                        <button
+                                            class="w-10 h-5 bg-primary rounded-full relative flex items-center px-1">
+                                            <div class="w-3.5 h-3.5 bg-white rounded-full absolute right-1"></div>
+                                        </button>
+                                    </div>
+                                </div>
+                            </section>
+                            <!-- 7. Approval Card -->
+                            <section
+                                class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+                                <h4 class="text-sm font-bold mb-4 uppercase tracking-tight text-slate-400">Approvals
+                                </h4>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-500 mb-1">Submitted
+                                            By</label>
+                                        <div class="flex items-center gap-2">
+                                            <div
+                                                class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-bold">
+                                                AD</div>
+                                            <span class="text-sm">Alex Designer</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1.5">Assign Approver</label>
+                                        <select
+                                            class="w-full text-sm border-slate-200 dark:border-slate-700 bg-transparent rounded focus:ring-primary focus:border-primary py-2">
+                                            <option>Select Manager</option>
+                                            <option>Sarah Finance (CFO)</option>
+                                            <option>Marcus Studio (Director)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 8. Sticky Footer -->
+            <footer
+                class="absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 p-6 z-10">
+                <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input class="rounded border-slate-300 text-primary focus:ring-primary" type="checkbox" />
+                        <span
+                            class="text-xs text-slate-500 group-hover:text-slate-900 dark:group-hover:text-slate-200 transition-colors">I
+                            declare that the information provided above is accurate and the receipts are genuine.</span>
+                    </label>
+                    <div class="flex gap-3">
+                        <button
+                            class="px-6 py-2.5 text-sm font-bold border border-slate-200 dark:border-slate-700 rounded hover:bg-slate-50 dark:hover:bg-white/5">Save
+                            as Draft</button>
+                        <button
+                            class="px-8 py-2.5 text-sm font-bold bg-primary text-white rounded hover:bg-primary/90 shadow-lg shadow-primary/20">Preview
+                            Expense</button>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
+</body>
+
+</html>
