@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Check } from 'lucide-react';
 
 const STEPS = ['Basic Info', 'Project Requirements'];
 
@@ -11,13 +12,51 @@ const NewClientPage = () => {
     projectType: '', estimatedBudget: '', timeline: '', description: '',
   });
   const set = (field, val) => setForm(f => ({ ...f, [field]: val }));
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const validate = () => {
+    const phoneDigits = form.phone.replace(/\D/g, '');
+    if (!phoneDigits || phoneDigits.length !== 10) {
+      setError('Phone number is required and must contain exactly 10 digits.');
+      return false;
+    }
+    if (!form.email || !form.email.includes('@')) {
+      setError('Email is required and must include @.');
+      return false;
+    }
+    return true;
+  };
+
+  const addClient = () => {
+    if (!validate()) return;
+    setIsSubmitting(true);
+    const newClient = {
+      id: `CLT${String(Date.now()).slice(-6)}`,
+      name: form.companyName,
+      contactPerson: form.contactPerson,
+      email: form.email,
+      phone: `+1 ${form.phone.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3')}`,
+      type: form.type || 'Corporate',
+      status: 'Active',
+      totalProjects: 0,
+      totalValue: 0,
+      city: form.city,
+      joinDate: new Date().toISOString().slice(0, 10),
+    };
+    const stored = window.localStorage.getItem('boxwayClients');
+    const clients = stored ? JSON.parse(stored) : [];
+    window.localStorage.setItem('boxwayClients', JSON.stringify([newClient, ...clients]));
+    setIsSubmitting(false);
+    navigate('/clients');
+  };
 
   return (
     <div className="flex-1 overflow-y-auto p-8 bg-[#f8f6f6]">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
           <button onClick={() => navigate('/clients')} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-white rounded transition-colors">
-            <span className="material-symbols-outlined">arrow_back</span>
+            <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
             <h2 className="text-2xl font-black text-slate-900">Register New Client</h2>
@@ -31,7 +70,7 @@ const NewClientPage = () => {
             <React.Fragment key={s}>
               <div className="flex flex-col items-center">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${step > i + 1 ? 'bg-green-500 border-green-500 text-white' : step === i + 1 ? 'bg-primary border-primary text-white' : 'border-slate-300 text-slate-400 bg-white'}`}>
-                  {step > i + 1 ? <span className="material-symbols-outlined text-xs">check</span> : i + 1}
+                  {step > i + 1 ? <Check className="h-3.5 w-3.5" /> : i + 1}
                 </div>
                 <span className={`text-[10px] font-bold mt-1 uppercase tracking-wide ${step === i + 1 ? 'text-primary' : 'text-slate-400'}`}>{s}</span>
               </div>
@@ -51,7 +90,13 @@ const NewClientPage = () => {
               <div><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Email *</label>
                 <input type="email" value={form.email} onChange={e => set('email', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" /></div>
               <div><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Phone</label>
-                <input value={form.phone} onChange={e => set('phone', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" /></div>
+                <input
+                  type="tel"
+                  value={form.phone}
+                  onChange={e => set('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
+                  className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                  placeholder="1234567890"
+                /></div>
               <div><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Client Type</label>
                 <select value={form.type} onChange={e => set('type', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary">
                   <option value="">Select Type</option>
@@ -76,14 +121,22 @@ const NewClientPage = () => {
           )}
         </div>
 
+        {error && (
+          <div className="mb-4 px-4 py-3 rounded-lg bg-red-50 text-red-700 border border-red-200 text-sm">
+            {error}
+          </div>
+        )}
         <div className="flex justify-between mt-6">
           <button onClick={() => step > 1 ? setStep(s => s - 1) : navigate('/clients')}
             className="px-6 py-2.5 border border-slate-200 bg-white text-slate-700 text-sm font-semibold rounded hover:bg-slate-50">
             {step === 1 ? 'Cancel' : 'Back'}
           </button>
-          <button onClick={() => step < 2 ? setStep(s => s + 1) : navigate('/clients')}
-            className="px-6 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20">
-            {step === 2 ? 'Register Client' : 'Continue'}
+          <button
+            onClick={() => step < 2 ? setStep(s => s + 1) : addClient()}
+            disabled={isSubmitting}
+            className="px-6 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20 disabled:opacity-60"
+          >
+            {step === 2 ? (isSubmitting ? 'Saving...' : 'Register Client') : 'Continue'}
           </button>
         </div>
       </div>

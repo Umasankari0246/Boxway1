@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { MOCK_PAYSLIPS } from '../../data/mockData';
+import Icon from "../../components/ui/Icon.jsx"
 
 const api = axios.create({
   baseURL: 'http://localhost:8000/api'
@@ -56,7 +57,7 @@ const EmployeeProfilePage = () => {
       <div className="bg-white border-b border-slate-200 px-8 py-5">
         <div className="flex items-start gap-6">
           <button onClick={() => navigate('/employees')} className="mt-1 p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded transition-colors">
-            <span className="material-symbols-outlined">arrow_back</span>
+            <Icon name="arrow_back" />
           </button>
           <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200">
             <img src={emp.photoUrl || userAvatar} alt={emp.name} className="w-full h-full object-cover" />
@@ -68,9 +69,9 @@ const EmployeeProfilePage = () => {
             </div>
             <p className="text-slate-500 text-sm mt-0.5">{emp.role} · {emp.department}</p>
             <div className="flex items-center gap-6 mt-3 text-sm text-slate-500">
-              <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-sm">cake</span>{emp.dob || '01 Jan 1990'}</span>
-              <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-sm">water_drop</span>{emp.bloodGroup || 'O+'}</span>
-              <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-sm">location_on</span>{emp.city || emp.location || 'London'}</span>
+              <span className="flex items-center gap-1.5"><Icon name="cake" className="text-sm" />{emp.dob || '01 Jan 1990'}</span>
+              <span className="flex items-center gap-1.5"><Icon name="water_drop" className="text-sm" />{emp.bloodGroup || 'O+'}</span>
+              <span className="flex items-center gap-1.5"><Icon name="location_on" className="text-sm" />{emp.city || emp.location || 'London'}</span>
             </div>
           </div>
           <div className="text-right">
@@ -150,7 +151,7 @@ const EmployeeProfilePage = () => {
 
         {activeTab === 'leaves & timesheet' && (
              <div className="bg-white rounded-xl border border-slate-200 p-8 text-center">
-                <span className="material-symbols-outlined text-5xl text-slate-300">calendar_month</span>
+                <Icon name="calendar_month" className="text-5xl text-slate-300" />
                 <p className="text-slate-500 text-sm mt-3">No upcoming leaves scheduled. Timesheet is up to date.</p>
             </div>
         )}
@@ -200,7 +201,7 @@ const EmployeeProfilePage = () => {
                     <td className="px-6 py-4 text-sm font-bold text-slate-900">${p.net?.toLocaleString()}</td>
                     <td className="px-6 py-4"><span className="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold rounded uppercase">{p.status}</span></td>
                     <td className="px-6 py-4">
-                      <button className="text-slate-400 hover:text-primary transition-colors"><span className="material-symbols-outlined text-lg">download</span></button>
+                      <button className="text-slate-400 hover:text-primary transition-colors"><Icon name="download" className="text-lg" /></button>
                     </td>
                   </tr>
                 ))}
@@ -211,7 +212,7 @@ const EmployeeProfilePage = () => {
 
         {activeTab === 'documents' && (
           <div className="bg-white rounded-xl border border-slate-200 p-8 text-center">
-            <span className="material-symbols-outlined text-5xl text-slate-300">folder_open</span>
+            <Icon name="folder_open" className="text-5xl text-slate-300" />
             <p className="text-slate-500 text-sm mt-3">No documents uploaded for this employee yet.</p>
             <button className="mt-4 px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 transition-colors">
               Upload Document

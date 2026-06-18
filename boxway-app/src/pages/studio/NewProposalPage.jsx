@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Icon from "../../components/ui/Icon.jsx"
 
 const STEPS = [
   { id: '01', label: 'Client', icon: 'person' },
@@ -50,7 +51,7 @@ const NewProposalPage = () => {
         <div>
           <div className="flex items-center gap-3">
             <button onClick={() => navigate('/proposals')} className="text-zinc-400 hover:text-zinc-700 transition-colors">
-              <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+              <Icon name="arrow_back" className="text-[20px]" />
             </button>
             <h2 className="text-xl font-black tracking-tight text-zinc-900 uppercase">New Enquiry / Initial Meeting</h2>
           </div>
@@ -62,7 +63,7 @@ const NewProposalPage = () => {
           </button>
           <button onClick={handleNext} className="px-6 py-2.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors flex items-center gap-2">
             {step < STEPS.length - 1 ? 'Next Step' : 'Review & Submit'}
-            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            <Icon name="arrow_forward" className="text-[16px]" />
           </button>
         </div>
       </div>
@@ -83,7 +84,7 @@ const NewProposalPage = () => {
               }`}
             >
               <span className={`w-5 h-5 flex items-center justify-center text-[9px] font-black ${i <= step ? 'bg-primary text-white' : 'bg-zinc-100 text-zinc-400'}`}>
-                {i < step ? <span className="material-symbols-outlined text-[12px]">check</span> : s.id}
+                {i < step ? <Icon name="check" className="text-[12px]" /> : s.id}
               </span>
               <span className="text-[10px] font-black uppercase tracking-widest">{s.label}</span>
             </button>
@@ -100,7 +101,7 @@ const NewProposalPage = () => {
             {step === 0 && (
               <section className="space-y-8">
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="material-symbols-outlined p-2 bg-zinc-50 text-primary text-[20px]">person</span>
+                  <Icon name="person" className="p-2 bg-zinc-50 text-primary text-[20px]" />
                   <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-zinc-900">01. Client Information</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -148,7 +149,7 @@ const NewProposalPage = () => {
             {step === 1 && (
               <section className="space-y-8">
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="material-symbols-outlined p-2 bg-zinc-50 text-primary text-[20px]">architecture</span>
+                  <Icon name="architecture" className="p-2 bg-zinc-50 text-primary text-[20px]" />
                   <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-zinc-900">02. Project Overview</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -187,7 +188,7 @@ const NewProposalPage = () => {
             {step === 2 && (
               <section className="space-y-6">
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="material-symbols-outlined p-2 bg-zinc-50 text-primary text-[20px]">payments</span>
+                  <Icon name="payments" className="p-2 bg-zinc-50 text-primary text-[20px]" />
                   <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-zinc-900">03. Budget & Timeline</h3>
                 </div>
                 <div>
@@ -221,7 +222,7 @@ const NewProposalPage = () => {
                         onClick={() => set(key, !form[key])}
                         className={`w-4 h-4 border-2 flex items-center justify-center transition-colors ${form[key] ? 'border-primary bg-primary' : 'border-zinc-300'}`}
                       >
-                        {form[key] && <span className="material-symbols-outlined text-white text-[12px]" style={{ fontVariationSettings: "'wght' 700" }}>check</span>}
+                        {form[key] && <Icon name="check" style={{ fontVariationSettings: "'wght' 700" }} className="text-white text-[12px]" />}
                       </div>
                       <span className="text-sm font-semibold">{label}</span>
                     </label>
@@ -234,7 +235,7 @@ const NewProposalPage = () => {
             {step === 3 && (
               <section className="space-y-8">
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="material-symbols-outlined p-2 bg-zinc-50 text-primary text-[20px]">auto_awesome</span>
+                  <Icon name="auto_awesome" className="p-2 bg-zinc-50 text-primary text-[20px]" />
                   <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-zinc-900">04. Requirements & Vision</h3>
                 </div>
                 <div>
@@ -269,7 +270,7 @@ const NewProposalPage = () => {
             {step === 4 && (
               <section className="space-y-8">
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="material-symbols-outlined p-2 bg-zinc-50 text-primary text-[20px]">location_on</span>
+                  <Icon name="location_on" className="p-2 bg-zinc-50 text-primary text-[20px]" />
                   <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-zinc-900">05. Site & Documentation</h3>
                 </div>
                 <div>
@@ -277,7 +278,7 @@ const NewProposalPage = () => {
                   <textarea value={form.siteNotes} onChange={e => set('siteNotes', e.target.value)} rows={3} placeholder="Conservation area constraints, neighboring buildings, planning history..." className={INPUT + ' resize-none'} />
                 </div>
                 <div className="border-2 border-dashed border-zinc-200 p-8 flex flex-col items-center text-center gap-3 hover:border-primary cursor-pointer transition-colors group">
-                  <span className="material-symbols-outlined text-zinc-300 group-hover:text-primary text-[36px] transition-colors">cloud_upload</span>
+                  <Icon name="cloud_upload" className="text-zinc-300 group-hover:text-primary text-[36px] transition-colors" />
                   <div>
                     <p className="text-xs font-black uppercase tracking-widest text-zinc-700">Upload Site Files</p>
                     <p className="text-[10px] text-zinc-400 mt-1">CAD, PDF, or Site Imagery — max 50MB</p>
@@ -290,7 +291,7 @@ const NewProposalPage = () => {
             {step === 5 && (
               <section className="space-y-8">
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="material-symbols-outlined p-2 bg-zinc-50 text-primary text-[20px]">checklist</span>
+                  <Icon name="checklist" className="p-2 bg-zinc-50 text-primary text-[20px]" />
                   <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-zinc-900">06. Scope of Services</h3>
                 </div>
                 <div className="space-y-3">
@@ -308,7 +309,7 @@ const NewProposalPage = () => {
                         onClick={() => set('scopeServices', form.scopeServices.includes(s) ? form.scopeServices.filter(x => x !== s) : [...form.scopeServices, s])}
                         className={`w-4 h-4 border-2 flex items-center justify-center shrink-0 transition-colors ${form.scopeServices.includes(s) ? 'border-primary bg-primary' : 'border-zinc-300'}`}
                       >
-                        {form.scopeServices.includes(s) && <span className="material-symbols-outlined text-white text-[12px]" style={{ fontVariationSettings: "'wght' 700" }}>check</span>}
+                        {form.scopeServices.includes(s) && <Icon name="check" style={{ fontVariationSettings: "'wght' 700" }} className="text-white text-[12px]" />}
                       </div>
                       <span className="text-xs font-semibold">{s}</span>
                     </label>
@@ -321,7 +322,7 @@ const NewProposalPage = () => {
             {step === 6 && (
               <section className="space-y-8">
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="material-symbols-outlined p-2 bg-zinc-50 text-primary text-[20px]">analytics</span>
+                  <Icon name="analytics" className="p-2 bg-zinc-50 text-primary text-[20px]" />
                   <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-zinc-900">07. Internal Qualification</h3>
                 </div>
                 <div>
@@ -361,7 +362,7 @@ const NewProposalPage = () => {
             <div className="bg-zinc-900 text-white p-7 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rotate-45 translate-x-10 -translate-y-10" />
               <div className="flex items-center gap-3 mb-6">
-                <span className="material-symbols-outlined text-primary text-[20px]">payments</span>
+                <Icon name="payments" className="text-primary text-[20px]" />
                 <h3 className="text-[10px] font-black uppercase tracking-[0.15em]">Budget & Scope Summary</h3>
               </div>
               <div className="space-y-4 text-sm relative z-10">
@@ -386,7 +387,7 @@ const NewProposalPage = () => {
                   <p className="text-[9px] text-white/40 uppercase tracking-widest mb-1">Services Included</p>
                   {form.scopeServices.length > 0 ? form.scopeServices.map(s => (
                     <div key={s} className="flex items-center gap-2 text-xs mt-1">
-                      <span className="material-symbols-outlined text-primary text-[12px]" style={{ fontVariationSettings: "'wght' 700" }}>check</span>
+                      <Icon name="check" style={{ fontVariationSettings: "'wght' 700" }} className="text-primary text-[12px]" />
                       <span>{s}</span>
                     </div>
                   )) : <p className="text-white/30 text-xs">None selected</p>}
@@ -417,7 +418,7 @@ const NewProposalPage = () => {
             onClick={() => step > 0 ? setStep(s => s - 1) : navigate('/proposals')}
             className="flex items-center gap-2 text-zinc-500 hover:text-zinc-900 text-[10px] font-black uppercase tracking-widest transition-colors"
           >
-            <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+            <Icon name="arrow_back" className="text-[18px]" />
             {step > 0 ? 'Previous Step' : 'Back to Proposals'}
           </button>
           <button
@@ -425,7 +426,7 @@ const NewProposalPage = () => {
             className="flex items-center gap-2 px-6 py-3 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors"
           >
             {step < STEPS.length - 1 ? 'Continue' : 'Review & Submit'}
-            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            <Icon name="arrow_forward" className="text-[16px]" />
           </button>
         </div>
       </div>

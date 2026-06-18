@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { MOCK_PROPOSALS } from '../../data/mockData';
+import Icon from "../../components/ui/Icon.jsx"
 
 const APPROVAL_STAGES = [
   { key: 'initial', label: 'Initial Enquiry', desc: 'Submitted by studio team' },
@@ -89,7 +90,7 @@ const ViewProposalPage = () => {
       <div className="sticky top-0 z-20 bg-[#fcf9f8]/95 backdrop-blur border-b border-zinc-100 px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate('/proposals')} className="text-zinc-400 hover:text-zinc-700 transition-colors">
-            <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+            <Icon name="arrow_back" className="text-[20px]" />
           </button>
           <div>
             <h2 className="text-lg font-black tracking-tight text-zinc-900 uppercase">{proposal.title}</h2>
@@ -124,7 +125,7 @@ const ViewProposalPage = () => {
                   <span className={`text-[9px] tracking-[0.15em] uppercase font-black ${isDone ? 'text-emerald-600' : isCurrent ? 'text-primary' : 'text-zinc-400'}`}>
                     Phase {String(i + 1).padStart(2, '0')}
                   </span>
-                  {isDone && <span className="material-symbols-outlined text-emerald-500 text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>}
+                  {isDone && <Icon name="check_circle" style={{ fontVariationSettings: "'FILL' 1" }} className="text-emerald-500 text-[16px]" />}
                   {isCurrent && <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />}
                 </div>
                 <h4 className="font-black text-zinc-900">{stage.label}</h4>
@@ -138,7 +139,7 @@ const ViewProposalPage = () => {
         {/* Stage Action Button */}
         {currentStage < APPROVAL_STAGES.length - 1 && (
           <div className="mb-6 flex items-center gap-3 p-4 bg-amber-50 border border-amber-200">
-            <span className="material-symbols-outlined text-amber-600 text-[20px]">pending_actions</span>
+            <Icon name="pending_actions" className="text-amber-600 text-[20px]" />
             <p className="text-xs text-amber-800 font-semibold flex-1">
               Currently in <strong>{APPROVAL_STAGES[currentStage].label}</strong> phase. Ready to advance?
             </p>
@@ -149,7 +150,7 @@ const ViewProposalPage = () => {
         )}
         {currentStage === APPROVAL_STAGES.length - 1 && (
           <div className="mb-6 flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200">
-            <span className="material-symbols-outlined text-emerald-600 text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+            <Icon name="check_circle" style={{ fontVariationSettings: "'FILL' 1" }} className="text-emerald-600 text-[20px]" />
             <p className="text-xs text-emerald-800 font-semibold">This proposal has been fully <strong>Approved</strong>. All stages complete.</p>
           </div>
         )}
@@ -263,14 +264,14 @@ const ViewProposalPage = () => {
                 ].map(doc => (
                   <div key={doc.name} className="flex items-center justify-between p-4 bg-zinc-50 border border-zinc-100 hover:bg-white transition-all group">
                     <div className="flex items-center gap-3">
-                      <span className="material-symbols-outlined text-zinc-400 text-[20px]">description</span>
+                      <Icon name="description" className="text-zinc-400 text-[20px]" />
                       <div>
                         <p className="text-xs font-black text-zinc-800">{doc.name}</p>
                         <p className="text-[10px] text-zinc-400">{doc.size} · {doc.date}</p>
                       </div>
                     </div>
                     <button className="p-1.5 hover:bg-zinc-200 opacity-0 group-hover:opacity-100 transition-all">
-                      <span className="material-symbols-outlined text-[18px] text-zinc-500">download</span>
+                      <Icon name="download" className="text-[18px] text-zinc-500" />
                     </button>
                   </div>
                 ))}
@@ -331,14 +332,14 @@ const ViewProposalPage = () => {
                             onClick={() => setLikedIds(prev => prev.includes(c.id) ? prev.filter(x => x !== c.id) : [...prev, c.id])}
                             className={`flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider transition-colors ${likedIds.includes(c.id) ? 'text-primary' : 'text-zinc-400 hover:text-zinc-700'}`}
                           >
-                            <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: `'FILL' ${likedIds.includes(c.id) ? 1 : 0}` }}>thumb_up</span>
+                            <Icon name="thumb_up" style={{ fontVariationSettings: `'FILL' ${likedIds.includes(c.id) ? 1 : 0}` }} className="text-[14px]" />
                             {c.actions.like + (likedIds.includes(c.id) ? 1 : 0)}
                           </button>
                           <button
                             onClick={() => setExpandedReplies(prev => prev.includes(c.id) ? prev.filter(x => x !== c.id) : [...prev, c.id])}
                             className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 hover:text-zinc-700 transition-colors"
                           >
-                            <span className="material-symbols-outlined text-[14px]">reply</span>
+                            <Icon name="reply" className="text-[14px]" />
                             Reply
                           </button>
                         </div>
@@ -409,11 +410,11 @@ const ViewProposalPage = () => {
             <div className="bg-white border border-zinc-100 p-5 shadow-sm space-y-3">
               <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-2">Quick Actions</p>
               <button onClick={() => navigate(`/proposals/new`)} className="w-full py-2.5 bg-zinc-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors flex items-center justify-center gap-2">
-                <span className="material-symbols-outlined text-[16px]">edit</span>Edit Proposal
+                <Icon name="edit" className="text-[16px]" />Edit Proposal
               </button>
               {currentStage < APPROVAL_STAGES.length - 1 && (
                 <button onClick={advanceStage} className="w-full py-2.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors flex items-center justify-center gap-2">
-                  <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                  <Icon name="arrow_forward" className="text-[16px]" />
                   Advance to {APPROVAL_STAGES[currentStage + 1].label}
                 </button>
               )}

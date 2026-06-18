@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MOCK_EXPENSES } from '../../data/mockData';
+import Icon from "../../components/ui/Icon.jsx"
 
 const statusColors = { Approved: 'bg-green-100 text-green-700', Pending: 'bg-yellow-100 text-yellow-700', Rejected: 'bg-red-100 text-red-700' };
 
@@ -29,7 +30,7 @@ const ExpensesPage = () => {
           <p className="text-sm text-slate-500">{MOCK_EXPENSES.length} expense records</p>
         </div>
         <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-bold rounded shadow-lg shadow-primary/20 hover:bg-primary/90">
-          <span className="material-symbols-outlined text-lg">add</span> Log Expense
+          <Icon name="add" className="text-lg" /> Log Expense
         </button>
       </div>
 
@@ -49,7 +50,7 @@ const ExpensesPage = () => {
 
       <div className="flex items-center gap-4 mb-4">
         <div className="relative flex-1 max-w-sm">
-          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+          <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg" />
           <input value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded bg-white text-sm focus:outline-none focus:border-primary" placeholder="Search expenses..." />
         </div>
         <div className="flex gap-2">
@@ -81,8 +82,8 @@ const ExpensesPage = () => {
                 <td className="px-6 py-4"><span className={`px-2.5 py-0.5 text-[10px] font-bold rounded uppercase ${statusColors[e.status]}`}>{e.status}</span></td>
                 <td className="px-6 py-4">
                   <div className="flex gap-1">
-                    <button className="p-1 text-slate-400 hover:text-primary transition-colors"><span className="material-symbols-outlined text-lg">visibility</span></button>
-                    <button className="p-1 text-slate-400 hover:text-red-500 transition-colors"><span className="material-symbols-outlined text-lg">delete</span></button>
+                    <button className="p-1 text-slate-400 hover:text-primary transition-colors"><Icon name="visibility" className="text-lg" /></button>
+                    <button className="p-1 text-slate-400 hover:text-red-500 transition-colors"><Icon name="delete" className="text-lg" /></button>
                   </div>
                 </td>
               </tr>
@@ -97,7 +98,7 @@ const ExpensesPage = () => {
           <div className="bg-white rounded-xl p-8 w-full max-w-lg shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-black text-slate-900">Log Expense</h3>
-              <button onClick={() => setShowCreate(false)} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded"><span className="material-symbols-outlined">close</span></button>
+              <button onClick={() => setShowCreate(false)} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded"><Icon name="close" /></button>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2"><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Expense Title *</label>

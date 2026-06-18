@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePayrollStore } from '../../../store/payrollStore';
+import Icon from "../../../components/ui/Icon.jsx"
 
 const STEPS = ['Select Employee', 'Setup Salary', 'Review & Confirm'];
 
@@ -20,7 +21,7 @@ const Step3 = () => {
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
           <button onClick={() => navigate('/payroll/run/single/step2')} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-white rounded">
-            <span className="material-symbols-outlined">arrow_back</span>
+            <Icon name="arrow_back" />
           </button>
           <div>
             <h2 className="text-2xl font-black text-slate-900">Review & Confirm</h2>
@@ -33,7 +34,7 @@ const Step3 = () => {
             <React.Fragment key={step}>
               <div className="flex flex-col items-center">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 ${i < 2 ? 'bg-green-500 border-green-500 text-white' : 'bg-primary border-primary text-white'}`}>
-                  {i < 2 ? <span className="material-symbols-outlined text-xs">check</span> : 3}
+                  {i < 2 ? <Icon name="check" className="text-xs" /> : 3}
                 </div>
                 <span className={`text-[10px] font-bold mt-1 uppercase tracking-wide ${i === 2 ? 'text-primary' : 'text-slate-400'}`}>{step}</span>
               </div>
@@ -44,7 +45,7 @@ const Step3 = () => {
 
         {/* Notice Banner */}
         <div className="flex items-start gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg mb-6">
-          <span className="material-symbols-outlined text-yellow-600 shrink-0">warning</span>
+          <Icon name="warning" className="text-yellow-600 shrink-0" />
           <p className="text-sm text-yellow-800">Please review all details carefully. Once submitted, this payroll run will be queued for processing and may require approval.</p>
         </div>
 
@@ -98,7 +99,7 @@ const Step3 = () => {
         <div className="flex justify-between">
           <button onClick={() => navigate('/payroll/run/single/step2')} className="px-6 py-2.5 border border-slate-200 bg-white text-slate-700 text-sm font-semibold rounded hover:bg-slate-50">Back to Edit</button>
           <button onClick={handleSubmit} className="px-6 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20 flex items-center gap-2">
-            <span className="material-symbols-outlined text-lg">check_circle</span> Confirm & Process
+            <Icon name="check_circle" className="text-lg" /> Confirm & Process
           </button>
         </div>
       </div>

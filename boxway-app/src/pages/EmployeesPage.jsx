@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Search, Download, Plus, ChevronRight, MapPin, RefreshCw, Users } from 'lucide-react';
 
 const api = axios.create({
   baseURL: 'http://localhost:8000/api'
@@ -36,10 +37,10 @@ const EmployeesPage = () => {
           </div>
           <div className="flex gap-3">
             <button className="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-50 transition-colors flex items-center gap-2">
-              <span className="material-symbols-outlined text-[20px]">download</span> Export
+              <Download className="h-4 w-4" /> Export
             </button>
             <button onClick={() => navigate('/employees/new')} className="px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2">
-              <span className="material-symbols-outlined text-[20px]">add</span> New Employee
+              <Plus className="h-4 w-4" /> New Employee
             </button>
           </div>
         </div>
@@ -47,20 +48,20 @@ const EmployeesPage = () => {
         {/* Filters */}
         <div className="flex gap-4">
           <div className="flex-1 max-w-md relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
             <input 
               type="text" 
               placeholder="Search employees by name, role, or department..." 
               className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white transition-colors"
             />
           </div>
-          <select className="px-4 py-2 bg-white border border-slate-200 rounded text-sm text-slate-600 focus:outline-none focus:border-primary">
+          <select className="min-w-[180px] px-4 py-2 bg-white border border-slate-200 rounded text-sm text-slate-600 focus:outline-none focus:border-primary">
             <option>All Departments</option>
             <option>Design</option>
             <option>Engineering</option>
             <option>Management</option>
           </select>
-          <select className="px-4 py-2 bg-white border border-slate-200 rounded text-sm text-slate-600 focus:outline-none focus:border-primary">
+          <select className="min-w-[150px] px-4 py-2 bg-white border border-slate-200 rounded text-sm text-slate-600 focus:outline-none focus:border-primary">
             <option>All Status</option>
             <option>Active</option>
             <option>On Leave</option>
@@ -85,12 +86,12 @@ const EmployeesPage = () => {
           <div className="divide-y divide-slate-100">
             {loading ? (
               <div className="px-8 py-12 text-center text-slate-500 text-sm flex flex-col items-center">
-                 <span className="material-symbols-outlined animate-spin text-3xl mb-2">refresh</span>
+                 <RefreshCw className="animate-spin h-8 w-8 mb-2" />
                  Loading employees...
               </div>
             ) : employees.length === 0 ? (
               <div className="px-8 py-12 text-center text-slate-500 text-sm">
-                 <span className="material-symbols-outlined text-4xl mb-2 text-slate-300">group_off</span>
+                 <Users className="h-10 w-10 mb-2 text-slate-300" />
                  <p>No employees found.</p>
               </div>
             ) : (
@@ -123,12 +124,12 @@ const EmployeesPage = () => {
                     </span>
                   </div>
                   <div className="text-sm text-slate-600 flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-[16px] text-slate-400">location_on</span>
+                    <MapPin className="h-4 w-4 text-slate-400" />
                     {emp.city || emp.location || 'N/A'}
                   </div>
                   <div className="w-8 flex justify-end">
                     <button className="text-slate-400 hover:text-primary p-1 rounded hover:bg-primary/10 transition-colors">
-                      <span className="material-symbols-outlined text-xl">chevron_right</span>
+                      <ChevronRight className="h-5 w-5" />
                     </button>
                   </div>
                 </div>

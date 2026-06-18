@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
+import Icon from "../components/ui/Icon.jsx"
 
 const LoginPage = () => {
   const [role, setRole] = useState('Admin');
@@ -120,7 +121,7 @@ const LoginPage = () => {
           {/* Error Message */}
           {loginError && (
             <div className="mb-4 p-3 bg-red-50 border border-red-300 rounded text-xs text-red-700 font-medium flex items-center gap-2">
-              <span className="material-symbols-outlined text-sm">error</span>
+              <Icon name="error" className="text-sm" />
               {loginError}
             </div>
           )}
@@ -163,7 +164,6 @@ const LoginPage = () => {
                 disabled={loading}
               >
                 {loading ? 'Logging in…' : 'LOG IN'}
-                {!loading && <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>}
               </button>
             </div>
           </form>

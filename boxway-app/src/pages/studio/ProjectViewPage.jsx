@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MOCK_PROJECTS } from '../../data/mockData';
+import Icon from "../../components/ui/Icon.jsx"
 
 /* ── Phase definitions by project type ────────────────────────────────────── */
 const PHASE_MAP = {
@@ -100,7 +101,7 @@ const ProjectViewPage = () => {
       <div className="sticky top-0 z-20 bg-[#fcf9f8]/95 backdrop-blur border-b border-zinc-100 px-8 py-4">
         <div className="flex items-start gap-4">
           <button onClick={() => navigate('/projects')} className="text-zinc-400 hover:text-zinc-700 transition-colors mt-1">
-            <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+            <Icon name="arrow_back" className="text-[20px]" />
           </button>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 flex-wrap mb-1">
@@ -115,7 +116,7 @@ const ProjectViewPage = () => {
                 <button onClick={() => setEditingStatus(true)} className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest cursor-pointer hover:opacity-80 ${sc.cls}`} title="Click to change status">
                   <span className={`w-1.5 h-1.5 rounded-full ${sc.dot}`} />
                   {projectStatus}
-                  <span className="material-symbols-outlined text-[12px] ml-1">edit</span>
+                  <Icon name="edit" className="text-[12px] ml-1" />
                 </button>
               )}
               <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-zinc-100 text-zinc-500">{project.type}</span>
@@ -125,14 +126,14 @@ const ProjectViewPage = () => {
           </div>
           <div className="flex gap-2 shrink-0">
             <button onClick={() => setShowResourceModal(true)} className="flex items-center gap-1.5 px-4 py-2 border border-zinc-200 text-zinc-700 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors">
-              <span className="material-symbols-outlined text-[16px]">group_add</span>Resources
+              <Icon name="group_add" className="text-[16px]" />Resources
             </button>
             <button onClick={() => navigate('/projects/new')} className="flex items-center gap-1.5 px-4 py-2 bg-zinc-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors">
-              <span className="material-symbols-outlined text-[16px]">edit</span>Edit
+              <Icon name="edit" className="text-[16px]" />Edit
             </button>
             {activePhaseIdx < phases.length - 1 && (
               <button onClick={() => setShowAdvanceModal(true)} className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors shadow-sm shadow-primary/20">
-                <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                <Icon name="arrow_forward" className="text-[16px]" />
                 Advance Phase
               </button>
             )}
@@ -143,7 +144,7 @@ const ProjectViewPage = () => {
         <div className="flex gap-0 mt-4 border-t border-zinc-100 pt-1 overflow-x-auto no-scrollbar">
           {TABS.map(t => (
             <button key={t.key} onClick={() => setTab(t.key)} className={`flex items-center gap-1.5 px-4 py-2.5 border-b-2 text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-colors ${tab === t.key ? 'border-primary text-primary' : 'border-transparent text-zinc-400 hover:text-zinc-700'}`}>
-              <span className="material-symbols-outlined text-[15px]">{t.icon}</span>
+              <Icon name={t.icon} className="text-[15px]" />
               {t.label}
             </button>
           ))}
@@ -211,16 +212,16 @@ const ProjectViewPage = () => {
               <div className="bg-white border border-zinc-100 shadow-sm p-5 space-y-2">
                 <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-3">Quick Actions</h3>
                 <button onClick={() => { setTab('activity'); }} className="w-full flex items-center gap-2 px-3 py-2 bg-zinc-50 hover:bg-zinc-100 transition-colors text-[10px] font-black text-left">
-                  <span className="material-symbols-outlined text-[16px] text-zinc-400">chat</span>Add Comment
+                  <Icon name="chat" className="text-[16px] text-zinc-400" />Add Comment
                 </button>
                 <button onClick={() => navigate('/documents')} className="w-full flex items-center gap-2 px-3 py-2 bg-zinc-50 hover:bg-zinc-100 transition-colors text-[10px] font-black text-left">
-                  <span className="material-symbols-outlined text-[16px] text-zinc-400">upload</span>Upload Document
+                  <Icon name="upload" className="text-[16px] text-zinc-400" />Upload Document
                 </button>
                 <button onClick={() => navigate('/invoices/new')} className="w-full flex items-center gap-2 px-3 py-2 bg-zinc-50 hover:bg-zinc-100 transition-colors text-[10px] font-black text-left">
-                  <span className="material-symbols-outlined text-[16px] text-zinc-400">receipt_long</span>Create Invoice
+                  <Icon name="receipt_long" className="text-[16px] text-zinc-400" />Create Invoice
                 </button>
                 <button onClick={() => navigate('/proposals')} className="w-full flex items-center gap-2 px-3 py-2 bg-zinc-50 hover:bg-zinc-100 transition-colors text-[10px] font-black text-left">
-                  <span className="material-symbols-outlined text-[16px] text-zinc-400">description</span>View Parent Proposal
+                  <Icon name="description" className="text-[16px] text-zinc-400" />View Parent Proposal
                 </button>
               </div>
             </div>
@@ -245,8 +246,8 @@ const ProjectViewPage = () => {
                   <div className="p-5 flex items-center gap-5">
                     {/* Status icon */}
                     <div className={`w-10 h-10 flex items-center justify-center shrink-0 ${isDone ? 'bg-emerald-500' : isCurrent ? 'bg-primary' : 'bg-zinc-100'}`}>
-                      {isDone ? <span className="material-symbols-outlined text-white text-[18px]">check</span>
-                        : isCurrent ? <span className="material-symbols-outlined text-white text-[18px] animate-pulse">pending</span>
+                      {isDone ? <Icon name="check" className="text-white text-[18px]" />
+                        : isCurrent ? <Icon name="pending" className="text-white text-[18px] animate-pulse" />
                         : <span className="text-zinc-400 text-xs font-black">{String(i + 1).padStart(2, '0')}</span>}
                     </div>
                     {/* Phase info */}
@@ -269,9 +270,9 @@ const ProjectViewPage = () => {
                       {isCurrent && (
                         <>
                           <button onClick={() => navigate('/documents')} className="px-3 py-1.5 bg-zinc-100 hover:bg-zinc-200 text-[9px] font-black uppercase tracking-widest transition-colors flex items-center gap-1">
-                            <span className="material-symbols-outlined text-[13px]">upload</span>Upload</button>
+                            <Icon name="upload" className="text-[13px]" />Upload</button>
                           <button onClick={() => setShowAdvanceModal(true)} className="px-3 py-1.5 bg-primary text-white text-[9px] font-black uppercase tracking-widest hover:bg-black transition-colors flex items-center gap-1">
-                            <span className="material-symbols-outlined text-[13px]">check</span>Approve & Advance</button>
+                            <Icon name="check" className="text-[13px]" />Approve & Advance</button>
                         </>
                       )}
                     </div>
@@ -283,7 +284,7 @@ const ProjectViewPage = () => {
                       {['Create/Upload Design', 'Send to Client', 'Client Review', 'Revise if needed', 'Client Approval', 'Advance Phase'].map((step, si) => (
                         <React.Fragment key={step}>
                           <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-1 ${si < 2 ? 'bg-primary text-white' : si === 2 ? 'bg-primary/20 text-primary' : 'bg-zinc-100 text-zinc-400'}`}>{step}</span>
-                          {si < 5 && <span className="material-symbols-outlined text-zinc-300 text-[12px]">chevron_right</span>}
+                          {si < 5 && <Icon name="chevron_right" className="text-zinc-300 text-[12px]" />}
                         </React.Fragment>
                       ))}
                     </div>
@@ -300,7 +301,7 @@ const ProjectViewPage = () => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-black text-zinc-900">Assigned Team</h3>
               <button onClick={() => setShowResourceModal(true)} className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors">
-                <span className="material-symbols-outlined text-[16px]">group_add</span>Assign Resources
+                <Icon name="group_add" className="text-[16px]" />Assign Resources
               </button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -312,7 +313,7 @@ const ProjectViewPage = () => {
                     <p className="text-xs text-zinc-400">{m.role}</p>
                   </div>
                   <button onClick={() => setTeam(t => t.filter(x => x.id !== m.id))} className="p-1.5 text-zinc-300 hover:text-red-500 transition-colors">
-                    <span className="material-symbols-outlined text-[16px]">remove_circle</span>
+                    <Icon name="remove_circle" className="text-[16px]" />
                   </button>
                 </div>
               ))}
@@ -327,7 +328,7 @@ const ProjectViewPage = () => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-black text-zinc-900">Project Documents</h3>
               <button onClick={() => navigate('/documents')} className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors">
-                <span className="material-symbols-outlined text-[16px]">upload</span>Upload Document
+                <Icon name="upload" className="text-[16px]" />Upload Document
               </button>
             </div>
             <div className="bg-white border border-zinc-100 shadow-sm overflow-hidden">
@@ -351,8 +352,8 @@ const ProjectViewPage = () => {
                       <td className="px-5 py-3.5 text-xs text-zinc-400">{doc.date}</td>
                       <td className="px-5 py-3.5">
                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button className="p-1 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors"><span className="material-symbols-outlined text-[15px]">download</span></button>
-                          <button className="p-1 hover:bg-red-50 text-zinc-400 hover:text-red-500 transition-colors"><span className="material-symbols-outlined text-[15px]">delete</span></button>
+                          <button className="p-1 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors"><Icon name="download" className="text-[15px]" /></button>
+                          <button className="p-1 hover:bg-red-50 text-zinc-400 hover:text-red-500 transition-colors"><Icon name="delete" className="text-[15px]" /></button>
                         </div>
                       </td>
                     </tr>
@@ -373,7 +374,7 @@ const ProjectViewPage = () => {
                 <div key={ph} className={`border ${isDone ? 'border-emerald-100 bg-emerald-50/30' : 'border-primary/30 bg-primary/5'}`}>
                   <div className="p-5 flex items-center gap-4">
                     <div className={`w-8 h-8 flex items-center justify-center shrink-0 ${isDone ? 'bg-emerald-500' : 'bg-primary'}`}>
-                      <span className="material-symbols-outlined text-white text-[16px]">{isDone ? 'check' : 'pending'}</span>
+                      <Icon name={isDone ? 'check' : 'pending'} className="text-white text-[16px]" />
                     </div>
                     <div className="flex-1">
                       <p className="text-xs font-black text-zinc-900">Phase {i + 1}: {ph}</p>
@@ -437,7 +438,7 @@ const ProjectViewPage = () => {
                         onClick={() => setLikedIds(prev => prev.includes(c.id) ? prev.filter(x => x !== c.id) : [...prev, c.id])}
                         className={`flex items-center gap-1 mt-2 text-[9px] font-bold uppercase tracking-wider transition-colors ${likedIds.includes(c.id) ? 'text-primary' : 'text-zinc-300 hover:text-zinc-600'}`}
                       >
-                        <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: `'FILL' ${likedIds.includes(c.id) ? 1 : 0}` }}>thumb_up</span>
+                        <Icon name="thumb_up" style={{ fontVariationSettings: `'FILL' ${likedIds.includes(c.id) ? 1 : 0}` }} className="text-[14px]" />
                         {c.likes + (likedIds.includes(c.id) ? 1 : 0)}
                       </button>
                     )}
@@ -453,7 +454,7 @@ const ProjectViewPage = () => {
       {showAdvanceModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" onClick={() => setShowAdvanceModal(false)}>
           <div className="bg-white w-full max-w-md shadow-2xl p-8" onClick={e => e.stopPropagation()}>
-            <span className="material-symbols-outlined text-primary text-3xl mb-3 block">arrow_forward</span>
+            <Icon name="arrow_forward" className="text-primary text-3xl mb-3 block" />
             <h3 className="text-lg font-black uppercase tracking-tight mb-2">Advance to Next Phase?</h3>
             <p className="text-sm text-zinc-500 mb-2">Mark <strong className="text-zinc-900">"{phases[activePhaseIdx]}"</strong> as complete and advance to:</p>
             <div className="p-4 bg-primary/5 border border-primary/20 mb-6">
@@ -491,7 +492,7 @@ const ProjectViewPage = () => {
                       onClick={() => setTeam(prev => assigned ? prev.filter(x => x.id !== e.id) : [...prev, { ...e }])}
                       className={`w-4 h-4 border-2 flex items-center justify-center transition-colors ${assigned ? 'border-primary bg-primary' : 'border-zinc-300'}`}
                     >
-                      {assigned && <span className="material-symbols-outlined text-white text-[12px]" style={{ fontVariationSettings: "'wght' 700" }}>check</span>}
+                      {assigned && <Icon name="check" style={{ fontVariationSettings: "'wght' 700" }} className="text-white text-[12px]" />}
                     </div>
                     <div className={`w-8 h-8 ${e.color} text-white text-[10px] font-black flex items-center justify-center shrink-0`}>{e.name.charAt(0)}</div>
                     <div>

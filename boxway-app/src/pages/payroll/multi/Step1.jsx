@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MOCK_EMPLOYEES } from '../../../data/mockData';
 import { usePayrollStore } from '../../../store/payrollStore';
+import Icon from "../../../components/ui/Icon.jsx"
 
 const Step1 = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ const Step1 = () => {
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
           <button onClick={() => navigate('/payroll')} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-white rounded">
-            <span className="material-symbols-outlined">arrow_back</span>
+            <Icon name="arrow_back" />
           </button>
           <div>
             <h2 className="text-2xl font-black text-slate-900">Multi-Employee Payroll Run</h2>
@@ -51,7 +52,7 @@ const Step1 = () => {
               <div key={e.id} onClick={() => toggle(e.id)}
                 className={`flex items-center gap-4 p-4 rounded-lg border cursor-pointer transition-all ${selected.has(e.id) ? 'border-primary bg-primary/5' : 'border-slate-200 hover:border-slate-300'}`}>
                 <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors shrink-0 ${selected.has(e.id) ? 'bg-primary border-primary' : 'border-slate-300'}`}>
-                  {selected.has(e.id) && <span className="material-symbols-outlined text-white text-xs">check</span>}
+                  {selected.has(e.id) && <Icon name="check" className="text-white text-xs" />}
                 </div>
                 <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">{e.name.charAt(0)}</div>
                 <div className="flex-1">

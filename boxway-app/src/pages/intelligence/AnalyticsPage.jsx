@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MOCK_ANALYTICS } from '../../data/mockData';
+import Icon from "../../components/ui/Icon.jsx"
 
 const BarChart = ({ data, keyX, keyA, keyB, labelA, labelB }) => {
   const maxVal = Math.max(...data.map(d => Math.max(d[keyA], d[keyB])));
@@ -36,7 +37,7 @@ const AnalyticsPage = () => {
             ))}
           </div>
           <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 bg-white text-slate-700 text-sm font-semibold rounded hover:bg-slate-50">
-            <span className="material-symbols-outlined text-lg">download</span> Export
+            <Icon name="download" className="text-lg" /> Export
           </button>
         </div>
       </div>
@@ -53,7 +54,7 @@ const AnalyticsPage = () => {
         ].map(k => (
           <div key={k.label} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm flex items-start gap-4">
             <div className={`w-10 h-10 ${k.bg} rounded-xl flex items-center justify-center shrink-0`}>
-              <span className={`material-symbols-outlined ${k.color}`}>{k.icon}</span>
+              <Icon name={k.icon} className={`${k.color} text-[20px]`} />
             </div>
             <div>
               <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">{k.label}</p>

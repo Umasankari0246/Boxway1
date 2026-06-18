@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInvoiceStore } from '../store/invoiceStore';
+import Icon from "../components/ui/Icon.jsx"
 
 const CreateInvoicePage = () => {
   const navigate = useNavigate();
@@ -72,7 +73,7 @@ const CreateInvoicePage = () => {
           <div className="bg-slate-50 rounded-xl border border-slate-200 p-6 shadow-sm">
             <div className="flex justify-between items-start mb-4">
               <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">From: BOXWAY STUDIO</h3>
-              <span className="material-symbols-outlined text-slate-300 text-sm">lock</span>
+              <Icon name="lock" className="text-slate-300 text-sm" />
             </div>
             <div className="space-y-2 text-sm text-slate-600">
               <p className="font-bold text-slate-900">Boxway Studio Architects</p>
@@ -134,7 +135,7 @@ const CreateInvoicePage = () => {
               onClick={addItem}
               className="flex items-center gap-1 text-primary text-xs font-bold hover:opacity-80 transition-opacity"
             >
-              <span className="material-symbols-outlined text-sm">add</span> ADD LINE ITEM
+              <Icon name="add" className="text-sm" /> ADD LINE ITEM
             </button>
           </div>
           <div className="overflow-x-auto">
@@ -175,7 +176,7 @@ const CreateInvoicePage = () => {
                         ₹{discountedAmount.toFixed(2)}
                       </td>
                       <td className="px-4 py-4">
-                        <button onClick={() => removeItem(item.id)} className="text-slate-300 hover:text-brand-red"><span className="material-symbols-outlined text-sm">close</span></button>
+                        <button onClick={() => removeItem(item.id)} className="text-slate-300 hover:text-brand-red"><Icon name="close" className="text-sm" /></button>
                       </td>
                     </tr>
                   );
@@ -206,7 +207,7 @@ const CreateInvoicePage = () => {
                 value={invoiceData.notes} onChange={(e) => updateField('notes', e.target.value)}
               />
               <div className="border-2 border-dashed border-slate-100 rounded-lg p-6 text-center group cursor-pointer hover:border-primary/50 transition-colors">
-                <span className="material-symbols-outlined text-slate-300 group-hover:text-primary mb-2">cloud_upload</span>
+                <Icon name="cloud_upload" className="text-slate-300 group-hover:text-primary mb-2" />
                 <p className="text-[10px] text-slate-400 font-medium">Click to upload receipts or supporting documents</p>
               </div>
             </div>
@@ -221,14 +222,14 @@ const CreateInvoicePage = () => {
               <div className="flex justify-between items-center text-sm">
                 <div className="flex items-center gap-2">
                   <span className="text-slate-500">CGST (9%)</span>
-                  <span className="material-symbols-outlined text-[14px] text-slate-300">info</span>
+                  <Icon name="info" className="text-[14px] text-slate-300" />
                 </div>
                 <span className="font-medium">₹{cgst.toFixed(2)}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
                 <div className="flex items-center gap-2">
                   <span className="text-slate-500">SGST (9%)</span>
-                  <span className="material-symbols-outlined text-[14px] text-slate-300">info</span>
+                  <Icon name="info" className="text-[14px] text-slate-300" />
                 </div>
                 <span className="font-medium">₹{sgst.toFixed(2)}</span>
               </div>
@@ -251,7 +252,7 @@ const CreateInvoicePage = () => {
       <footer className="h-20 bg-white border-t border-slate-200 fixed bottom-0 left-60 right-0 z-20 px-8 flex items-center justify-between shadow-[0_-4px_10px_rgba(0,0,0,0.03)]">
         <div className="flex items-center gap-4">
           <button className="flex items-center gap-2 text-slate-500 hover:text-slate-700 transition-colors text-sm font-medium">
-            <span className="material-symbols-outlined text-lg">delete</span>
+            <Icon name="delete" className="text-lg" />
             Discard
           </button>
         </div>
@@ -261,7 +262,7 @@ const CreateInvoicePage = () => {
           </button>
           <button onClick={handleNext} className="px-8 py-2 bg-primary text-white rounded font-bold hover:opacity-90 transition-opacity text-sm flex items-center gap-2 cursor-pointer">
             Preview Invoice
-            <span className="material-symbols-outlined text-sm">visibility</span>
+            <Icon name="visibility" className="text-sm" />
           </button>
         </div>
       </footer>

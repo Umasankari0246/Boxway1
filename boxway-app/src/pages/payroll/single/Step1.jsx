@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MOCK_EMPLOYEES } from '../../../data/mockData';
 import { usePayrollStore } from '../../../store/payrollStore';
+import Icon from "../../../components/ui/Icon.jsx"
 
 const Step1 = () => {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ const Step1 = () => {
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
           <button onClick={() => navigate('/payroll')} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-white rounded">
-            <span className="material-symbols-outlined">arrow_back</span>
+            <Icon name="arrow_back" />
           </button>
           <div>
             <h2 className="text-2xl font-black text-slate-900">Single Payroll Run</h2>
@@ -52,7 +53,7 @@ const Step1 = () => {
                   <p className="text-sm font-bold text-slate-900">${(e.salary / 12).toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
                   <p className="text-xs text-slate-400">/ mo</p>
                 </div>
-                {selected === e.id && <span className="material-symbols-outlined text-primary">check_circle</span>}
+                {selected === e.id && <Icon name="check_circle" className="text-primary" />}
               </div>
             ))}
           </div>

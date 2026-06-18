@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { MOCK_EMPLOYEES } from '../../data/mockData';
+import Icon from "../../components/ui/Icon.jsx"
 
 const api = axios.create({
   baseURL: 'http://localhost:8000/api'
@@ -27,12 +28,26 @@ const NewEmployeePage = () => {
 
   const set = (field, val) => setForm(f => ({ ...f, [field]: val }));
 
+  const validateForm = () => {
+    const digitsOnly = form.phone.replace(/\D/g, '');
+    if (!digitsOnly || digitsOnly.length !== 10) {
+      setError('Phone number is required and must contain exactly 10 digits.');
+      return false;
+    }
+    if (!form.email || !form.email.includes('@')) {
+      setError('A valid email address is required and must contain the @ symbol.');
+      return false;
+    }
+    return true;
+  };
+
   const departments = ['Design', 'Engineering', 'Management', 'Finance', 'Technical', 'HR'];
   const roles = ['Senior Architect', 'Architect', 'Junior Architect', 'Project Manager', 'Interior Designer', 'Structural Engineer', 'CAD Technician', 'Finance Manager'];
   const toolsList = ['AutoCAD', 'Revit', 'SketchUp', 'Rhino', 'Enscape', 'Lumion', 'V-Ray', '3ds Max'];
   const skillsList = ['Conceptual Design', '3D Modeling', 'Drafting', 'Urban Planning', 'Interior Design', 'Landscape Architecture'];
 
   const handleSubmit = async () => {
+    if (!validateForm()) return;
     try {
       setIsSubmitting(true);
       setError('');
@@ -120,11 +135,28 @@ const NewEmployeePage = () => {
             </div>
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Email Address *</label>
-              <input type="email" value={form.email} onChange={e => set('email', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="email@boxway.com" />
+              <input
+                type="email"
+                required
+                value={form.email}
+                onChange={e => set('email', e.target.value)}
+                className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                placeholder="email@boxway.com"
+              />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Phone Number</label>
-              <input value={form.phone} onChange={e => set('phone', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="+1 555-0000" />
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Phone Number *</label>
+              <input
+                type="tel"
+                required
+                value={form.phone}
+                onChange={e => {
+                  const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+                  set('phone', digits);
+                }}
+                className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                placeholder="e.g., 5551234567"
+              />
             </div>
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Date of Birth</label>
@@ -261,7 +293,7 @@ const NewEmployeePage = () => {
             <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2">Employee Photo</h3>
             <div className="flex items-center gap-4 mb-6">
                 <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center border-2 border-dashed border-slate-300 overflow-hidden text-slate-400">
-                    <span className="material-symbols-outlined text-4xl">person</span>
+                    <Icon name="person" className="text-4xl" />
                 </div>
                 <div>
                     <button className="px-4 py-2 bg-white border border-slate-200 rounded text-sm font-medium text-slate-700 hover:bg-slate-50">Upload Photo</button>
@@ -272,7 +304,7 @@ const NewEmployeePage = () => {
         <div className="col-span-2">
           <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2">College & Onboarding Documents</h3>
           <div className="border-2 border-dashed border-slate-200 rounded-lg p-8 text-center hover:border-primary transition-colors cursor-pointer">
-            <span className="material-symbols-outlined text-slate-400 text-4xl">upload_file</span>
+            <Icon name="upload_file" className="text-slate-400 text-4xl" />
             <p className="text-sm text-slate-500 mt-2">Drop documents here or <span className="text-primary font-semibold">browse</span></p>
             <p className="text-xs text-slate-400 mt-1">ID Card, Degree Certificates, Offer Letter (Max 10MB each)</p>
           </div>
@@ -327,7 +359,7 @@ const NewEmployeePage = () => {
         <div className="bg-slate-50 p-6 rounded-lg border border-slate-200">
            <div className="flex items-center gap-4 mb-6 pb-6 border-b border-slate-200">
                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center border border-slate-200 text-slate-400">
-                    <span className="material-symbols-outlined text-3xl">person</span>
+                    <Icon name="person" className="text-3xl" />
                 </div>
                 <div>
                    <h2 className="text-xl font-bold text-slate-800">{form.name || 'New Employee'}</h2>
@@ -378,7 +410,7 @@ const NewEmployeePage = () => {
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <button onClick={() => navigate('/employees')} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-white rounded transition-colors">
-            <span className="material-symbols-outlined">arrow_back</span>
+            <Icon name="arrow_back" />
           </button>
           <div>
             <h2 className="text-2xl font-black text-slate-900">Add New Employee</h2>
@@ -393,7 +425,7 @@ const NewEmployeePage = () => {
               <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-colors ${
                 step > i + 1 ? 'bg-primary text-white' : step === i + 1 ? 'bg-primary text-white ring-4 ring-primary/20' : 'bg-slate-100 text-slate-400'
               }`}>
-                {step > i + 1 ? <span className="material-symbols-outlined text-lg">check</span> : i + 1}
+                {step > i + 1 ? <Icon name="check" className="text-lg" /> : i + 1}
               </div>
               <span className={`text-xs mt-2 font-medium ${step === i + 1 ? 'text-primary' : 'text-slate-500'}`}>{s}</span>
             </div>
@@ -425,9 +457,9 @@ const NewEmployeePage = () => {
           ) : (
             <button type="button" onClick={handleSubmit} disabled={isSubmitting} className="px-6 py-2.5 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
               {isSubmitting ? (
-                <span className="material-symbols-outlined text-sm animate-spin">refresh</span>
+                <Icon name="refresh" className="text-sm animate-spin" />
               ) : (
-                <span className="material-symbols-outlined text-sm">check_circle</span>
+                <Icon name="check_circle" className="text-sm" />
               )}
               {isSubmitting ? 'Creating...' : 'Create Employee'}
             </button>

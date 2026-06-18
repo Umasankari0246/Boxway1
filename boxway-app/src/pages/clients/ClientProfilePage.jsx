@@ -1,5 +1,6 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft, User, Mail, MapPin } from 'lucide-react';
 import { MOCK_CLIENTS, MOCK_PROJECTS, MOCK_INVOICES } from '../../data/mockData';
 
 const ClientProfilePage = () => {
@@ -15,7 +16,7 @@ const ClientProfilePage = () => {
       <div className="bg-white border-b border-slate-200 px-8 py-5">
         <div className="flex items-start gap-5">
           <button onClick={() => navigate('/clients')} className="mt-1 p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded">
-            <span className="material-symbols-outlined">arrow_back</span>
+            <ArrowLeft className="h-5 w-5" />
           </button>
           <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black text-xl">
             {client.name.charAt(0)}
@@ -27,9 +28,9 @@ const ClientProfilePage = () => {
               <span className="px-2.5 py-0.5 text-[10px] font-bold rounded uppercase bg-blue-50 text-blue-700">{client.type}</span>
             </div>
             <div className="flex gap-6 mt-2 text-sm text-slate-500">
-              <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-sm">person</span>{client.contactPerson}</span>
-              <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-sm">mail</span>{client.email}</span>
-              <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-sm">location_on</span>{client.city}</span>
+              <span className="flex items-center gap-1.5"><User className="h-4 w-4" />{client.contactPerson}</span>
+              <span className="flex items-center gap-1.5"><Mail className="h-4 w-4" />{client.email}</span>
+              <span className="flex items-center gap-1.5"><MapPin className="h-4 w-4" />{client.city}</span>
             </div>
           </div>
           <div className="text-right">

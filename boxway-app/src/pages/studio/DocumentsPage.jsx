@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MOCK_DOCUMENTS, MOCK_PROJECTS, MOCK_CLIENTS } from '../../data/mockData';
+import Icon from "../../components/ui/Icon.jsx"
 
 /* ── Folder/Type config matching client's drive structure ─────────────────── */
 const FOLDER_TYPES = [
@@ -54,7 +55,7 @@ const UploadModal = ({ onClose }) => {
             <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mt-0.5">Architecture file with full metadata</p>
           </div>
           <button onClick={onClose} className="p-1.5 hover:bg-zinc-100 transition-colors">
-            <span className="material-symbols-outlined text-[20px]">close</span>
+            <Icon name="close" className="text-[20px]" />
           </button>
         </div>
 
@@ -96,7 +97,7 @@ const UploadModal = ({ onClose }) => {
             <div className="grid grid-cols-3 gap-2">
               {FOLDER_TYPES.map(f => (
                 <button key={f.key} type="button" onClick={() => set('folderType', f.key)} className={`flex items-center gap-2 p-2.5 border transition-all text-left ${form.folderType === f.key ? 'border-primary bg-primary/5' : 'border-zinc-100 hover:border-zinc-200 bg-zinc-50'}`}>
-                  <span className={`material-symbols-outlined text-[16px] ${form.folderType === f.key ? 'text-primary' : 'text-zinc-400'}`}>{f.icon}</span>
+                  <Icon name={f.icon} className={`text-[16px] ${form.folderType === f.key ? 'text-primary' : 'text-zinc-400'}`} />
                   <div>
                     <p className={`text-[10px] font-black ${form.folderType === f.key ? 'text-primary' : 'text-zinc-700'}`}>{f.label}</p>
                     <p className="text-[8px] text-zinc-400 leading-tight">{f.exts}</p>
@@ -109,7 +110,7 @@ const UploadModal = ({ onClose }) => {
           {/* Sub-folder info */}
           {ft && (
             <div className={`p-3 ${ft.color} border border-current/10 text-[10px] font-semibold flex items-center gap-2`}>
-              <span className="material-symbols-outlined text-[16px]">{ft.icon}</span>
+              <Icon name={ft.icon} className="text-[16px]" />
               <span>Will be saved under: <strong>2024 / {form.projectCode || 'PROJECT-CODE'} / {ft.label}</strong></span>
             </div>
           )}
@@ -149,7 +150,7 @@ const UploadModal = ({ onClose }) => {
 
           {/* Drop Zone */}
           <div className="border-2 border-dashed border-zinc-200 p-6 flex flex-col items-center gap-2 text-center hover:border-primary transition-colors cursor-pointer group">
-            <span className="material-symbols-outlined text-zinc-300 group-hover:text-primary text-[36px] transition-colors">cloud_upload</span>
+            <Icon name="cloud_upload" className="text-zinc-300 group-hover:text-primary text-[36px] transition-colors" />
             <p className="text-xs font-black uppercase tracking-widest text-zinc-700">Drop file here or click to browse</p>
             <p className="text-[9px] text-zinc-400">DWG · DXF · RVT · SKP · PDF · PNG · JPG · MP4 · AI · ZIP<br/>Max 1 GB per file</p>
           </div>
@@ -158,7 +159,7 @@ const UploadModal = ({ onClose }) => {
         <div className="sticky bottom-0 bg-white border-t border-zinc-100 px-7 py-4 flex gap-3 justify-end">
           <button onClick={onClose} className="px-5 py-2 border border-zinc-200 text-zinc-600 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors">Cancel</button>
           <button onClick={onClose} className="px-6 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors flex items-center gap-2">
-            <span className="material-symbols-outlined text-[16px]">upload</span>Upload File
+            <Icon name="upload" className="text-[16px]" />Upload File
           </button>
         </div>
       </div>
@@ -187,26 +188,26 @@ const DocDrawer = ({ doc, onClose }) => {
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-zinc-100 px-6 py-4 flex items-start gap-3 z-10">
           <div className={`w-10 h-10 flex items-center justify-center bg-zinc-50 shrink-0`}>
-            <span className={`material-symbols-outlined text-[22px] ${typeColor}`}>{typeIcon}</span>
+            <Icon name={typeIcon} className={`text-[22px] ${typeColor}`} />
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-black text-sm text-zinc-900 leading-tight truncate">{doc.name}</p>
             <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mt-0.5">{doc.type} · {doc.size}</p>
           </div>
           <div className="flex gap-1 shrink-0">
-            <button className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors" title="Download"><span className="material-symbols-outlined text-[18px]">download</span></button>
-            <button className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-900 transition-colors" title="Edit"><span className="material-symbols-outlined text-[18px]">edit</span></button>
-            <button className="p-1.5 hover:bg-red-50 text-zinc-400 hover:text-red-600 transition-colors" title="Delete"><span className="material-symbols-outlined text-[18px]">delete</span></button>
-            <button onClick={onClose} className="p-1.5 hover:bg-zinc-100 text-zinc-400 transition-colors ml-1"><span className="material-symbols-outlined text-[18px]">close</span></button>
+            <button className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors" title="Download"><Icon name="download" className="text-[18px]" /></button>
+            <button className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-900 transition-colors" title="Edit"><Icon name="edit" className="text-[18px]" /></button>
+            <button className="p-1.5 hover:bg-red-50 text-zinc-400 hover:text-red-600 transition-colors" title="Delete"><Icon name="delete" className="text-[18px]" /></button>
+            <button onClick={onClose} className="p-1.5 hover:bg-zinc-100 text-zinc-400 transition-colors ml-1"><Icon name="close" className="text-[18px]" /></button>
           </div>
         </div>
 
         {/* File Preview placeholder */}
         <div className={`mx-6 mt-5 flex flex-col items-center justify-center h-44 ${ft.color} border border-current/10 relative overflow-hidden`}>
-          <span className={`material-symbols-outlined text-[56px] opacity-20`}>{ft.icon}</span>
+          <Icon name={ft.icon} className="text-[56px] opacity-20" />
           <p className="text-[10px] font-black uppercase tracking-widest mt-2 opacity-50">{doc.type} Preview</p>
           <button className="absolute bottom-3 right-3 text-[9px] font-black uppercase tracking-widest px-3 py-1.5 bg-white border border-current/20 hover:bg-zinc-50 transition-colors flex items-center gap-1">
-            <span className="material-symbols-outlined text-[13px]">open_in_new</span>Open in Browser
+            <Icon name="open_in_new" className="text-[13px]" />Open in Browser
           </button>
         </div>
 
@@ -233,7 +234,7 @@ const DocDrawer = ({ doc, onClose }) => {
 
           {/* Google Drive path */}
           <div className="bg-zinc-900 text-white px-4 py-3 flex items-center gap-2">
-            <span className="material-symbols-outlined text-[16px] text-zinc-400">folder</span>
+            <Icon name="folder" className="text-[16px] text-zinc-400" />
             <p className="text-[10px] font-mono text-zinc-300 truncate">
               Google Drive / 2024 / <span className="text-primary">{doc.projectCode}</span> / {doc.folderType} / {doc.name}
             </p>
@@ -276,7 +277,7 @@ const DocDrawer = ({ doc, onClose }) => {
                     }}
                     className={`flex items-center gap-1 mt-1.5 text-[9px] font-bold uppercase tracking-wider transition-colors ${likedIds.includes(c.id) ? 'text-primary' : 'text-zinc-300 hover:text-zinc-600'}`}
                   >
-                    <span className="material-symbols-outlined text-[13px]" style={{ fontVariationSettings: `'FILL' ${likedIds.includes(c.id) ? 1 : 0}` }}>thumb_up</span>
+                    <Icon name="thumb_up" style={{ fontVariationSettings: `'FILL' ${likedIds.includes(c.id) ? 1 : 0}` }} className="text-[13px]" />
                     {c.likes + (likedIds.includes(c.id) ? 1 : 0)}
                   </button>
                 </div>
@@ -322,7 +323,7 @@ const DocumentsPage = () => {
                 onClick={() => setFolderFilter(folderFilter === f.key ? 'All' : f.key)}
                 className={`flex flex-col items-center justify-center p-3 border transition-all text-center ${folderFilter === f.key ? `${f.color} border-current/30 shadow-sm` : 'bg-white border-zinc-100 hover:border-zinc-200'}`}
               >
-                <span className={`material-symbols-outlined text-[22px] mb-1 ${folderFilter === f.key ? '' : 'text-zinc-400'}`}>{f.icon}</span>
+                <Icon name={f.icon} className={`text-[22px] mb-1 ${folderFilter === f.key ? '' : 'text-zinc-400'}`} />
                 <p className={`text-[8px] font-black uppercase tracking-wide leading-tight ${folderFilter === f.key ? '' : 'text-zinc-500'}`}>{f.label}</p>
                 <p className={`text-[9px] font-black mt-0.5 ${folderFilter === f.key ? 'opacity-70' : 'text-zinc-400'}`}>{count}</p>
               </button>
@@ -336,7 +337,7 @@ const DocumentsPage = () => {
         <div className="bg-white border border-zinc-100 shadow-sm py-3 px-4 flex flex-wrap gap-3 items-center">
           {/* Search */}
           <div className="relative flex-1 min-w-40">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-[18px]">search</span>
+            <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-[18px]" />
             <input value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-3 py-2 bg-zinc-50 text-xs font-medium placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Search documents, clients..." />
           </div>
           {/* Project filter */}
@@ -352,7 +353,7 @@ const DocumentsPage = () => {
           </select>
           {/* Upload CTA */}
           <button onClick={() => setShowUpload(true)} className="ml-auto flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors shadow-sm shadow-primary/20">
-            <span className="material-symbols-outlined text-[16px]">upload</span>Upload File
+            <Icon name="upload" className="text-[16px]" />Upload File
           </button>
         </div>
       </div>
@@ -372,7 +373,7 @@ const DocumentsPage = () => {
               {filtered.length === 0 && (
                 <tr>
                   <td colSpan={8} className="py-16 text-center">
-                    <span className="material-symbols-outlined text-zinc-200 text-4xl block mb-2">folder_open</span>
+                    <Icon name="folder_open" className="text-zinc-200 text-4xl block mb-2" />
                     <p className="text-zinc-400 text-sm">No documents match your filters.</p>
                   </td>
                 </tr>
@@ -385,7 +386,7 @@ const DocumentsPage = () => {
                   <tr key={doc.id} className="hover:bg-zinc-50/70 transition-colors cursor-pointer group" onClick={() => setSelectedDoc(doc)}>
                     <td className="px-5 py-3.5 max-w-[200px]">
                       <div className="flex items-center gap-2">
-                        <span className={`material-symbols-outlined text-[20px] shrink-0 ${iconColor}`}>{iconName}</span>
+                        <Icon name={iconName} className={`text-[20px] shrink-0 ${iconColor}`} />
                         <div className="min-w-0">
                           <p className="text-xs font-black text-zinc-800 group-hover:text-primary transition-colors truncate">{doc.name}</p>
                           <p className="text-[9px] text-zinc-400">{doc.size}</p>
@@ -409,10 +410,10 @@ const DocumentsPage = () => {
                     <td className="px-5 py-3.5 text-xs text-zinc-400 whitespace-nowrap">{doc.uploadDate}</td>
                     <td className="px-5 py-3.5" onClick={e => e.stopPropagation()}>
                       <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => setSelectedDoc(doc)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700 transition-colors" title="View"><span className="material-symbols-outlined text-[15px]">visibility</span></button>
-                        <button className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors" title="Download"><span className="material-symbols-outlined text-[15px]">download</span></button>
-                        <button className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700 transition-colors" title="Edit"><span className="material-symbols-outlined text-[15px]">edit</span></button>
-                        <button onClick={() => setDeletingId(doc.id)} className="p-1.5 hover:bg-red-50 text-zinc-400 hover:text-red-600 transition-colors" title="Delete"><span className="material-symbols-outlined text-[15px]">delete</span></button>
+                        <button onClick={() => setSelectedDoc(doc)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700 transition-colors" title="View"><Icon name="visibility" className="text-[15px]" /></button>
+                        <button className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors" title="Download"><Icon name="download" className="text-[15px]" /></button>
+                        <button className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700 transition-colors" title="Edit"><Icon name="edit" className="text-[15px]" /></button>
+                        <button onClick={() => setDeletingId(doc.id)} className="p-1.5 hover:bg-red-50 text-zinc-400 hover:text-red-600 transition-colors" title="Delete"><Icon name="delete" className="text-[15px]" /></button>
                       </div>
                     </td>
                   </tr>
@@ -434,7 +435,7 @@ const DocumentsPage = () => {
       {deletingId && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" onClick={() => setDeletingId(null)}>
           <div className="bg-white p-8 w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
-            <span className="material-symbols-outlined text-red-500 text-3xl mb-3 block">warning</span>
+            <Icon name="warning" className="text-red-500 text-3xl mb-3 block" />
             <h3 className="text-lg font-black uppercase tracking-tight mb-2">Delete Document?</h3>
             <p className="text-sm text-zinc-500 mb-6">This will permanently remove the file and all its associated metadata and comments.</p>
             <div className="flex gap-3">

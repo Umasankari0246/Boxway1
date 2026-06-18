@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MOCK_PROJECTS } from '../../data/mockData';
+import Icon from "../../components/ui/Icon.jsx"
 
 const STATUS_CFG = {
   'In Progress': { cls: 'bg-blue-100 text-blue-700',   dot: 'bg-blue-500' },
@@ -54,9 +55,7 @@ const ProjectsPage = () => {
   const totalSpent  = MOCK_PROJECTS.reduce((s, p) => s + p.spent, 0);
 
   const SortIcon = ({ col }) => (
-    <span className={`material-symbols-outlined text-[14px] ml-0.5 ${sortBy === col ? 'text-primary' : 'text-zinc-300'}`}>
-      {sortBy === col ? (sortDir === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'}
-    </span>
+    <Icon name={sortBy === col ? (sortDir === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'} className={`text-[14px] ml-0.5 ${sortBy === col ? 'text-primary' : 'text-zinc-300'}`} />
   );
 
   return (
@@ -74,7 +73,7 @@ const ProjectsPage = () => {
               <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-1">{k.label}</p>
               <p className={`text-3xl font-black ${k.color}`}>{k.val}</p>
             </div>
-            <span className={`material-symbols-outlined text-[28px] ${k.color} opacity-20`}>{k.icon}</span>
+            <Icon name={k.icon} className={`text-[28px] ${k.color} opacity-20`} />
           </div>
         ))}
       </div>
@@ -84,7 +83,7 @@ const ProjectsPage = () => {
         <div className="bg-white border border-zinc-100 shadow-sm py-3 px-4 flex flex-wrap gap-3 items-center">
           {/* Search */}
           <div className="relative flex-1 min-w-40">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-[18px]">search</span>
+            <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-[18px]" />
             <input value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-3 py-2 bg-zinc-50 text-xs font-medium placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Search project, client, or lead..." />
           </div>
           {/* Status filters */}
@@ -106,7 +105,7 @@ const ProjectsPage = () => {
           </select>
           {/* New Project CTA */}
           <button onClick={() => navigate('/projects/new')} className="ml-auto flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors shadow-sm shadow-primary/20">
-            <span className="material-symbols-outlined text-[16px]">add</span>New Project
+            <Icon name="add" className="text-[16px]" />New Project
           </button>
         </div>
       </div>
@@ -142,7 +141,7 @@ const ProjectsPage = () => {
             <tbody className="divide-y divide-zinc-50">
               {filtered.length === 0 && (
                 <tr><td colSpan={10} className="py-16 text-center">
-                  <span className="material-symbols-outlined text-zinc-200 text-4xl block mb-2">architecture</span>
+                  <Icon name="architecture" className="text-zinc-200 text-4xl block mb-2" />
                   <p className="text-zinc-400 text-sm">No projects match your filters.</p>
                 </td></tr>
               )}
@@ -183,9 +182,9 @@ const ProjectsPage = () => {
                     <td className="px-5 py-3.5 text-xs text-zinc-400 whitespace-nowrap">{p.endDate}</td>
                     <td className="px-5 py-3.5" onClick={e => e.stopPropagation()}>
                       <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => navigate(`/projects/${p.id}`)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700 transition-colors" title="View"><span className="material-symbols-outlined text-[15px]">visibility</span></button>
-                        <button onClick={() => navigate(`/projects/${p.id}/edit`)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors" title="Edit"><span className="material-symbols-outlined text-[15px]">edit</span></button>
-                        <button onClick={() => setDeletingId(p.id)} className="p-1.5 hover:bg-red-50 text-zinc-400 hover:text-red-600 transition-colors" title="Delete"><span className="material-symbols-outlined text-[15px]">delete</span></button>
+                        <button onClick={() => navigate(`/projects/${p.id}`)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700 transition-colors" title="View"><Icon name="visibility" className="text-[15px]" /></button>
+                        <button onClick={() => navigate(`/projects/${p.id}/edit`)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors" title="Edit"><Icon name="edit" className="text-[15px]" /></button>
+                        <button onClick={() => setDeletingId(p.id)} className="p-1.5 hover:bg-red-50 text-zinc-400 hover:text-red-600 transition-colors" title="Delete"><Icon name="delete" className="text-[15px]" /></button>
                       </div>
                     </td>
                   </tr>
@@ -204,7 +203,7 @@ const ProjectsPage = () => {
       {deletingId && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" onClick={() => setDeletingId(null)}>
           <div className="bg-white p-8 w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
-            <span className="material-symbols-outlined text-red-500 text-3xl mb-3 block">warning</span>
+            <Icon name="warning" className="text-red-500 text-3xl mb-3 block" />
             <h3 className="text-lg font-black uppercase tracking-tight mb-2">Delete Project?</h3>
             <p className="text-sm text-zinc-500 mb-6">This will permanently delete the project and all associated data.</p>
             <div className="flex gap-3">

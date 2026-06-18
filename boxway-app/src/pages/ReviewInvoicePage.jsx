@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInvoiceStore } from '../store/invoiceStore';
+import Icon from "../components/ui/Icon.jsx"
 
 const ReviewInvoicePage = () => {
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ const ReviewInvoicePage = () => {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <div className="size-8 bg-slate-900 rounded flex items-center justify-center text-white">
-                <span className="material-symbols-outlined !text-[18px]">box</span>
+                <Icon name="box" className="!text-[18px]" />
               </div>
               <span className="font-black text-xl tracking-tighter uppercase">Boxway Studio</span>
             </div>
@@ -150,7 +151,7 @@ const ReviewInvoicePage = () => {
       <footer className="fixed bottom-0 left-60 right-0 h-24 bg-white border-t border-slate-200 px-8 flex items-center justify-between shadow-[0_-10px_30px_rgba(0,0,0,0.03)] z-50">
         <div className="flex items-center gap-4">
           <button onClick={handleBack} className="flex items-center gap-2 px-6 py-3 text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg font-bold text-sm transition-all cursor-pointer">
-            <span className="material-symbols-outlined">edit</span>
+            <Icon name="edit" />
             Back to Edit
           </button>
         </div>
@@ -159,7 +160,7 @@ const ReviewInvoicePage = () => {
             Save as Draft
           </button>
           <button onClick={handleConfirm} className="flex items-center gap-2 px-8 py-3 bg-primary hover:bg-rose-700 text-white rounded-lg font-black text-sm uppercase tracking-wide shadow-lg shadow-rose-200 transition-all active:scale-95 cursor-pointer">
-            <span className="material-symbols-outlined">send</span>
+            <Icon name="send" />
             Confirm & Generate
           </button>
         </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MOCK_PAYROLL_RUNS, MOCK_PAYSLIPS } from '../../data/mockData';
+import Icon from "../../components/ui/Icon.jsx"
 
 const TABS = ['Dashboard', 'Payroll Runs', 'Payslips', 'Settings'];
 
@@ -19,7 +20,7 @@ const PayrollDashboardTab = ({ navigate }) => (
           <div className="flex items-baseline gap-2">
             <h3 className={`text-3xl font-bold ${k.color || 'text-slate-900'}`}>{k.val}</h3>
             {k.trend && <span className={`text-xs font-bold flex items-center ${k.trendUp ? 'text-green-500' : 'text-red-500'}`}>
-              <span className="material-symbols-outlined text-xs">{k.trendUp ? 'arrow_upward' : 'arrow_downward'}</span>{k.trend}
+              <Icon name={k.trendUp ? 'arrow_upward' : 'arrow_downward'} className="text-xs" />{k.trend}
             </span>}
             {k.sub && <span className="text-slate-400 text-xs font-medium">{k.sub}</span>}
           </div>
@@ -54,7 +55,7 @@ const PayrollDashboardTab = ({ navigate }) => (
                   <td className="px-6 py-4 text-right">
                     {run.status === 'Pending Approval'
                       ? <button className="px-3 py-1 bg-primary text-white text-xs font-bold rounded hover:bg-primary/90">Approve</button>
-                      : <button className="text-slate-400 hover:text-primary"><span className="material-symbols-outlined text-xl">more_vert</span></button>
+                      : <button className="text-slate-400 hover:text-primary"><Icon name="more_vert" className="text-xl" /></button>
                     }
                   </td>
                 </tr>
@@ -74,7 +75,7 @@ const PayrollDashboardTab = ({ navigate }) => (
         </div>
         <div className="p-4 space-y-3">
           <div className="p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg flex gap-4">
-            <span className="material-symbols-outlined text-red-500 shrink-0">error</span>
+            <Icon name="error" className="text-red-500 shrink-0" />
             <div>
               <p className="text-sm font-bold text-slate-900">Missing salary data</p>
               <p className="text-xs text-slate-500 mt-1">1 employee hasn't updated their direct deposit info.</p>
@@ -82,7 +83,7 @@ const PayrollDashboardTab = ({ navigate }) => (
             </div>
           </div>
           <div className="p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-r-lg flex gap-4">
-            <span className="material-symbols-outlined text-yellow-600 shrink-0">pending_actions</span>
+            <Icon name="pending_actions" className="text-yellow-600 shrink-0" />
             <div>
               <p className="text-sm font-bold text-slate-900">Pending approvals</p>
               <p className="text-xs text-slate-500 mt-1">November payroll draft awaiting sign-off.</p>
@@ -97,15 +98,15 @@ const PayrollDashboardTab = ({ navigate }) => (
           <p className="text-zinc-400 text-sm mb-6">Process the current cycle for all departments.</p>
           <div className="space-y-3">
             <button onClick={() => navigate('/payroll/run/single/step1')} className="w-full py-3 border border-white/20 text-white text-sm font-bold rounded-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2">
-              <span className="material-symbols-outlined text-xl">person</span> Single Employee
+              <Icon name="person" className="text-xl" /> Single Employee
             </button>
             <button onClick={() => navigate('/payroll/run/multi/step1')} className="w-full py-3 bg-primary text-white font-bold rounded-lg shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all flex items-center justify-center gap-2">
-              <span className="material-symbols-outlined text-xl">group</span> All / Multi Employees
+              <Icon name="group" className="text-xl" /> All / Multi Employees
             </button>
           </div>
         </div>
         <div className="absolute -right-10 -bottom-10 opacity-10">
-          <span className="material-symbols-outlined text-[150px]">payments</span>
+          <Icon name="payments" className="text-[150px]" />
         </div>
       </div>
     </div>
@@ -118,10 +119,10 @@ const PayrollRunsTab = ({ navigate }) => (
       <h3 className="text-lg font-bold text-slate-900">All Payroll Runs</h3>
       <div className="flex gap-3">
         <button onClick={() => navigate('/payroll/run/single/step1')} className="flex items-center gap-2 px-4 py-2 border border-slate-200 bg-white text-slate-700 text-sm font-bold rounded hover:bg-slate-50">
-          <span className="material-symbols-outlined text-lg">person</span> Single Run
+          <Icon name="person" className="text-lg" /> Single Run
         </button>
         <button onClick={() => navigate('/payroll/run/multi/step1')} className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20">
-          <span className="material-symbols-outlined text-lg">group</span> Multi Run
+          <Icon name="group" className="text-lg" /> Multi Run
         </button>
       </div>
     </div>
@@ -162,7 +163,7 @@ const PayslipsTab = () => {
     <div>
       <div className="flex items-center gap-4 mb-6">
         <div className="relative flex-1 max-w-sm">
-          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+          <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg" />
           <input value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded bg-white text-sm focus:outline-none focus:border-primary" placeholder="Search payslips..." />
         </div>
         <select className="px-3 py-2 border border-slate-200 bg-white rounded text-sm focus:outline-none focus:border-primary">
@@ -192,9 +193,9 @@ const PayslipsTab = () => {
                 <td className="px-6 py-4"><span className="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold rounded uppercase">{p.status}</span></td>
                 <td className="px-6 py-4">
                   <div className="flex gap-2">
-                    <button title="View" className="p-1 text-slate-400 hover:text-primary"><span className="material-symbols-outlined text-lg">visibility</span></button>
-                    <button title="Download" className="p-1 text-slate-400 hover:text-primary"><span className="material-symbols-outlined text-lg">download</span></button>
-                    <button title="Email" className="p-1 text-slate-400 hover:text-primary"><span className="material-symbols-outlined text-lg">mail</span></button>
+                    <button title="View" className="p-1 text-slate-400 hover:text-primary"><Icon name="visibility" className="text-lg" /></button>
+                    <button title="Download" className="p-1 text-slate-400 hover:text-primary"><Icon name="download" className="text-lg" /></button>
+                    <button title="Email" className="p-1 text-slate-400 hover:text-primary"><Icon name="mail" className="text-lg" /></button>
                   </div>
                 </td>
               </tr>
@@ -218,13 +219,13 @@ const SettingsTab = () => (
     ].map(item => (
       <div key={item.title} className="bg-white rounded-xl border border-slate-200 p-6 flex items-start gap-5 cursor-pointer hover:shadow-md transition-shadow">
         <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
-          <span className="material-symbols-outlined text-2xl">{item.icon}</span>
+          <Icon name={item.icon} className="text-2xl" />
         </div>
         <div className="flex-1">
           <h4 className="font-bold text-slate-900 text-sm">{item.title}</h4>
           <p className="text-xs text-slate-500 mt-1 leading-relaxed">{item.desc}</p>
         </div>
-        <span className="material-symbols-outlined text-slate-300">chevron_right</span>
+        <Icon name="chevron_right" className="text-slate-300" />
       </div>
     ))}
   </div>

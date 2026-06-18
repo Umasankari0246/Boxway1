@@ -15,10 +15,11 @@ const AppLayout = () => {
   return (
     <div className="flex h-screen bg-[#fcfcfc] text-black overflow-hidden font-display">
       <Sidebar />
-      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+      <main className="flex-1 flex flex-col h-screen min-h-0">
         <TopBar />
-        {/* The current route's page content renders inside Outlet */}
-        <Outlet />
+        <div className="flex-1 overflow-y-auto">
+          <Outlet />
+        </div>
       </main>
     </div>
   );

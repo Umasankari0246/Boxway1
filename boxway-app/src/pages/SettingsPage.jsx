@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Icon from "../components/ui/Icon.jsx"
 
 const SETTINGS_SECTIONS = [
   {
@@ -81,7 +82,7 @@ const SettingsPage = () => {
               </div>
               <div className="mt-4 flex justify-end">
                 <button onClick={handleSave} className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all">
-                  {saved ? <><span className="material-symbols-outlined text-lg">check</span> Saved!</> : 'Save Changes'}
+                  {saved ? <><Icon name="check" className="text-lg" /> Saved!</> : 'Save Changes'}
                 </button>
               </div>
             </div>
@@ -150,7 +151,7 @@ const SettingsPage = () => {
 
           {!['Company', 'Notifications', 'Appearance', 'Security'].includes(activeSection) && (
             <div className="max-w-2xl text-center py-20">
-              <span className="material-symbols-outlined text-slate-300 text-5xl">settings</span>
+              <Icon name="settings" className="text-slate-300 text-5xl" />
               <h2 className="text-xl font-bold text-slate-900 mt-4">{activeSection}</h2>
               <p className="text-slate-400 text-sm mt-2">This settings section is coming soon.</p>
             </div>

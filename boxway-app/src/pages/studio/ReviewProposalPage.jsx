@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import Icon from "../../components/ui/Icon.jsx"
 
 const LABEL = 'text-[9px] uppercase tracking-[0.15em] font-black text-zinc-400';
 const VAL = 'text-sm font-semibold text-zinc-900 mt-0.5';
@@ -27,7 +28,7 @@ const ReviewProposalPage = () => {
       <div className="sticky top-0 z-20 bg-[#fcf9f8]/95 backdrop-blur border-b border-zinc-100 px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="text-zinc-400 hover:text-zinc-900 transition-colors">
-            <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+            <Icon name="arrow_back" className="text-[20px]" />
           </button>
           <div>
             <h2 className="text-xl font-black tracking-tight text-zinc-900 uppercase">Review & Confirm</h2>
@@ -40,7 +41,7 @@ const ReviewProposalPage = () => {
           </button>
           <button onClick={handleSubmit} className="px-6 py-2.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors flex items-center gap-2 shadow-lg shadow-primary/20">
             Submit Enquiry
-            <span className="material-symbols-outlined text-[16px]">send</span>
+            <Icon name="send" className="text-[16px]" />
           </button>
         </div>
       </div>
@@ -60,7 +61,7 @@ const ReviewProposalPage = () => {
             </p>
           </div>
           <div className="flex items-center gap-2 bg-emerald-50 px-4 py-2 border border-emerald-100">
-            <span className="material-symbols-outlined text-emerald-600 text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+            <Icon name="check_circle" style={{ fontVariationSettings: "'FILL' 1" }} className="text-emerald-600 text-[18px]" />
             <span className="text-[9px] font-black uppercase tracking-widest text-emerald-700">All Sections Complete</span>
           </div>
         </div>
@@ -73,7 +74,7 @@ const ReviewProposalPage = () => {
             <div className="bg-white p-8 border border-zinc-100 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex justify-between items-start mb-6">
                 <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-primary text-[20px]">person</span>
+                  <Icon name="person" className="text-primary text-[20px]" />
                   <h4 className="text-[10px] font-black uppercase tracking-widest">Client Info</h4>
                 </div>
                 <button onClick={() => navigate(-1)} className="text-[10px] text-primary font-black uppercase tracking-widest hover:underline">Edit</button>
@@ -100,7 +101,7 @@ const ReviewProposalPage = () => {
             <div className="bg-zinc-50 p-8 border border-zinc-100 shadow-sm">
               <div className="flex justify-between items-start mb-6">
                 <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-primary text-[20px]">auto_awesome</span>
+                  <Icon name="auto_awesome" className="text-primary text-[20px]" />
                   <h4 className="text-[10px] font-black uppercase tracking-widest">Requirements & Vision</h4>
                 </div>
                 <button onClick={() => navigate(-1)} className="text-[10px] text-primary font-black uppercase tracking-widest hover:underline">Edit</button>
@@ -124,7 +125,7 @@ const ReviewProposalPage = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-white p-6 border border-zinc-100 shadow-sm">
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="material-symbols-outlined text-primary text-[18px]">architecture</span>
+                  <Icon name="architecture" className="text-primary text-[18px]" />
                   <h4 className="text-[10px] font-black uppercase tracking-widest">Project Details</h4>
                 </div>
                 <div className="space-y-3">
@@ -136,13 +137,13 @@ const ReviewProposalPage = () => {
               </div>
               <div className="bg-white p-6 border border-zinc-100 shadow-sm">
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="material-symbols-outlined text-primary text-[18px]">checklist</span>
+                  <Icon name="checklist" className="text-primary text-[18px]" />
                   <h4 className="text-[10px] font-black uppercase tracking-widest">Scope of Services</h4>
                 </div>
                 <div className="space-y-2">
                   {(form.scopeServices?.length > 0 ? form.scopeServices : ['RIBA Stages 0-4 (Design)', 'Contract Administration', 'BIM Coordination']).map(s => (
                     <div key={s} className="flex items-center gap-2 text-xs">
-                      <span className="material-symbols-outlined text-primary text-[14px]">check</span>
+                      <Icon name="check" className="text-primary text-[14px]" />
                       <span>{s}</span>
                     </div>
                   ))}
@@ -174,7 +175,7 @@ const ReviewProposalPage = () => {
             {/* Dark Scope Card */}
             <div className="bg-zinc-900 text-white p-7">
               <div className="flex items-center gap-3 mb-6">
-                <span className="material-symbols-outlined text-primary text-[20px]">analytics</span>
+                <Icon name="analytics" className="text-primary text-[20px]" />
                 <h4 className="text-[10px] font-black uppercase tracking-widest">Project Scope</h4>
               </div>
               <div>
@@ -187,7 +188,7 @@ const ReviewProposalPage = () => {
                 {(form.scopeServices || ['RIBA Stages 0-4 (Design)', 'Contract Administration']).map(s => (
                   <div key={s} className="flex items-center justify-between text-xs mt-2">
                     <span className="text-white/70">{s}</span>
-                    <span className="material-symbols-outlined text-primary text-[14px]" style={{ fontVariationSettings: "'wght' 700" }}>check</span>
+                    <Icon name="check" style={{ fontVariationSettings: "'wght' 700" }} className="text-primary text-[14px]" />
                   </div>
                 ))}
               </div>
@@ -196,7 +197,7 @@ const ReviewProposalPage = () => {
             {/* Budget Card */}
             <div className="bg-white border-l-4 border-primary p-7 shadow-sm">
               <div className="flex items-center gap-3 mb-5">
-                <span className="material-symbols-outlined text-primary text-[20px]">payments</span>
+                <Icon name="payments" className="text-primary text-[20px]" />
                 <h4 className="text-[10px] font-black uppercase tracking-widest">Financials & Timing</h4>
               </div>
               <div className="space-y-5">
@@ -222,7 +223,7 @@ const ReviewProposalPage = () => {
 
             <div className="bg-white border border-zinc-100 p-5 shadow-sm text-center">
               <button onClick={handleSubmit} className="w-full py-3.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors flex items-center justify-center gap-2">
-                <span className="material-symbols-outlined text-[16px]">send</span>
+                <Icon name="send" className="text-[16px]" />
                 Submit Enquiry
               </button>
               <button onClick={() => navigate(-1)} className="w-full mt-2 py-3 border border-zinc-200 text-zinc-500 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors">

@@ -1,7 +1,28 @@
 import React from 'react';
 import Icon from '../components/ui/Icon.jsx';
 
+const revenueBars = [
+  { month: 'Jul', value: 145, color: 'bg-primary' },
+  { month: 'Aug', value: 128, color: 'bg-slate-800' },
+  { month: 'Sep', value: 165, color: 'bg-primary' },
+  { month: 'Oct', value: 182, color: 'bg-slate-800' },
+  { month: 'Nov', value: 156, color: 'bg-primary' },
+  { month: 'Dec', value: 174, color: 'bg-slate-800' },
+];
+
+const upcomingCalendar = [
+  { title: 'DA submission - Villa 4', date: 'Oct 24, 2023', status: 'High' },
+  { title: 'Structural review', date: 'Oct 28, 2023', status: 'Mid' },
+  { title: 'Client kickoff', date: 'Nov 02, 2023', status: 'Low' },
+  { title: 'Permitting deadline', date: 'Nov 10, 2023', status: 'High' },
+  { title: 'Team sync', date: 'Nov 14, 2023', status: 'Medium' },
+];
+
 const DashboardPage = () => {
+  const [showCalendar, setShowCalendar] = React.useState(false);
+
+  const maxValue = Math.max(...revenueBars.map((item) => item.value));
+
   return (
     <div className="flex-1 p-6 overflow-y-auto no-scrollbar space-y-6">
       {/* KPI Cards */}
@@ -137,16 +158,27 @@ const DashboardPage = () => {
               </div>
             </div>
             
-            <div className="h-48 flex items-end justify-between gap-4 px-2">
-              <div className="flex-1 flex flex-col justify-end gap-1"><div className="bg-black w-full h-[30%]"></div><div className="bg-primary w-full h-[60%]"></div></div>
-              <div className="flex-1 flex flex-col justify-end gap-1"><div className="bg-black w-full h-[40%]"></div><div className="bg-primary w-full h-[80%]"></div></div>
-              <div className="flex-1 flex flex-col justify-end gap-1"><div className="bg-black w-full h-[20%]"></div><div className="bg-primary w-full h-[50%]"></div></div>
-              <div className="flex-1 flex flex-col justify-end gap-1"><div className="bg-black w-full h-[35%]"></div><div className="bg-primary w-full h-[70%]"></div></div>
-              <div className="flex-1 flex flex-col justify-end gap-1"><div className="bg-black w-full h-[50%]"></div><div className="bg-primary w-full h-[90%]"></div></div>
-              <div className="flex-1 flex flex-col justify-end gap-1"><div className="bg-black w-full h-[30%]"></div><div className="bg-primary w-full h-[85%]"></div></div>
+              <div className="h-52 relative rounded-3xl border border-zinc-100 bg-zinc-50 p-4">
+              <div className="absolute inset-x-4 top-4 h-px bg-zinc-200" />
+              <div className="absolute inset-x-4 top-16 h-px bg-zinc-200" />
+              <div className="absolute inset-x-4 top-28 h-px bg-zinc-200" />
+              <div className="absolute inset-x-4 top-40 h-px bg-zinc-200" />
+              <div className="absolute inset-x-4 bottom-14 h-px bg-zinc-200" />
+              <div className="relative h-full flex items-end gap-3 pt-2 pb-2">
+                {revenueBars.map((item) => {
+                  const height = `${Math.max((item.value / maxValue) * 100, 18)}%`;
+                  return (
+                    <div key={item.month} className="flex-1 flex flex-col items-center gap-2">
+                      <div className={`w-full rounded-t-3xl ${item.color}`} style={{ height }} />
+                      <span className="text-[10px] font-bold text-zinc-500">{item.month}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-            <div className="flex justify-between mt-4 text-[10px] font-bold text-zinc-400">
-              <span>JAN</span><span>FEB</span><span>MAR</span><span>APR</span><span>MAY</span><span>JUN</span>
+            <div className="grid grid-cols-2 gap-4 mt-4 text-[10px] font-bold text-zinc-400 uppercase">
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-primary" />Revenue</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-slate-800" />Expenses</div>
             </div>
           </section>
         </div>
@@ -189,10 +221,51 @@ const DashboardPage = () => {
                 <p className="text-[9px] text-zinc-400 mt-2 font-bold uppercase">Nov 02, 2023</p>
               </div>
             </div>
-            <button className="w-full mt-4 py-2 border border-zinc-100 text-[10px] font-bold text-primary hover:bg-zinc-50 uppercase tracking-widest transition-colors">
-              View Full Calendar
-            </button>
-          </section>
+<button
+                onClick={() => setShowCalendar(true)}
+                className="w-full mt-4 py-2 border border-zinc-100 text-[10px] font-bold text-primary hover:bg-zinc-50 uppercase tracking-widest transition-colors"
+              >
+                View Full Calendar
+              </button>
+            </section>
+            {showCalendar && (
+              <div className="fixed inset-0 z-50 bg-black/40 p-6 flex items-center justify-center">
+                <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden">
+                  <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
+                    <div>
+                      <h3 className="text-sm font-black uppercase">Full Calendar</h3>
+                      <p className="text-[11px] text-zinc-500 mt-1">Upcoming schedule and delivery milestones</p>
+                    </div>
+                    <button
+                      onClick={() => setShowCalendar(false)}
+                      className="text-zinc-500 hover:text-black transition-colors text-[13px] font-bold"
+                    >
+                      Close
+                    </button>
+                  </div>
+                  <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+                    {upcomingCalendar.map((event) => (
+                      <div key={event.title} className="flex items-center justify-between gap-4 p-4 bg-zinc-50 rounded-3xl">
+                        <div>
+                          <p className="text-sm font-bold text-slate-900">{event.title}</p>
+                          <p className="text-[11px] text-zinc-500 mt-1">{event.date}</p>
+                        </div>
+                        <span className={`text-[10px] font-black uppercase px-3 py-1 rounded-full ${
+                          event.status === 'High'
+                            ? 'bg-rose-100 text-rose-700'
+                            : event.status === 'Medium'
+                            ? 'bg-amber-100 text-amber-700'
+                            : 'bg-slate-100 text-slate-700'
+                        }`}
+                        >
+                          {event.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
 
           {/* Recent Activity */}
           <section className="bg-white p-6 border border-zinc-100 shadow-sm">

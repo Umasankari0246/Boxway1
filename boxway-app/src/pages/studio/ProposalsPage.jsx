@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MOCK_PROPOSALS } from '../../data/mockData';
+import Icon from "../../components/ui/Icon.jsx"
 
 const statusConfig = {
   Draft: { cls: 'bg-zinc-100 text-zinc-600', dot: 'bg-zinc-400' },
@@ -42,7 +43,7 @@ const ProposalsPage = () => {
           onClick={() => navigate('/proposals/new')}
           className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-[11px] font-black uppercase tracking-widest hover:bg-black transition-colors shadow-lg shadow-primary/20"
         >
-          <span className="material-symbols-outlined text-[18px]">add</span>
+          <Icon name="add" className="text-[18px]" />
           New Enquiry / Proposal
         </button>
       </div>
@@ -62,7 +63,7 @@ const ProposalsPage = () => {
                 <p className={`text-3xl font-black ${k.color}`}>{k.val}</p>
                 {k.sub && <p className="text-[10px] text-zinc-400 mt-0.5">{k.sub}</p>}
               </div>
-              <span className={`material-symbols-outlined text-[28px] ${k.color} opacity-30`}>{k.icon}</span>
+              <Icon name={k.icon} className={`text-[28px] ${k.color} opacity-30`} />
             </div>
           ))}
         </div>
@@ -70,7 +71,7 @@ const ProposalsPage = () => {
         {/* Search + Filters */}
         <div className="bg-white border border-zinc-100 shadow-sm p-3 flex flex-col sm:flex-row gap-3 items-center">
           <div className="relative flex-1 w-full">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-[20px]">search</span>
+            <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-[20px]" />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -114,7 +115,7 @@ const ProposalsPage = () => {
               {filtered.length === 0 && (
                 <tr>
                   <td colSpan={8} className="px-6 py-16 text-center">
-                    <span className="material-symbols-outlined text-zinc-200 text-4xl block mb-2">description</span>
+                    <Icon name="description" className="text-zinc-200 text-4xl block mb-2" />
                     <p className="text-zinc-400 text-sm">No proposals match your search.</p>
                   </td>
                 </tr>
@@ -156,13 +157,13 @@ const ProposalsPage = () => {
                     <td className="px-5 py-4 text-xs text-zinc-400">{p.submittedDate || '—'}</td>
                     <td className="px-5 py-4" onClick={e => e.stopPropagation()}>
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => navigate(`/proposals/${p.id}`)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-900 transition-colors" title="View"><span className="material-symbols-outlined text-[16px]">visibility</span></button>
-                        <button onClick={() => navigate(`/proposals/new`)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors" title="Edit"><span className="material-symbols-outlined text-[16px]">edit</span></button>
+                        <button onClick={() => navigate(`/proposals/${p.id}`)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-900 transition-colors" title="View"><Icon name="visibility" className="text-[16px]" /></button>
+                        <button onClick={() => navigate(`/proposals/new`)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors" title="Edit"><Icon name="edit" className="text-[16px]" /></button>
                         <button
                           onClick={() => setDeletingId(p.id)}
                           className="p-1.5 hover:bg-red-50 text-zinc-400 hover:text-red-600 transition-colors" title="Delete"
                         >
-                          <span className="material-symbols-outlined text-[16px]">delete</span>
+                          <Icon name="delete" className="text-[16px]" />
                         </button>
                       </div>
                     </td>
@@ -181,7 +182,7 @@ const ProposalsPage = () => {
       {deletingId && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" onClick={() => setDeletingId(null)}>
           <div className="bg-white p-8 w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
-            <span className="material-symbols-outlined text-red-500 text-3xl mb-3 block">warning</span>
+            <Icon name="warning" className="text-red-500 text-3xl mb-3 block" />
             <h3 className="text-lg font-black uppercase tracking-tight mb-2">Delete Proposal?</h3>
             <p className="text-sm text-zinc-500 mb-6">This action cannot be undone. The proposal and all its data will be permanently removed.</p>
             <div className="flex gap-3">

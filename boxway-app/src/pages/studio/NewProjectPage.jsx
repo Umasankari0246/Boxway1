@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import Icon from "../../components/ui/Icon.jsx"
 
 const STEPS = [
   { id: '01', label: 'Details',    icon: 'architecture' },
@@ -84,7 +85,7 @@ const NewProjectPage = () => {
       <div className="sticky top-0 z-20 bg-[#fcf9f8]/95 backdrop-blur border-b border-zinc-100 px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate('/projects')} className="text-zinc-400 hover:text-zinc-700 transition-colors">
-            <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+            <Icon name="arrow_back" className="text-[20px]" />
           </button>
           <div>
             <h2 className="text-xl font-black tracking-tight text-zinc-900 uppercase">New Project</h2>
@@ -97,7 +98,7 @@ const NewProjectPage = () => {
           <button className="px-5 py-2.5 bg-zinc-100 text-zinc-700 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-200 transition-colors">Save Draft</button>
           <button onClick={handleNext} className="px-6 py-2.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors flex items-center gap-1.5">
             {step < STEPS.length - 1 ? 'Continue' : 'Create Project'}
-            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            <Icon name="arrow_forward" className="text-[16px]" />
           </button>
         </div>
       </div>
@@ -121,7 +122,7 @@ const NewProjectPage = () => {
         {step === 0 && (
           <div className="space-y-8">
             <div className="flex items-center gap-3 mb-4">
-              <span className="material-symbols-outlined p-2 bg-zinc-50 text-primary text-[20px]">architecture</span>
+              <Icon name="architecture" className="p-2 bg-zinc-50 text-primary text-[20px]" />
               <h3 className="text-[11px] font-black uppercase tracking-[0.15em]">01. Project Details</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -153,7 +154,7 @@ const NewProjectPage = () => {
               </div>
               {fromProposal && (
                 <div className="md:col-span-2 flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200">
-                  <span className="material-symbols-outlined text-emerald-600 text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>link</span>
+                  <Icon name="link" style={{ fontVariationSettings: "'FILL' 1" }} className="text-emerald-600 text-[20px]" />
                   <p className="text-xs text-emerald-800 font-semibold">
                     Linked to Proposal <strong>{fromProposal.id || 'PRP001'}</strong> — details pre-filled from approved enquiry.
                   </p>
@@ -167,7 +168,7 @@ const NewProjectPage = () => {
         {step === 1 && (
           <div className="space-y-6">
             <div className="flex items-center gap-3 mb-4">
-              <span className="material-symbols-outlined p-2 bg-zinc-50 text-primary text-[20px]">person_pin</span>
+              <Icon name="person_pin" className="p-2 bg-zinc-50 text-primary text-[20px]" />
               <h3 className="text-[11px] font-black uppercase tracking-[0.15em]">02. Client Information</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -198,7 +199,7 @@ const NewProjectPage = () => {
         {step === 2 && (
           <div className="space-y-6">
             <div className="flex items-center gap-3 mb-4">
-              <span className="material-symbols-outlined p-2 bg-zinc-50 text-primary text-[20px]">group</span>
+              <Icon name="group" className="p-2 bg-zinc-50 text-primary text-[20px]" />
               <h3 className="text-[11px] font-black uppercase tracking-[0.15em]">03. Resource Assignment</h3>
             </div>
             <div>
@@ -217,7 +218,7 @@ const NewProjectPage = () => {
                       onClick={() => toggleMember(e.id)}
                       className={`w-4 h-4 border-2 flex items-center justify-center transition-colors shrink-0 ${form.teamMembers.includes(e.id) ? 'border-primary bg-primary' : 'border-zinc-300'}`}
                     >
-                      {form.teamMembers.includes(e.id) && <span className="material-symbols-outlined text-white text-[12px]" style={{ fontVariationSettings: "'wght' 700" }}>check</span>}
+                      {form.teamMembers.includes(e.id) && <Icon name="check" style={{ fontVariationSettings: "'wght' 700" }} className="text-white text-[12px]" />}
                     </div>
                     <div className="w-8 h-8 bg-primary/10 text-primary text-[11px] font-black flex items-center justify-center shrink-0">{e.name.charAt(0)}</div>
                     <div>
@@ -235,14 +236,14 @@ const NewProjectPage = () => {
         {step === 3 && (
           <div className="space-y-6">
             <div className="flex items-center gap-3 mb-2">
-              <span className="material-symbols-outlined p-2 bg-zinc-50 text-primary text-[20px]">timeline</span>
+              <Icon name="timeline" className="p-2 bg-zinc-50 text-primary text-[20px]" />
               <div>
                 <h3 className="text-[11px] font-black uppercase tracking-[0.15em]">04. Project Phases</h3>
                 <p className="text-[9px] text-zinc-400 mt-0.5">Auto-generated from project type. Toggle phases as needed.</p>
               </div>
             </div>
             <div className="p-3 bg-amber-50 border border-amber-200 flex items-center gap-2 mb-2">
-              <span className="material-symbols-outlined text-amber-600 text-[18px]">info</span>
+              <Icon name="info" className="text-amber-600 text-[18px]" />
               <p className="text-[10px] text-amber-800 font-semibold">Phases for type: <strong>{form.type}</strong>. Resources can be reassigned at any phase.</p>
             </div>
             <div className="space-y-2">
@@ -252,7 +253,7 @@ const NewProjectPage = () => {
                     onClick={() => togglePhase(i)}
                     className={`w-4 h-4 border-2 flex items-center justify-center transition-colors shrink-0 cursor-pointer ${ph.active ? 'border-primary bg-primary' : 'border-zinc-300'}`}
                   >
-                    {ph.active && <span className="material-symbols-outlined text-white text-[12px]" style={{ fontVariationSettings: "'wght' 700" }}>check</span>}
+                    {ph.active && <Icon name="check" style={{ fontVariationSettings: "'wght' 700" }} className="text-white text-[12px]" />}
                   </div>
                   <div className="flex items-center gap-3 flex-1">
                     <span className="text-[10px] font-black font-mono text-primary w-6">{String(i + 1).padStart(2, '0')}</span>
@@ -271,7 +272,7 @@ const NewProjectPage = () => {
         {step === 4 && (
           <div className="space-y-6">
             <div className="flex items-center gap-3 mb-4">
-              <span className="material-symbols-outlined p-2 bg-zinc-50 text-primary text-[20px]">payments</span>
+              <Icon name="payments" className="p-2 bg-zinc-50 text-primary text-[20px]" />
               <h3 className="text-[11px] font-black uppercase tracking-[0.15em]">05. Budget & Financials</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -312,7 +313,7 @@ const NewProjectPage = () => {
         {step === 5 && (
           <div className="space-y-6">
             <div className="flex items-center gap-3 mb-4">
-              <span className="material-symbols-outlined p-2 bg-zinc-50 text-primary text-[20px]">fact_check</span>
+              <Icon name="fact_check" className="p-2 bg-zinc-50 text-primary text-[20px]" />
               <h3 className="text-[11px] font-black uppercase tracking-[0.15em]">06. Review & Create</h3>
             </div>
             <div className="grid grid-cols-12 gap-5">
@@ -356,7 +357,7 @@ const NewProjectPage = () => {
                   <div><p className="text-[9px] text-white/40 uppercase tracking-widest">Budget</p><p className="text-2xl font-black text-primary">{form.budget ? `$${Number(form.budget).toLocaleString()}` : '—'}</p></div>
                   <div><p className="text-[9px] text-white/40 uppercase tracking-widest">Phases</p><p className="font-bold">{form.phases.filter(p => p.active).length} phases defined</p></div>
                   <button onClick={handleNext} className="w-full py-3 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-primary transition-colors flex items-center justify-center gap-2">
-                    <span className="material-symbols-outlined text-[16px]">add</span>Create Project
+                    <Icon name="add" className="text-[16px]" />Create Project
                   </button>
                 </div>
               </div>
@@ -367,12 +368,12 @@ const NewProjectPage = () => {
         {/* Bottom Navigation */}
         <div className="flex justify-between mt-10 pt-6 border-t border-zinc-100">
           <button onClick={() => step > 0 ? setStep(s => s - 1) : navigate('/projects')} className="flex items-center gap-2 text-zinc-500 hover:text-zinc-900 text-[10px] font-black uppercase tracking-widest transition-colors">
-            <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+            <Icon name="arrow_back" className="text-[18px]" />
             {step > 0 ? 'Previous' : 'Cancel'}
           </button>
           <button onClick={handleNext} className="flex items-center gap-2 px-6 py-3 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors">
             {step < STEPS.length - 1 ? 'Continue' : 'Create Project'}
-            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            <Icon name="arrow_forward" className="text-[16px]" />
           </button>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MOCK_AI_INSIGHTS } from '../../data/mockData';
+import Icon from "../../components/ui/Icon.jsx"
 
 const typeConfig = {
   warning: { bgCard: 'border-l-4 border-red-500 bg-red-50', iconColor: 'text-red-500', badge: 'bg-red-100 text-red-700' },
@@ -71,7 +72,7 @@ const AIInsightsPage = () => {
                 <div key={insight.id} className={`bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden`}>
                   <div className={`p-5 ${cfg.bgCard}`}>
                     <div className="flex items-start gap-4">
-                      <span className={`material-symbols-outlined ${cfg.iconColor} shrink-0`}>{insight.icon}</span>
+                      <Icon name={insight.icon} className={`${cfg.iconColor} shrink-0`} />
                       <div className="flex-1">
                         <div className="flex items-start justify-between gap-3">
                           <div>
@@ -102,7 +103,7 @@ const AIInsightsPage = () => {
             <div className="p-5 border-b border-white/10">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                  <span className="material-symbols-outlined text-white text-lg">psychology</span>
+                  <Icon name="psychology" className="text-white text-lg" />
                 </div>
                 <div>
                   <p className="font-bold text-white text-sm">Boxway AI</p>
@@ -140,7 +141,7 @@ const AIInsightsPage = () => {
                   className="flex-1 bg-white/10 text-white placeholder-zinc-500 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary border border-white/10"
                 />
                 <button onClick={() => sendMessage(input)} disabled={!input.trim()} className="p-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-40 transition-colors">
-                  <span className="material-symbols-outlined">send</span>
+                  <Icon name="send" />
                 </button>
               </div>
             </div>

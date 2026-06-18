@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePayrollStore } from '../../../store/payrollStore';
+import Icon from "../../../components/ui/Icon.jsx"
 
 const STEPS = ['Select Employees', 'Setup Payroll', 'Review & Confirm'];
 
@@ -26,7 +27,7 @@ const Step2 = () => {
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
           <button onClick={() => navigate('/payroll/run/multi/step1')} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-white rounded">
-            <span className="material-symbols-outlined">arrow_back</span>
+            <Icon name="arrow_back" />
           </button>
           <div>
             <h2 className="text-2xl font-black text-slate-900">Setup Payroll</h2>
@@ -39,7 +40,7 @@ const Step2 = () => {
             <React.Fragment key={s}>
               <div className="flex flex-col items-center">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 ${i < 1 ? 'bg-green-500 border-green-500 text-white' : i === 1 ? 'bg-primary border-primary text-white' : 'border-slate-300 text-slate-400 bg-white'}`}>
-                  {i < 1 ? <span className="material-symbols-outlined text-xs">check</span> : i + 1}
+                  {i < 1 ? <Icon name="check" className="text-xs" /> : i + 1}
                 </div>
                 <span className={`text-[10px] font-bold mt-1 uppercase tracking-wide ${i === 1 ? 'text-primary' : 'text-slate-400'}`}>{s}</span>
               </div>
