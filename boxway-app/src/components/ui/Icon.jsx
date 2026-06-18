@@ -82,6 +82,7 @@ const iconMap = {
   box: Box,
   cake: Cake,
   calendar_month: CalendarDays,
+  calendar_today: CalendarDays,
   chat: MessageSquare,
   check: Check,
   check_circle: CheckCircle,

@@ -1,4 +1,5 @@
 import React from 'react';
+import Icon from '../components/ui/Icon.jsx';
 
 const DashboardPage = () => {
   return (
@@ -6,32 +7,48 @@ const DashboardPage = () => {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
-          <div>
-            <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Active Projects</p>
-            <h3 className="text-2xl font-black">12</h3>
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-primary/10 text-primary grid place-items-center">
+              <Icon name="box" className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Active Projects</p>
+              <h3 className="text-2xl font-black">12</h3>
+            </div>
           </div>
-          <div className="text-primary"><span className="material-symbols-outlined text-[28px]">box</span></div>
         </div>
         <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
-          <div>
-            <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Revenue</p>
-            <h3 className="text-2xl font-black">$84,200</h3>
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-700 grid place-items-center">
+              <Icon name="payments" className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Revenue</p>
+              <h3 className="text-2xl font-black">$84,200</h3>
+            </div>
           </div>
-          <div className="text-black"><span className="material-symbols-outlined text-[28px]">payments</span></div>
         </div>
         <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
-          <div>
-            <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Pending</p>
-            <h3 className="text-2xl font-black">05</h3>
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-amber-50 text-amber-700 grid place-items-center">
+              <Icon name="pending_actions" className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Pending</p>
+              <h3 className="text-2xl font-black">05</h3>
+            </div>
           </div>
-          <div className="text-primary"><span className="material-symbols-outlined text-[28px]">pending_actions</span></div>
         </div>
         <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
-          <div>
-            <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Team</p>
-            <h3 className="text-2xl font-black">28</h3>
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-sky-50 text-sky-700 grid place-items-center">
+              <Icon name="group" className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Team</p>
+              <h3 className="text-2xl font-black">28</h3>
+            </div>
           </div>
-          <div className="text-black"><span className="material-symbols-outlined text-[28px]">groups</span></div>
         </div>
       </div>
 
@@ -139,8 +156,10 @@ const DashboardPage = () => {
           {/* Upcoming Deadlines */}
           <section className="bg-white p-6 border border-zinc-100 shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xs font-black uppercase">Upcoming Deadlines</h3>
-              <span className="material-symbols-outlined text-[18px] text-zinc-300">calendar_today</span>
+              <h3 className="text-xs font-black uppercase flex items-center gap-2">
+                <Icon name="calendar_today" className="h-4 w-4 text-primary" />
+                Upcoming Deadlines
+              </h3>
             </div>
             <div className="space-y-3">
               <div className="p-3 border-l-4 border-primary bg-zinc-50">
@@ -149,9 +168,7 @@ const DashboardPage = () => {
                   <span className="text-[9px] font-black bg-primary text-white px-1.5 py-0.5 uppercase">High</span>
                 </div>
                 <p className="text-[10px] text-zinc-500 mt-1 uppercase">Modern Villa Design</p>
-                <p className="text-[9px] text-zinc-400 mt-2 font-bold uppercase flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[12px]">schedule</span> Oct 24, 2023
-                </p>
+                <p className="text-[9px] text-zinc-400 mt-2 font-bold uppercase">Oct 24, 2023</p>
               </div>
               
               <div className="p-3 border-l-4 border-black bg-zinc-50">
@@ -160,9 +177,7 @@ const DashboardPage = () => {
                   <span className="text-[9px] font-black bg-black text-white px-1.5 py-0.5 uppercase">Mid</span>
                 </div>
                 <p className="text-[10px] text-zinc-500 mt-1 uppercase">Skyline Office Tower</p>
-                <p className="text-[9px] text-zinc-400 mt-2 font-bold uppercase flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[12px]">schedule</span> Oct 28, 2023
-                </p>
+                <p className="text-[9px] text-zinc-400 mt-2 font-bold uppercase">Oct 28, 2023</p>
               </div>
 
               <div className="p-3 border-l-4 border-zinc-200 bg-zinc-50">
@@ -171,9 +186,7 @@ const DashboardPage = () => {
                   <span className="text-[9px] font-black bg-zinc-200 text-zinc-600 px-1.5 py-0.5 uppercase">Low</span>
                 </div>
                 <p className="text-[10px] text-zinc-500 mt-1 uppercase">Urban Park Renovation</p>
-                <p className="text-[9px] text-zinc-400 mt-2 font-bold uppercase flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[12px]">schedule</span> Nov 02, 2023
-                </p>
+                <p className="text-[9px] text-zinc-400 mt-2 font-bold uppercase">Nov 02, 2023</p>
               </div>
             </div>
             <button className="w-full mt-4 py-2 border border-zinc-100 text-[10px] font-bold text-primary hover:bg-zinc-50 uppercase tracking-widest transition-colors">
@@ -188,8 +201,8 @@ const DashboardPage = () => {
               <div className="absolute left-[13px] top-2 bottom-4 w-[1px] bg-zinc-100"></div>
               
               <div className="flex gap-4 relative">
-                <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center shrink-0 z-10">
-                  <span className="material-symbols-outlined text-[14px]">upload_file</span>
+                <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center shrink-0 z-10 font-bold text-sm">
+                  S
                 </div>
                 <div>
                   <p className="text-[11px] font-bold">Sarah Chen <span className="text-zinc-500 font-normal">uploaded Floor_Plan_v3.pdf</span></p>
@@ -198,8 +211,8 @@ const DashboardPage = () => {
               </div>
 
               <div className="flex gap-4 relative">
-                <div className="w-7 h-7 rounded-full bg-black text-white flex items-center justify-center shrink-0 z-10">
-                  <span className="material-symbols-outlined text-[14px]">chat</span>
+                <div className="w-7 h-7 rounded-full bg-black text-white flex items-center justify-center shrink-0 z-10 font-bold text-sm">
+                  M
                 </div>
                 <div>
                   <p className="text-[11px] font-bold">Marcus T. <span className="text-zinc-500 font-normal">commented on Concept Slides</span></p>
@@ -208,8 +221,8 @@ const DashboardPage = () => {
               </div>
 
               <div className="flex gap-4 relative">
-                <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center shrink-0 z-10">
-                  <span className="material-symbols-outlined text-[14px]">done_all</span>
+                <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center shrink-0 z-10 font-bold text-sm">
+                  P
                 </div>
                 <div>
                   <p className="text-[11px] font-bold">Project Bot <span className="text-zinc-500 font-normal">marked Site Survey complete</span></p>
