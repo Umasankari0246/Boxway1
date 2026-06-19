@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { MOCK_EMPLOYEES } from '../../data/mockData';
@@ -14,6 +14,7 @@ const NewEmployeePage = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [employeeId, setEmployeeId] = useState('');
   const [error, setError] = useState('');
   const [form, setForm] = useState({
     name: '', email: '', phone: '', dob: '', gender: '', bloodGroup: '', city: '',
@@ -27,6 +28,19 @@ const NewEmployeePage = () => {
   });
 
   const set = (field, val) => setForm(f => ({ ...f, [field]: val }));
+
+  useEffect(() => {
+    const fetchEmployeeCount = async () => {
+      try {
+        const response = await api.get('/employees/');
+        const count = response.data.data ? response.data.data.length : MOCK_EMPLOYEES.length;
+        setEmployeeId(`EMP${String(count + 1).padStart(3, '0')}`);
+      } catch (error) {
+        setEmployeeId(`EMP${String(MOCK_EMPLOYEES.length + 1).padStart(3, '0')}`);
+      }
+    };
+    fetchEmployeeCount();
+  }, []);
 
   const validateForm = () => {
     const digitsOnly = form.phone.replace(/\D/g, '');
@@ -52,6 +66,7 @@ const NewEmployeePage = () => {
       setIsSubmitting(true);
       setError('');
       const payload = {
+        employeeId: employeeId,
         name: form.name,
         email: form.email,
         phone: form.phone,
@@ -78,7 +93,9 @@ const NewEmployeePage = () => {
         hra: Number(form.hra) || 0,
         allowances: Number(form.allowances) || 0,
         taxId: form.taxId,
-        status: "Active"
+        status: "Active",
+        photoUrl: form.photoUrl,
+        collegeDocs: form.collegeDocs
       };
 
       await api.post('/employees/', payload);
@@ -182,7 +199,7 @@ const NewEmployeePage = () => {
             </div>
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Employee ID</label>
-              <input value={`EMP${String(MOCK_EMPLOYEES.length + 1).padStart(3, '0')}`} disabled className="w-full border border-slate-100 bg-slate-50 rounded px-3 py-2.5 text-sm text-slate-400 cursor-not-allowed" />
+              <input value={employeeId} disabled className="w-full border border-slate-100 bg-slate-50 rounded px-3 py-2.5 text-sm text-slate-400 cursor-not-allowed" />
             </div>
           </div>
         </div>
@@ -203,7 +220,16 @@ const NewEmployeePage = () => {
             </div>
             <div className="col-span-2">
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Emergency Phone</label>
-              <input value={form.emergencyPhone} onChange={e => set('emergencyPhone', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="+1 555-0000" />
+              <input 
+                value={form.emergencyPhone} 
+                onChange={e => {
+                  const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                  set('emergencyPhone', value);
+                }} 
+                className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" 
+                placeholder="10-digit phone number" 
+                maxLength={10}
+              />
             </div>
            </div>
         </div>
@@ -293,19 +319,73 @@ const NewEmployeePage = () => {
             <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2">Employee Photo</h3>
             <div className="flex items-center gap-4 mb-6">
                 <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center border-2 border-dashed border-slate-300 overflow-hidden text-slate-400">
-                    <Icon name="person" className="text-4xl" />
+                    {form.photoUrl ? (
+                      <img src={form.photoUrl} alt="Employee preview" className="w-full h-full object-cover" />
+                    ) : (
+                      <Icon name="person" className="text-4xl" />
+                    )}
                 </div>
                 <div>
-                    <button className="px-4 py-2 bg-white border border-slate-200 rounded text-sm font-medium text-slate-700 hover:bg-slate-50">Upload Photo</button>
+                    <input 
+                      type="file" 
+                      id="photo-upload" 
+                      className="hidden" 
+                      accept="image/*" 
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            set('photoUrl', reader.result);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }} 
+                    />
+                    <button type="button" onClick={() => document.getElementById('photo-upload').click()} className="px-4 py-2 bg-white border border-slate-200 rounded text-sm font-medium text-slate-700 hover:bg-slate-50">Upload Photo</button>
                     <p className="text-xs text-slate-500 mt-2">JPG, GIF or PNG. Max size of 800K</p>
                 </div>
             </div>
         </div>
         <div className="col-span-2">
           <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2">College & Onboarding Documents</h3>
-          <div className="border-2 border-dashed border-slate-200 rounded-lg p-8 text-center hover:border-primary transition-colors cursor-pointer">
+          <input 
+            type="file" 
+            id="doc-upload" 
+            className="hidden" 
+            multiple 
+            accept=".pdf,.doc,.docx" 
+            onChange={(e) => {
+              const files = Array.from(e.target.files);
+              // Convert files to base64 for storage
+              const filePromises = files.map(file => {
+                return new Promise((resolve) => {
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    resolve({
+                      name: file.name,
+                      type: file.type,
+                      size: file.size,
+                      data: reader.result
+                    });
+                  };
+                  reader.readAsDataURL(file);
+                });
+              });
+              
+              Promise.all(filePromises).then(base64Files => {
+                set('collegeDocs', base64Files);
+              });
+            }} 
+          />
+          <div onClick={() => document.getElementById('doc-upload').click()} className="border-2 border-dashed border-slate-200 rounded-lg p-8 text-center hover:border-primary transition-colors cursor-pointer">
             <Icon name="upload_file" className="text-slate-400 text-4xl" />
-            <p className="text-sm text-slate-500 mt-2">Drop documents here or <span className="text-primary font-semibold">browse</span></p>
+            <p className="text-sm text-slate-500 mt-2">
+              {form.collegeDocs && form.collegeDocs.length > 0 
+                ? <span className="text-primary font-semibold">{form.collegeDocs.length} document(s) selected</span>
+                : <>Drop documents here or <span className="text-primary font-semibold">browse</span></>
+              }
+            </p>
             <p className="text-xs text-slate-400 mt-1">ID Card, Degree Certificates, Offer Letter (Max 10MB each)</p>
           </div>
         </div>

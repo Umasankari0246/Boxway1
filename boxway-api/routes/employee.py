@@ -24,23 +24,47 @@ async def get_employees():
 
 @router.get("/{id}", response_description="Employee data retrieved")
 async def get_employee(id: str):
-    employee = employee_collection.find_one({"_id": ObjectId(id)})
+    # Try to find by employeeId first, then by MongoDB _id
+    employee = employee_collection.find_one({"employeeId": id})
+    if not employee:
+        try:
+            employee = employee_collection.find_one({"_id": ObjectId(id)})
+        except:
+            pass
     if employee:
         return {"message": "Success", "data": employee_helper(employee)}
     return {"error": "Employee not found"}
 
 @router.put("/{id}")
-async def update_employee(id: str, req: UpdateEmployeeSchema = Body(...)):
-    req = {k: v for k, v in req.dict().items() if v is not None}
-    update_result = employee_collection.update_one({"_id": ObjectId(id)}, {"$set": req})
-    if update_result.modified_count == 1:
-        updated_employee = employee_collection.find_one({"_id": ObjectId(id)})
-        return {"message": "Success", "data": employee_helper(updated_employee)}
+@router.patch("/{id}")
+async def update_employee(id: str, req: dict = Body(...)):
+    # Filter out None values
+    req = {k: v for k, v in req.items() if v is not None}
+    # Try to find by employeeId first, then by MongoDB _id
+    employee = employee_collection.find_one({"employeeId": id})
+    if not employee:
+        try:
+            employee = employee_collection.find_one({"_id": ObjectId(id)})
+        except:
+            pass
+    if employee:
+        update_result = employee_collection.update_one({"_id": employee["_id"]}, {"$set": req})
+        if update_result.matched_count == 1:
+            updated_employee = employee_collection.find_one({"_id": employee["_id"]})
+            return {"message": "Success", "data": employee_helper(updated_employee)}
     return {"error": "Update failed"}
 
 @router.delete("/{id}", response_description="Employee deleted")
 async def delete_employee(id: str):
-    delete_result = employee_collection.delete_one({"_id": ObjectId(id)})
-    if delete_result.deleted_count == 1:
-        return {"message": "Success"}
+    # Try to find by employeeId first, then by MongoDB _id
+    employee = employee_collection.find_one({"employeeId": id})
+    if not employee:
+        try:
+            employee = employee_collection.find_one({"_id": ObjectId(id)})
+        except:
+            pass
+    if employee:
+        delete_result = employee_collection.delete_one({"_id": employee["_id"]})
+        if delete_result.deleted_count == 1:
+            return {"message": "Success"}
     return {"error": "Delete failed"}
