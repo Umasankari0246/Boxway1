@@ -1,8 +1,71 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from "../components/ui/Icon.jsx"
 
+const MOCK_INVOICES = [
+  { id: '#INV-2024-001', client: 'Metropolis Development', project: 'Skyline Tower Phase II', date: 'Oct 12, 2023', amount: 12400, status: 'Paid' },
+  { id: '#INV-2024-002', client: 'Urban Green Co.', project: 'Riverside Pavillion', date: 'Oct 24, 2023', amount: 8200, status: 'Pending' },
+  { id: '#INV-2024-003', client: 'Vanguard Estates', project: 'Oakridge Residential Complex', date: 'Nov 02, 2023', amount: 24500, status: 'Overdue' },
+  { id: '#INV-2024-004', client: 'Apex Logistics', project: 'Warehouse Retrofit Plan', date: 'Nov 15, 2023', amount: 5750, status: 'Paid' },
+];
+
 const InvoicesPage = () => {
+  const [invoices, setInvoices] = useState(() => {
+    const stored = localStorage.getItem('invoices');
+    return stored ? JSON.parse(stored) : MOCK_INVOICES;
+  });
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All Statuses');
+  const [deletingId, setDeletingId] = useState(null);
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const filtered = invoices.filter(inv => {
+    const matchesSearch = search === '' ||
+      inv.id.toLowerCase().includes(search.toLowerCase()) ||
+      inv.client.toLowerCase().includes(search.toLowerCase()) ||
+      inv.project.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus = statusFilter === 'All Statuses' || inv.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  }).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  const handleDelete = () => {
+    const updated = invoices.filter(inv => inv.id !== deletingId);
+    setInvoices(updated);
+    localStorage.setItem('invoices', JSON.stringify(updated));
+    setDeletingId(null);
+  };
+
+  const handleStatusChange = (id, newStatus) => {
+    const updated = invoices.map(inv => inv.id === id ? { ...inv, status: newStatus } : inv);
+    setInvoices(updated);
+    localStorage.setItem('invoices', JSON.stringify(updated));
+  };
+
+  const paginated = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Paid': return 'bg-emerald-100 text-emerald-700';
+      case 'Pending': return 'bg-amber-100 text-amber-700';
+      case 'Overdue': return 'bg-red-100 text-red-600';
+      default: return 'bg-zinc-100 text-zinc-700';
+    }
+  };
+
+  // Calculate KPIs
+  const totalBilled = invoices.reduce((sum, inv) => sum + inv.amount, 0);
+  const pending = invoices.filter(inv => inv.status === 'Pending').reduce((sum, inv) => sum + inv.amount, 0);
+  const overdue = invoices.filter(inv => inv.status === 'Overdue').reduce((sum, inv) => sum + inv.amount, 0);
+  const paidThisMonth = invoices.filter(inv => inv.status === 'Paid').reduce((sum, inv) => sum + inv.amount, 0);
+
+  // Update localStorage when invoices change
+  React.useEffect(() => {
+    localStorage.setItem('invoices', JSON.stringify(invoices));
+  }, [invoices]);
+
   return (
     <div className="flex-1 p-6 overflow-y-auto no-scrollbar space-y-6">
       {/* Top Actions */}
@@ -24,28 +87,28 @@ const InvoicesPage = () => {
         <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
           <div>
             <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Total Billed</p>
-            <h3 className="text-2xl font-black">$124,500</h3>
+            <h3 className="text-2xl font-black">${totalBilled.toLocaleString()}</h3>
           </div>
           <div className="text-primary"><Icon name="payments" className="text-[28px]" /></div>
         </div>
         <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between border-l-2 border-l-primary">
           <div>
             <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Pending</p>
-            <h3 className="text-2xl font-black">$32,400</h3>
+            <h3 className="text-2xl font-black">${pending.toLocaleString()}</h3>
           </div>
           <div className="text-black"><Icon name="schedule" className="text-[28px]" /></div>
         </div>
         <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
           <div>
             <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Overdue</p>
-            <h3 className="text-2xl font-black text-primary">$8,200</h3>
+            <h3 className="text-2xl font-black text-primary">${overdue.toLocaleString()}</h3>
           </div>
           <div className="text-primary"><Icon name="warning" className="text-[28px]" /></div>
         </div>
         <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
           <div>
             <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Paid this Month</p>
-            <h3 className="text-2xl font-black">$45,150</h3>
+            <h3 className="text-2xl font-black">${paidThisMonth.toLocaleString()}</h3>
           </div>
           <div className="text-black"><Icon name="check_circle" className="text-[28px]" /></div>
         </div>
@@ -56,13 +119,19 @@ const InvoicesPage = () => {
         <div className="relative flex-1 w-full">
           <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-[20px]" />
           <input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-zinc-50 border-none text-[12px] font-medium placeholder:text-zinc-400 focus:ring-1 focus:ring-primary"
-            placeholder="Search by ID, client or project..." 
-            type="text" 
+            placeholder="Search by ID, client or project..."
+            type="text"
           />
         </div>
         <div className="flex items-center gap-2 w-full md:w-auto">
-          <select className="bg-white border border-zinc-200 text-[11px] font-bold uppercase py-2 px-3 focus:ring-0 focus:border-primary">
+          <select
+            value={statusFilter}
+            onChange={e => setStatusFilter(e.target.value)}
+            className="bg-white border border-zinc-200 text-[11px] font-bold uppercase py-2 px-10 focus:ring-0 focus:border-primary min-w-[180px]"
+          >
             <option>All Statuses</option>
             <option>Paid</option>
             <option>Pending</option>
@@ -85,105 +154,129 @@ const InvoicesPage = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-100">
-            <tr className="hover:bg-zinc-50/50 transition-colors">
-              <td className="px-6 py-4 text-xs font-black">#INV-2024-001</td>
-              <td className="px-6 py-4">
-                <div>
-                  <p className="text-xs font-black">Metropolis Development</p>
-                  <p className="text-[10px] text-zinc-500 uppercase">Skyline Tower Phase II</p>
-                </div>
-              </td>
-              <td className="px-6 py-4 text-[11px] font-medium uppercase text-zinc-600">Oct 12, 2023</td>
-              <td className="px-6 py-4 text-[11px] font-black text-right">$12,400.00</td>
-              <td className="px-6 py-4 text-center">
-                <span className="px-2 py-0.5 text-[9px] font-black uppercase bg-emerald-100 text-emerald-700">Paid</span>
-              </td>
-              <td className="px-6 py-4 text-right">
-                <div className="flex justify-end gap-2">
-                  <button className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-black transition-colors"><Icon name="visibility" className="text-[18px]" /></button>
-                  <button className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-primary transition-colors"><Icon name="edit" className="text-[18px]" /></button>
-                  <button className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-red-600 transition-colors"><Icon name="delete" className="text-[18px]" /></button>
-                </div>
-              </td>
-            </tr>
-            <tr className="hover:bg-zinc-50/50 transition-colors">
-              <td className="px-6 py-4 text-xs font-black">#INV-2024-002</td>
-              <td className="px-6 py-4">
-                <div>
-                  <p className="text-xs font-black">Urban Green Co.</p>
-                  <p className="text-[10px] text-zinc-500 uppercase">Riverside Pavillion</p>
-                </div>
-              </td>
-              <td className="px-6 py-4 text-[11px] font-medium uppercase text-zinc-600">Oct 24, 2023</td>
-              <td className="px-6 py-4 text-[11px] font-black text-right">$8,200.00</td>
-              <td className="px-6 py-4 text-center">
-                <span className="px-2 py-0.5 text-[9px] font-black uppercase bg-amber-100 text-amber-700">Pending</span>
-              </td>
-              <td className="px-6 py-4 text-right">
-                <div className="flex justify-end gap-2">
-                  <button className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-black transition-colors"><Icon name="visibility" className="text-[18px]" /></button>
-                  <button className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-primary transition-colors"><Icon name="edit" className="text-[18px]" /></button>
-                  <button className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-red-600 transition-colors"><Icon name="delete" className="text-[18px]" /></button>
-                </div>
-              </td>
-            </tr>
-            <tr className="hover:bg-zinc-50/50 transition-colors">
-              <td className="px-6 py-4 text-xs font-black">#INV-2024-003</td>
-              <td className="px-6 py-4">
-                <div>
-                  <p className="text-xs font-black">Vanguard Estates</p>
-                  <p className="text-[10px] text-zinc-500 uppercase">Oakridge Residential Complex</p>
-                </div>
-              </td>
-              <td className="px-6 py-4 text-[11px] font-medium uppercase text-zinc-600">Nov 02, 2023</td>
-              <td className="px-6 py-4 text-[11px] font-black text-right">$24,500.00</td>
-              <td className="px-6 py-4 text-center">
-                <span className="px-2 py-0.5 text-[9px] font-black uppercase bg-red-100 text-red-600">Overdue</span>
-              </td>
-              <td className="px-6 py-4 text-right">
-                <div className="flex justify-end gap-2">
-                  <button className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-black transition-colors"><Icon name="visibility" className="text-[18px]" /></button>
-                  <button className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-primary transition-colors"><Icon name="edit" className="text-[18px]" /></button>
-                  <button className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-red-600 transition-colors"><Icon name="delete" className="text-[18px]" /></button>
-                </div>
-              </td>
-            </tr>
-            <tr className="hover:bg-zinc-50/50 transition-colors">
-              <td className="px-6 py-4 text-xs font-black">#INV-2024-004</td>
-              <td className="px-6 py-4">
-                <div>
-                  <p className="text-xs font-black">Apex Logistics</p>
-                  <p className="text-[10px] text-zinc-500 uppercase">Warehouse Retrofit Plan</p>
-                </div>
-              </td>
-              <td className="px-6 py-4 text-[11px] font-medium uppercase text-zinc-600">Nov 15, 2023</td>
-              <td className="px-6 py-4 text-[11px] font-black text-right">$5,750.00</td>
-              <td className="px-6 py-4 text-center">
-                <span className="px-2 py-0.5 text-[9px] font-black uppercase bg-emerald-100 text-emerald-700">Paid</span>
-              </td>
-              <td className="px-6 py-4 text-right">
-                <div className="flex justify-end gap-2">
-                  <button className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-black transition-colors"><Icon name="visibility" className="text-[18px]" /></button>
-                  <button className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-primary transition-colors"><Icon name="edit" className="text-[18px]" /></button>
-                  <button className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-red-600 transition-colors"><Icon name="delete" className="text-[18px]" /></button>
-                </div>
-              </td>
-            </tr>
+            {paginated.map(inv => (
+              <tr key={inv.id} className="hover:bg-zinc-50/50 transition-colors">
+                <td className="px-6 py-4 text-xs font-black">{inv.id}</td>
+                <td className="px-6 py-4">
+                  <div>
+                    <p className="text-xs font-black">{inv.client}</p>
+                    <p className="text-[10px] text-zinc-500 uppercase">{inv.project}</p>
+                  </div>
+                </td>
+                <td className="px-6 py-4 text-[11px] font-medium uppercase text-zinc-600">{inv.date}</td>
+                <td className="px-6 py-4 text-[11px] font-black text-right">${inv.amount.toLocaleString()}</td>
+                <td className="px-6 py-4 text-center">
+                  <select
+                    value={inv.status}
+                    onChange={(e) => handleStatusChange(inv.id, e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className={`px-4 py-0.5 text-[9px] font-black uppercase border-0 cursor-pointer min-w-[100px] ${getStatusColor(inv.status)}`}
+                  >
+                    <option value="Paid">Paid</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Overdue">Overdue</option>
+                  </select>
+                </td>
+                <td className="px-6 py-4 text-right">
+                  <div className="flex justify-end gap-2">
+                    <button onClick={() => setSelectedInvoice(inv)} className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-black transition-colors"><Icon name="visibility" className="text-[18px]" /></button>
+                    <Link to={`/invoices/new`} className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-primary transition-colors"><Icon name="edit" className="text-[18px]" /></Link>
+                    <button onClick={() => setDeletingId(inv.id)} className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-red-600 transition-colors"><Icon name="delete" className="text-[18px]" /></button>
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
 
         {/* Pagination */}
         <div className="px-6 py-3 border-t border-zinc-100 flex items-center justify-between">
-          <div className="text-[10px] font-black uppercase text-zinc-400">Showing 1-4 of 128 results</div>
+          <div className="text-[10px] font-black uppercase text-zinc-400">Showing {paginated.length} of {filtered.length} results</div>
           <div className="flex items-center gap-1">
-            <button className="h-8 px-2 text-[10px] font-black uppercase border border-zinc-100 hover:bg-zinc-50">Prev</button>
-            <button className="h-8 w-8 bg-black text-white text-[10px] font-black">1</button>
-            <button className="h-8 w-8 border border-zinc-100 text-[10px] font-black hover:bg-zinc-50">2</button>
-            <button className="h-8 w-8 border border-zinc-100 text-[10px] font-black hover:bg-zinc-50">3</button>
-            <button className="h-8 px-2 text-[10px] font-black uppercase border border-zinc-100 hover:bg-zinc-50">Next</button>
+            <button
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className="h-8 px-2 text-[10px] font-black uppercase border border-zinc-100 hover:bg-zinc-50 disabled:opacity-50"
+            >
+              Prev
+            </button>
+            {Array.from({ length: Math.min(3, totalPages) }, (_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => setCurrentPage(i + 1)}
+                className={`h-8 w-8 ${currentPage === i + 1 ? 'bg-black text-white' : 'border border-zinc-100'} text-[10px] font-black hover:bg-zinc-50`}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+              disabled={currentPage === totalPages}
+              className="h-8 px-2 text-[10px] font-black uppercase border border-zinc-100 hover:bg-zinc-50 disabled:opacity-50"
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deletingId && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" onClick={() => setDeletingId(null)}>
+          <div className="bg-white p-8 w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
+            <Icon name="warning" className="text-red-500 text-3xl mb-3 block" />
+            <h3 className="text-lg font-black uppercase tracking-tight mb-2">Delete Invoice?</h3>
+            <p className="text-sm text-zinc-500 mb-6">This will permanently remove the invoice and all its associated data.</p>
+            <div className="flex gap-3">
+              <button onClick={() => setDeletingId(null)} className="flex-1 py-2.5 border border-zinc-200 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50">Cancel</button>
+              <button onClick={handleDelete} className="flex-1 py-2.5 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-red-700">Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Invoice Modal */}
+      {selectedInvoice && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" onClick={() => setSelectedInvoice(null)}>
+          <div className="bg-white w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="p-6 border-b border-zinc-100 flex justify-between items-center">
+              <h3 className="text-lg font-black uppercase tracking-tight">Invoice Details</h3>
+              <button onClick={() => setSelectedInvoice(null)} className="p-1.5 hover:bg-zinc-100 transition-colors">
+                <Icon name="close" className="text-[20px]" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-[10px] font-black uppercase text-zinc-400 mb-1">Invoice ID</p>
+                  <p className="text-sm font-semibold">{selectedInvoice.id}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase text-zinc-400 mb-1">Issue Date</p>
+                  <p className="text-sm font-semibold">{selectedInvoice.date}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase text-zinc-400 mb-1">Client</p>
+                  <p className="text-sm font-semibold">{selectedInvoice.client}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase text-zinc-400 mb-1">Project</p>
+                  <p className="text-sm font-semibold">{selectedInvoice.project}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase text-zinc-400 mb-1">Amount</p>
+                  <p className="text-sm font-black text-lg">${selectedInvoice.amount.toLocaleString()}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase text-zinc-400 mb-1">Status</p>
+                  <span className={`px-2 py-0.5 text-[9px] font-black uppercase ${getStatusColor(selectedInvoice.status)}`}>{selectedInvoice.status}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

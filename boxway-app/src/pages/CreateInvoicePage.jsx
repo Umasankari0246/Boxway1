@@ -1,14 +1,59 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInvoiceStore } from '../store/invoiceStore';
 import Icon from "../components/ui/Icon.jsx"
 
 const CreateInvoicePage = () => {
   const navigate = useNavigate();
-  const { invoiceData, updateField, updateItem, addItem, removeItem } = useInvoiceStore();
+  const { invoiceData, updateField, updateItem, addItem, removeItem, resetInvoice } = useInvoiceStore();
+  const [showAddItemModal, setShowAddItemModal] = useState(false);
+  const [newItem, setNewItem] = useState({ description: '', hsn: '', qty: 1, rate: 0, disc: 0 });
+
+  // Generate dynamic invoice number
+  const generateInvoiceNumber = () => {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const random = Math.floor(Math.random() * 9000) + 1000;
+    return `INV-${year}-${month}-${random}`;
+  };
 
   const handleNext = () => {
     navigate('/invoices/review');
+  };
+
+  const handleSaveDraft = () => {
+    // Save invoice as draft - for now just show alert
+    alert('Invoice saved as draft!');
+  };
+
+  const handleDiscard = () => {
+    if (window.confirm('Are you sure you want to discard this invoice? All unsaved changes will be lost.')) {
+      resetInvoice();
+      navigate('/invoices');
+    }
+  };
+
+  const handleFileUpload = (e) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      alert(`Uploaded ${files.length} file(s)`);
+    }
+  };
+
+  const handleAddItemModal = () => {
+    if (newItem.description && newItem.rate > 0) {
+      addItem();
+      updateItem(invoiceData.items[invoiceData.items.length - 1].id, 'description', newItem.description);
+      updateItem(invoiceData.items[invoiceData.items.length - 1].id, 'hsn', newItem.hsn);
+      updateItem(invoiceData.items[invoiceData.items.length - 1].id, 'qty', newItem.qty);
+      updateItem(invoiceData.items[invoiceData.items.length - 1].id, 'rate', newItem.rate);
+      updateItem(invoiceData.items[invoiceData.items.length - 1].id, 'disc', newItem.disc);
+      setNewItem({ description: '', hsn: '', qty: 1, rate: 0, disc: 0 });
+      setShowAddItemModal(false);
+    } else {
+      alert('Please fill in at least description and rate');
+    }
   };
 
   // Calculations
@@ -33,7 +78,7 @@ const CreateInvoicePage = () => {
         <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-6">
           <div>
             <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Invoice Number</label>
-            <div className="text-slate-900 font-mono font-semibold">INV-2023-0842</div>
+            <div className="text-slate-900 font-mono font-semibold">{generateInvoiceNumber()}</div>
           </div>
           <div>
             <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Issue Date</label>
@@ -131,8 +176,8 @@ const CreateInvoicePage = () => {
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="p-6 border-b border-slate-100 flex justify-between items-center">
             <h3 className="text-sm font-semibold text-slate-800">Invoice Items</h3>
-            <button 
-              onClick={addItem}
+            <button
+              onClick={() => setShowAddItemModal(true)}
               className="flex items-center gap-1 text-primary text-xs font-bold hover:opacity-80 transition-opacity"
             >
               <Icon name="add" className="text-sm" /> ADD LINE ITEM
@@ -207,8 +252,11 @@ const CreateInvoicePage = () => {
                 value={invoiceData.notes} onChange={(e) => updateField('notes', e.target.value)}
               />
               <div className="border-2 border-dashed border-slate-100 rounded-lg p-6 text-center group cursor-pointer hover:border-primary/50 transition-colors">
-                <Icon name="cloud_upload" className="text-slate-300 group-hover:text-primary mb-2" />
-                <p className="text-[10px] text-slate-400 font-medium">Click to upload receipts or supporting documents</p>
+                <input type="file" multiple onChange={handleFileUpload} className="hidden" id="file-upload" />
+                <label htmlFor="file-upload" className="cursor-pointer">
+                  <Icon name="cloud_upload" className="text-slate-300 group-hover:text-primary mb-2" />
+                  <p className="text-[10px] text-slate-400 font-medium">Click to upload receipts or supporting documents</p>
+                </label>
               </div>
             </div>
           </div>
@@ -251,13 +299,13 @@ const CreateInvoicePage = () => {
       {/* Sticky Footer Action Bar */}
       <footer className="h-20 bg-white border-t border-slate-200 fixed bottom-0 left-60 right-0 z-20 px-8 flex items-center justify-between shadow-[0_-4px_10px_rgba(0,0,0,0.03)]">
         <div className="flex items-center gap-4">
-          <button className="flex items-center gap-2 text-slate-500 hover:text-slate-700 transition-colors text-sm font-medium">
+          <button onClick={handleDiscard} className="flex items-center gap-2 text-slate-500 hover:text-slate-700 transition-colors text-sm font-medium">
             <Icon name="delete" className="text-lg" />
             Discard
           </button>
         </div>
         <div className="flex items-center gap-4">
-          <button className="px-6 py-2 border border-slate-300 rounded font-medium text-slate-600 hover:bg-slate-50 transition-colors text-sm">
+          <button onClick={handleSaveDraft} className="px-6 py-2 border border-slate-300 rounded font-medium text-slate-600 hover:bg-slate-50 transition-colors text-sm">
             Save as Draft
           </button>
           <button onClick={handleNext} className="px-8 py-2 bg-primary text-white rounded font-bold hover:opacity-90 transition-opacity text-sm flex items-center gap-2 cursor-pointer">
@@ -266,6 +314,76 @@ const CreateInvoicePage = () => {
           </button>
         </div>
       </footer>
+
+      {/* Add Line Item Modal */}
+      {showAddItemModal && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" onClick={() => setShowAddItemModal(false)}>
+          <div className="bg-white p-8 w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
+            <h3 className="text-lg font-black uppercase tracking-tight mb-4">Add Line Item</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Description</label>
+                <input
+                  className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary"
+                  type="text"
+                  value={newItem.description}
+                  onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
+                  placeholder="Item description"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">HSN/SAC</label>
+                <input
+                  className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary"
+                  type="text"
+                  value={newItem.hsn}
+                  onChange={(e) => setNewItem({ ...newItem, hsn: e.target.value })}
+                  placeholder="HSN/SAC code"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Quantity</label>
+                  <input
+                    className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary"
+                    type="number"
+                    value={newItem.qty}
+                    onChange={(e) => setNewItem({ ...newItem, qty: Number(e.target.value) })}
+                    min="1"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Rate</label>
+                  <input
+                    className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary"
+                    type="number"
+                    value={newItem.rate}
+                    onChange={(e) => setNewItem({ ...newItem, rate: Number(e.target.value) })}
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Discount (%)</label>
+                <input
+                  className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary"
+                  type="number"
+                  value={newItem.disc}
+                  onChange={(e) => setNewItem({ ...newItem, disc: Number(e.target.value) })}
+                  min="0"
+                  max="100"
+                  step="0.1"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setShowAddItemModal(false)} className="flex-1 py-2.5 border border-slate-200 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50">Cancel</button>
+              <button onClick={handleAddItemModal} className="flex-1 py-2.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:opacity-90">Add Item</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -7,20 +7,62 @@ const statusColors = { Approved: 'bg-green-100 text-green-700', Pending: 'bg-yel
 
 const ExpensesPage = () => {
   const navigate = useNavigate();
+  const [expenses, setExpenses] = useState(() => {
+    const stored = localStorage.getItem('expenses');
+    return stored ? JSON.parse(stored) : MOCK_EXPENSES;
+  });
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('All');
   const [showCreate, setShowCreate] = useState(false);
+  const [showView, setShowView] = useState(false);
+  const [selectedExpense, setSelectedExpense] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+  const [statusDropdownId, setStatusDropdownId] = useState(null);
   const [form, setForm] = useState({ title: '', category: '', amount: '', date: '', project: '', notes: '' });
 
   const categories = ['All', 'Software', 'Travel', 'Office', 'Entertainment'];
-  const filtered = MOCK_EXPENSES.filter(e =>
+  const filtered = expenses.filter(e =>
     (filter === 'All' || e.category === filter) &&
     e.title.toLowerCase().includes(search.toLowerCase())
   );
 
-  const totalApproved = MOCK_EXPENSES.filter(e => e.status === 'Approved').reduce((s, e) => s + e.amount, 0);
-  const totalPending = MOCK_EXPENSES.filter(e => e.status === 'Pending').reduce((s, e) => s + e.amount, 0);
+  const totalApproved = expenses.filter(e => e.status === 'Approved').reduce((s, e) => s + e.amount, 0);
+  const totalPending = expenses.filter(e => e.status === 'Pending').reduce((s, e) => s + e.amount, 0);
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+  const handleDelete = () => {
+    const updated = expenses.filter(e => e.id !== deletingId);
+    setExpenses(updated);
+    localStorage.setItem('expenses', JSON.stringify(updated));
+    setDeletingId(null);
+  };
+
+  const handleStatusChange = (id, newStatus) => {
+    const updated = expenses.map(e => e.id === id ? { ...e, status: newStatus } : e);
+    setExpenses([...updated]);
+    localStorage.setItem('expenses', JSON.stringify(updated));
+  };
+
+  const handleAddExpense = () => {
+    if (form.title && form.amount) {
+      const newExpense = {
+        id: Date.now().toString(),
+        title: form.title,
+        category: form.category || 'Other',
+        amount: Number(form.amount),
+        date: form.date || new Date().toISOString().split('T')[0],
+        project: form.project || '',
+        notes: form.notes || '',
+        submittedBy: 'Current User',
+        status: 'Pending'
+      };
+      const updated = [newExpense, ...expenses];
+      setExpenses(updated);
+      localStorage.setItem('expenses', JSON.stringify(updated));
+      setForm({ title: '', category: '', amount: '', date: '', project: '', notes: '' });
+      setShowCreate(false);
+    }
+  };
 
   return (
     <div className="flex-1 overflow-y-auto p-8 bg-[#f8f6f6]">
@@ -36,10 +78,10 @@ const ExpensesPage = () => {
 
       <div className="grid grid-cols-4 gap-4 mb-6">
         {[
-          { label: 'Total Expenses', val: '$' + MOCK_EXPENSES.reduce((s, e) => s + e.amount, 0).toLocaleString() },
+          { label: 'Total Expenses', val: '$' + expenses.reduce((s, e) => s + e.amount, 0).toLocaleString() },
           { label: 'Approved', val: '$' + totalApproved.toLocaleString(), color: 'text-green-600' },
           { label: 'Pending', val: '$' + totalPending.toLocaleString(), color: 'text-yellow-600' },
-          { label: 'This Month', val: MOCK_EXPENSES.length + ' items' },
+          { label: 'This Month', val: expenses.length + ' items' },
         ].map(k => (
           <div key={k.label} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
             <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">{k.label}</p>
@@ -60,7 +102,7 @@ const ExpensesPage = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
         <table className="w-full text-left">
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>{['Title', 'Category', 'Submitted By', 'Project', 'Amount', 'Date', 'Status', 'Actions'].map(col => (
@@ -69,7 +111,7 @@ const ExpensesPage = () => {
           </thead>
           <tbody className="divide-y divide-slate-100">
             {filtered.map(e => (
-              <tr key={e.id} className="hover:bg-slate-50">
+              <tr key={e.id}>
                 <td className="px-6 py-4">
                   <p className="text-sm font-semibold text-slate-900">{e.title}</p>
                   {e.notes && <p className="text-xs text-slate-400 truncate max-w-[200px]">{e.notes}</p>}
@@ -79,11 +121,33 @@ const ExpensesPage = () => {
                 <td className="px-6 py-4 text-sm text-slate-500">{e.project || '—'}</td>
                 <td className="px-6 py-4 text-sm font-bold text-slate-900">${e.amount.toLocaleString()}</td>
                 <td className="px-6 py-4 text-sm text-slate-500">{e.date}</td>
-                <td className="px-6 py-4"><span className={`px-2.5 py-0.5 text-[10px] font-bold rounded uppercase ${statusColors[e.status]}`}>{e.status}</span></td>
+                <td className="px-6 py-4">
+                  <div className="relative">
+                    <button
+                      onClick={() => setStatusDropdownId(statusDropdownId === e.id ? null : e.id)}
+                      className={`px-4 py-1 text-[10px] font-bold uppercase border border-slate-300 rounded cursor-pointer min-w-[120px] bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary relative z-10 ${statusColors[e.status]}`}
+                    >
+                      {e.status}
+                    </button>
+                    {statusDropdownId === e.id && (
+                      <div className="absolute top-full left-0 mt-1 bg-white border border-slate-200 rounded shadow-lg z-50 min-w-[120px]">
+                        {['Approved', 'Pending', 'Rejected'].map(status => (
+                          <button
+                            key={status}
+                            onClick={() => { handleStatusChange(e.id, status); setStatusDropdownId(null); }}
+                            className="w-full px-4 py-2 text-left text-[10px] font-bold uppercase hover:bg-slate-50"
+                          >
+                            {status}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </td>
                 <td className="px-6 py-4">
                   <div className="flex gap-1">
-                    <button className="p-1 text-slate-400 hover:text-primary transition-colors"><Icon name="visibility" className="text-lg" /></button>
-                    <button className="p-1 text-slate-400 hover:text-red-500 transition-colors"><Icon name="delete" className="text-lg" /></button>
+                    <button onClick={() => { setSelectedExpense(e); setShowView(true); }} className="p-1 text-slate-400 hover:text-primary transition-colors"><Icon name="visibility" className="text-lg" /></button>
+                    <button onClick={() => setDeletingId(e.id)} className="p-1 text-slate-400 hover:text-red-500 transition-colors"><Icon name="delete" className="text-lg" /></button>
                   </div>
                 </td>
               </tr>
@@ -118,7 +182,74 @@ const ExpensesPage = () => {
             </div>
             <div className="flex justify-end gap-3 mt-6">
               <button onClick={() => setShowCreate(false)} className="px-4 py-2 border border-slate-200 text-slate-700 text-sm font-semibold rounded hover:bg-slate-50">Cancel</button>
-              <button onClick={() => setShowCreate(false)} className="px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20">Submit Expense</button>
+              <button onClick={handleAddExpense} className="px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20">Submit Expense</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Modal */}
+      {showView && selectedExpense && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowView(false)}>
+          <div className="bg-white rounded-xl p-8 w-full max-w-lg shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-black text-slate-900">Expense Details</h3>
+              <button onClick={() => setShowView(false)} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded"><Icon name="close" /></button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Title</p>
+                <p className="text-sm font-semibold text-slate-900">{selectedExpense.title}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Category</p>
+                  <p className="text-sm text-slate-700">{selectedExpense.category}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Amount</p>
+                  <p className="text-sm font-bold text-slate-900">${selectedExpense.amount.toLocaleString()}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Date</p>
+                  <p className="text-sm text-slate-700">{selectedExpense.date}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Status</p>
+                  <span className={`px-2.5 py-0.5 text-[10px] font-bold rounded uppercase ${statusColors[selectedExpense.status]}`}>{selectedExpense.status}</span>
+                </div>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Submitted By</p>
+                <p className="text-sm text-slate-700">{selectedExpense.submittedBy}</p>
+              </div>
+              {selectedExpense.project && (
+                <div>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Project</p>
+                  <p className="text-sm text-slate-700">{selectedExpense.project}</p>
+                </div>
+              )}
+              {selectedExpense.notes && (
+                <div>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Notes</p>
+                  <p className="text-sm text-slate-700">{selectedExpense.notes}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deletingId && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setDeletingId(null)}>
+          <div className="bg-white rounded-xl p-8 w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
+            <Icon name="warning" className="text-red-500 text-3xl mb-3 block" />
+            <h3 className="text-lg font-black uppercase tracking-tight mb-2">Delete Expense?</h3>
+            <p className="text-sm text-slate-500 mb-6">This will permanently remove the expense record.</p>
+            <div className="flex gap-3">
+              <button onClick={() => setDeletingId(null)} className="flex-1 py-2.5 border border-slate-200 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50">Cancel</button>
+              <button onClick={handleDelete} className="flex-1 py-2.5 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-red-700">Delete</button>
             </div>
           </div>
         </div>

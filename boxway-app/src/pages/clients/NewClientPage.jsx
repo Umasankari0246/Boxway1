@@ -9,7 +9,7 @@ const NewClientPage = () => {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     companyName: '', contactPerson: '', email: '', phone: '', type: '', city: '',
-    projectType: '', estimatedBudget: '', timeline: '', description: '',
+    projectType: '', estimatedBudget: '', numberOfProjects: '', timeline: '', description: '',
   });
   const set = (field, val) => setForm(f => ({ ...f, [field]: val }));
   const [error, setError] = useState('');
@@ -39,8 +39,8 @@ const NewClientPage = () => {
       phone: `+1 ${form.phone.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3')}`,
       type: form.type || 'Corporate',
       status: 'Active',
-      totalProjects: 0,
-      totalValue: 0,
+      totalProjects: parseInt(form.numberOfProjects) || 0,
+      totalValue: parseFloat(form.estimatedBudget) || 0,
       city: form.city,
       joinDate: new Date().toISOString().slice(0, 10),
     };
@@ -111,6 +111,8 @@ const NewClientPage = () => {
                 <select value={form.projectType} onChange={e => set('projectType', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary">
                   <option value="">Select Type</option>
                   {['Commercial', 'Residential', 'Hospitality', 'Municipal', 'Industrial', 'Mixed-Use'].map(t => <option key={t}>{t}</option>)}</select></div>
+              <div><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Number of Projects</label>
+                <input type="number" value={form.numberOfProjects} onChange={e => set('numberOfProjects', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="e.g., 3" min="0" /></div>
               <div><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Estimated Budget ($)</label>
                 <input type="number" value={form.estimatedBudget} onChange={e => set('estimatedBudget', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="e.g., 500000" /></div>
               <div className="col-span-2"><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Expected Timeline</label>

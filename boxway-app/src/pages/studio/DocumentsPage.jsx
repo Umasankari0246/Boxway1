@@ -37,13 +37,28 @@ const CATEGORY_FILTERS = ['All', 'Site', 'Scheme/CAD', 'Email Out', 'Email In', 
 const LABEL = 'text-[9px] uppercase tracking-[0.15em] font-black text-zinc-400';
 
 /* ── Upload Modal ─────────────────────────────────────────────────────────── */
-const UploadModal = ({ onClose }) => {
+const UploadModal = ({ onClose, onUpload }) => {
   const [form, setForm] = useState({
     projectCode: 'BW24-01BFN-DGL', project: '', client: '', folderType: 'Site',
     subFolder: '', version: '1.0', description: '', file: null,
   });
   const set = (f, v) => setForm(p => ({ ...p, [f]: v }));
   const ft = FOLDER_TYPES.find(f => f.key === form.folderType);
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      set('file', file);
+    }
+  };
+
+  const handleUpload = () => {
+    if (!form.file) {
+      alert('Please select a file to upload');
+      return;
+    }
+    onUpload(form);
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
@@ -150,16 +165,123 @@ const UploadModal = ({ onClose }) => {
 
           {/* Drop Zone */}
           <div className="border-2 border-dashed border-zinc-200 p-6 flex flex-col items-center gap-2 text-center hover:border-primary transition-colors cursor-pointer group">
-            <Icon name="cloud_upload" className="text-zinc-300 group-hover:text-primary text-[36px] transition-colors" />
-            <p className="text-xs font-black uppercase tracking-widest text-zinc-700">Drop file here or click to browse</p>
-            <p className="text-[9px] text-zinc-400">DWG · DXF · RVT · SKP · PDF · PNG · JPG · MP4 · AI · ZIP<br/>Max 1 GB per file</p>
+            <input type="file" onChange={handleFileSelect} className="hidden" id="file-upload" />
+            <label htmlFor="file-upload" className="cursor-pointer w-full">
+              <Icon name="cloud_upload" className="text-zinc-300 group-hover:text-primary text-[36px] transition-colors mx-auto" />
+              <p className="text-xs font-black uppercase tracking-widest text-zinc-700 mt-2">Drop file here or click to browse</p>
+              <p className="text-[9px] text-zinc-400">DWG · DXF · RVT · SKP · PDF · PNG · JPG · MP4 · AI · ZIP<br/>Max 1 GB per file</p>
+              {form.file && (
+                <p className="text-xs font-semibold text-primary mt-2">Selected: {form.file.name}</p>
+              )}
+            </label>
           </div>
         </div>
 
         <div className="sticky bottom-0 bg-white border-t border-zinc-100 px-7 py-4 flex gap-3 justify-end">
           <button onClick={onClose} className="px-5 py-2 border border-zinc-200 text-zinc-600 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors">Cancel</button>
-          <button onClick={onClose} className="px-6 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors flex items-center gap-2">
+          <button onClick={handleUpload} className="px-6 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors flex items-center gap-2">
             <Icon name="upload" className="text-[16px]" />Upload File
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ── Edit Modal ─────────────────────────────────────────────────────────── */
+const EditModal = ({ doc, onClose, onUpdate }) => {
+  const [form, setForm] = useState({
+    projectCode: doc.projectCode || '',
+    project: doc.project || '',
+    client: doc.client || '',
+    folderType: doc.folderType || 'Site',
+    version: doc.version || '1.0',
+    description: doc.description || '',
+  });
+  const set = (f, v) => setForm(p => ({ ...p, [f]: v }));
+  const ft = FOLDER_TYPES.find(f => f.key === form.folderType);
+
+  const handleUpdate = () => {
+    onUpdate({
+      id: doc.id,
+      ...form,
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-white w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        {/* Header */}
+        <div className="sticky top-0 bg-white border-b border-zinc-100 px-7 py-5 flex justify-between items-center">
+          <div>
+            <h3 className="text-base font-black uppercase tracking-tight">Edit Document</h3>
+            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mt-0.5">{doc.name}</p>
+          </div>
+          <button onClick={onClose} className="p-1.5 hover:bg-zinc-100 transition-colors">
+            <Icon name="close" className="text-[20px]" />
+          </button>
+        </div>
+
+        <div className="p-7 space-y-6">
+          {/* Project Info */}
+          <div className="space-y-1">
+            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-3">Project Association</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className={LABEL + ' mb-1.5 block'}>Project Code</label>
+                <input value={form.projectCode} onChange={e => set('projectCode', e.target.value)} placeholder="e.g. BW24-01BFN-DGL" className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm font-mono focus:outline-none focus:border-primary" />
+              </div>
+              <div>
+                <label className={LABEL + ' mb-1.5 block'}>Project</label>
+                <select value={form.project} onChange={e => set('project', e.target.value)} className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary">
+                  <option value="">Select project...</option>
+                  {['Meridian Highrise', 'Horizon Cultural Hub', 'Savoy Boutique Hotel', 'Greenfield Estate', 'City Core Retail'].map(p => <option key={p}>{p}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className={LABEL + ' mb-1.5 block'}>Client</label>
+                <select value={form.client} onChange={e => set('client', e.target.value)} className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary">
+                  <option value="">Select client...</option>
+                  {['Meridian Properties', 'Horizon Developments', 'Savoy Hospitality', 'Greenfield Trust', 'City Core Ltd'].map(c => <option key={c}>{c}</option>)}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Folder Type */}
+          <div>
+            <p className={LABEL + ' mb-3'}>Folder Type (Drive Structure)</p>
+            <div className="grid grid-cols-3 gap-2">
+              {FOLDER_TYPES.map(f => (
+                <button key={f.key} type="button" onClick={() => set('folderType', f.key)} className={`flex items-center gap-2 p-2.5 border transition-all text-left ${form.folderType === f.key ? 'border-primary bg-primary/5' : 'border-zinc-100 hover:border-zinc-200 bg-zinc-50'}`}>
+                  <Icon name={f.icon} className={`text-[16px] ${form.folderType === f.key ? 'text-primary' : 'text-zinc-400'}`} />
+                  <div>
+                    <p className={`text-[10px] font-black ${form.folderType === f.key ? 'text-primary' : 'text-zinc-700'}`}>{f.label}</p>
+                    <p className="text-[8px] text-zinc-400 leading-tight">{f.exts}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* File metadata */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className={LABEL + ' mb-1.5 block'}>Version</label>
+              <input value={form.version} onChange={e => set('version', e.target.value)} placeholder="e.g. 1.0, 2.3, Final" className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+            </div>
+          </div>
+
+          <div>
+            <label className={LABEL + ' mb-1.5 block'}>Description / Notes</label>
+            <textarea value={form.description} onChange={e => set('description', e.target.value)} rows={2} placeholder="Brief description of file contents..." className="w-full border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary resize-none" />
+          </div>
+        </div>
+
+        <div className="sticky bottom-0 bg-white border-t border-zinc-100 px-7 py-4 flex gap-3 justify-end">
+          <button onClick={onClose} className="px-5 py-2 border border-zinc-200 text-zinc-600 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors">Cancel</button>
+          <button onClick={handleUpdate} className="px-6 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors flex items-center gap-2">
+            <Icon name="save" className="text-[16px]" />Save Changes
           </button>
         </div>
       </div>
@@ -182,6 +304,32 @@ const DocDrawer = ({ doc, onClose }) => {
     setNewText('');
   };
 
+  const handleOpenInBrowser = () => {
+    // Create a dummy content and open in new tab
+    const content = `Document: ${doc.name}\nType: ${doc.type}\nSize: ${doc.size}\nProject: ${doc.project}\nClient: ${doc.client}\nVersion: ${doc.version}\nUploaded by: ${doc.uploadedBy}\nDate: ${doc.uploadDate}`;
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  };
+
+  const handleDrawerDownload = () => {
+    const content = `Document: ${doc.name}\nType: ${doc.type}\nSize: ${doc.size}\nProject: ${doc.project}\nClient: ${doc.client}\nVersion: ${doc.version}\nUploaded by: ${doc.uploadedBy}\nDate: ${doc.uploadDate}`;
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = doc.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDrawerEdit = () => {
+    onClose();
+    // This will be handled by the parent component
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex justify-end" onClick={onClose}>
       <div className="w-full max-w-xl bg-white h-full shadow-2xl flex flex-col overflow-y-auto" onClick={e => e.stopPropagation()}>
@@ -195,8 +343,8 @@ const DocDrawer = ({ doc, onClose }) => {
             <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mt-0.5">{doc.type} · {doc.size}</p>
           </div>
           <div className="flex gap-1 shrink-0">
-            <button className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors" title="Download"><Icon name="download" className="text-[18px]" /></button>
-            <button className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-900 transition-colors" title="Edit"><Icon name="edit" className="text-[18px]" /></button>
+            <button onClick={handleDrawerDownload} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors" title="Download"><Icon name="download" className="text-[18px]" /></button>
+            <button onClick={handleDrawerEdit} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-900 transition-colors" title="Edit"><Icon name="edit" className="text-[18px]" /></button>
             <button className="p-1.5 hover:bg-red-50 text-zinc-400 hover:text-red-600 transition-colors" title="Delete"><Icon name="delete" className="text-[18px]" /></button>
             <button onClick={onClose} className="p-1.5 hover:bg-zinc-100 text-zinc-400 transition-colors ml-1"><Icon name="close" className="text-[18px]" /></button>
           </div>
@@ -206,7 +354,7 @@ const DocDrawer = ({ doc, onClose }) => {
         <div className={`mx-6 mt-5 flex flex-col items-center justify-center h-44 ${ft.color} border border-current/10 relative overflow-hidden`}>
           <Icon name={ft.icon} className="text-[56px] opacity-20" />
           <p className="text-[10px] font-black uppercase tracking-widest mt-2 opacity-50">{doc.type} Preview</p>
-          <button className="absolute bottom-3 right-3 text-[9px] font-black uppercase tracking-widest px-3 py-1.5 bg-white border border-current/20 hover:bg-zinc-50 transition-colors flex items-center gap-1">
+          <button onClick={handleOpenInBrowser} className="absolute bottom-3 right-3 text-[9px] font-black uppercase tracking-widest px-3 py-1.5 bg-white border border-current/20 hover:bg-zinc-50 transition-colors flex items-center gap-1">
             <Icon name="open_in_new" className="text-[13px]" />Open in Browser
           </button>
         </div>
@@ -299,33 +447,103 @@ const DocumentsPage = () => {
   const [showUpload, setShowUpload] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [documents, setDocuments] = useState(RICH_DOCS);
+  const [editingDoc, setEditingDoc] = useState(null);
 
-  const projects = ['All', ...Array.from(new Set(RICH_DOCS.map(d => d.projectCode)))];
+  const projects = ['All', ...Array.from(new Set(documents.map(d => d.projectCode)))];
 
-  const filtered = RICH_DOCS.filter(d =>
+  const filtered = documents.filter(d =>
     (folderFilter === 'All' || d.folderType === folderFilter) &&
     (projectFilter === 'All' || d.projectCode === projectFilter) &&
     (d.name.toLowerCase().includes(search.toLowerCase()) || (d.client || '').toLowerCase().includes(search.toLowerCase()))
-  );
+  ).sort((a, b) => {
+    if (sortBy === 'date') return new Date(b.uploadDate) - new Date(a.uploadDate);
+    if (sortBy === 'name') return a.name.localeCompare(b.name);
+    if (sortBy === 'size') {
+      const sizeA = parseFloat(a.size);
+      const sizeB = parseFloat(b.size);
+      return sizeB - sizeA;
+    }
+    if (sortBy === 'type') return a.type.localeCompare(b.type);
+    return 0;
+  });
 
   const ft = (key) => FOLDER_TYPES.find(f => f.key === key);
+
+  const handleUpload = (form) => {
+    const fileExt = form.file.name.split('.').pop().toUpperCase();
+    const fileSize = (form.file.size / (1024 * 1024)).toFixed(1) + ' MB';
+    const newDoc = {
+      id: `D${String(Date.now()).slice(-6)}`,
+      name: form.file.name,
+      type: fileExt,
+      folderType: form.folderType,
+      size: fileSize,
+      uploadedBy: 'Alex Carter',
+      uploadDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      project: form.project || 'Unknown Project',
+      projectCode: form.projectCode,
+      client: form.client,
+      version: form.version,
+      comments: []
+    };
+    setDocuments([newDoc, ...documents]);
+    setShowUpload(false);
+  };
+
+  const handleDelete = () => {
+    setDocuments(documents.filter(d => d.id !== deletingId));
+    setDeletingId(null);
+  };
+
+  const handleDownload = (doc) => {
+    // Create a dummy file for download since we don't have actual file data
+    const content = `Document: ${doc.name}\nType: ${doc.type}\nSize: ${doc.size}\nProject: ${doc.project}\nClient: ${doc.client}\nVersion: ${doc.version}\nUploaded by: ${doc.uploadedBy}\nDate: ${doc.uploadDate}`;
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = doc.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleEdit = (doc) => {
+    setEditingDoc(doc);
+  };
+
+  const handleUpdateDocument = (updatedDoc) => {
+    setDocuments(documents.map(d => d.id === updatedDoc.id ? { ...d, ...updatedDoc } : d));
+    setEditingDoc(null);
+  };
 
   return (
     <div className="flex-1 overflow-y-auto bg-[#fcf9f8]">
       {/* ─── Folder Type Overview Cards ─── */}
       <div className="px-8 pt-6 pb-4">
-        <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2">
+        <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-10 gap-3">
+          {/* All Projects Card */}
+          <button
+            onClick={() => setFolderFilter('All')}
+            className={`flex flex-col items-center justify-center p-6 border transition-all text-center col-span-1 ${folderFilter === 'All' ? 'bg-primary text-white border-primary shadow-sm' : 'bg-white border-zinc-100 hover:border-zinc-200'}`}
+          >
+            <Icon name="folder" className={`text-[32px] mb-1 ${folderFilter === 'All' ? 'text-white' : 'text-zinc-400'}`} />
+            <p className={`text-[11px] font-black uppercase tracking-wide leading-tight ${folderFilter === 'All' ? 'text-white' : 'text-zinc-500'}`}>All Projects</p>
+            <p className={`text-[12px] font-black mt-0.5 ${folderFilter === 'All' ? 'opacity-70' : 'text-zinc-400'}`}>{documents.length}</p>
+          </button>
           {FOLDER_TYPES.map(f => {
-            const count = RICH_DOCS.filter(d => d.folderType === f.key).length;
+            const count = documents.filter(d => d.folderType === f.key).length;
             return (
               <button
                 key={f.key}
                 onClick={() => setFolderFilter(folderFilter === f.key ? 'All' : f.key)}
-                className={`flex flex-col items-center justify-center p-3 border transition-all text-center ${folderFilter === f.key ? `${f.color} border-current/30 shadow-sm` : 'bg-white border-zinc-100 hover:border-zinc-200'}`}
+                className={`flex flex-col items-center justify-center p-4 border transition-all text-center ${folderFilter === f.key ? `${f.color} border-current/30 shadow-sm` : 'bg-white border-zinc-100 hover:border-zinc-200'}`}
               >
-                <Icon name={f.icon} className={`text-[22px] mb-1 ${folderFilter === f.key ? '' : 'text-zinc-400'}`} />
-                <p className={`text-[8px] font-black uppercase tracking-wide leading-tight ${folderFilter === f.key ? '' : 'text-zinc-500'}`}>{f.label}</p>
-                <p className={`text-[9px] font-black mt-0.5 ${folderFilter === f.key ? 'opacity-70' : 'text-zinc-400'}`}>{count}</p>
+                <Icon name={f.icon} className={`text-[24px] mb-1 ${folderFilter === f.key ? '' : 'text-zinc-400'}`} />
+                <p className={`text-[9px] font-black uppercase tracking-wide leading-tight ${folderFilter === f.key ? '' : 'text-zinc-500'}`}>{f.label}</p>
+                <p className={`text-[10px] font-black mt-0.5 ${folderFilter === f.key ? 'opacity-70' : 'text-zinc-400'}`}>{count}</p>
               </button>
             );
           })}
@@ -336,16 +554,16 @@ const DocumentsPage = () => {
       <div className="px-8 pb-4">
         <div className="bg-white border border-zinc-100 shadow-sm py-3 px-4 flex flex-wrap gap-3 items-center">
           {/* Search */}
-          <div className="relative flex-1 min-w-40">
+          <div className="relative w-96">
             <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-[18px]" />
             <input value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-3 py-2 bg-zinc-50 text-xs font-medium placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Search documents, clients..." />
           </div>
           {/* Project filter */}
-          <select value={projectFilter} onChange={e => setProjectFilter(e.target.value)} className="border border-zinc-200 text-[10px] font-black uppercase py-2 px-3 focus:ring-0 focus:border-primary bg-white">
+          <select value={projectFilter} onChange={e => setProjectFilter(e.target.value)} className="border border-zinc-200 text-[10px] font-black uppercase py-2 px-6 focus:ring-0 focus:border-primary bg-white">
             {projects.map(p => <option key={p} value={p}>{p === 'All' ? 'All Projects' : p}</option>)}
           </select>
           {/* Sort */}
-          <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="border border-zinc-200 text-[10px] font-black uppercase py-2 px-3 focus:ring-0 focus:border-primary bg-white">
+          <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="border border-zinc-200 text-[10px] font-black uppercase py-2 px-6 focus:ring-0 focus:border-primary bg-white">
             <option value="date">Sort: Date</option>
             <option value="name">Sort: Name</option>
             <option value="size">Sort: Size</option>
@@ -411,8 +629,8 @@ const DocumentsPage = () => {
                     <td className="px-5 py-3.5" onClick={e => e.stopPropagation()}>
                       <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button onClick={() => setSelectedDoc(doc)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700 transition-colors" title="View"><Icon name="visibility" className="text-[15px]" /></button>
-                        <button className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors" title="Download"><Icon name="download" className="text-[15px]" /></button>
-                        <button className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700 transition-colors" title="Edit"><Icon name="edit" className="text-[15px]" /></button>
+                        <button onClick={() => handleDownload(doc)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors" title="Download"><Icon name="download" className="text-[15px]" /></button>
+                        <button onClick={() => handleEdit(doc)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700 transition-colors" title="Edit"><Icon name="edit" className="text-[15px]" /></button>
                         <button onClick={() => setDeletingId(doc.id)} className="p-1.5 hover:bg-red-50 text-zinc-400 hover:text-red-600 transition-colors" title="Delete"><Icon name="delete" className="text-[15px]" /></button>
                       </div>
                     </td>
@@ -422,14 +640,15 @@ const DocumentsPage = () => {
             </tbody>
           </table>
           <div className="px-5 py-3 border-t border-zinc-50 text-[9px] font-black uppercase tracking-widest text-zinc-400 flex justify-between">
-            <span>Showing {filtered.length} of {RICH_DOCS.length} documents</span>
-            <span>{RICH_DOCS.reduce((a, d) => a, 0)} total files</span>
+            <span>Showing {filtered.length} of {documents.length} documents</span>
+            <span>{documents.reduce((a, d) => a, 0)} total files</span>
           </div>
         </div>
       </div>
 
       {/* ─── Modals ─── */}
-      {showUpload && <UploadModal onClose={() => setShowUpload(false)} />}
+      {showUpload && <UploadModal onClose={() => setShowUpload(false)} onUpload={handleUpload} />}
+      {editingDoc && <EditModal doc={editingDoc} onClose={() => setEditingDoc(null)} onUpdate={handleUpdateDocument} />}
       {selectedDoc && <DocDrawer doc={selectedDoc} onClose={() => setSelectedDoc(null)} />}
 
       {deletingId && (
@@ -440,7 +659,7 @@ const DocumentsPage = () => {
             <p className="text-sm text-zinc-500 mb-6">This will permanently remove the file and all its associated metadata and comments.</p>
             <div className="flex gap-3">
               <button onClick={() => setDeletingId(null)} className="flex-1 py-2.5 border border-zinc-200 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50">Cancel</button>
-              <button onClick={() => setDeletingId(null)} className="flex-1 py-2.5 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-red-700">Delete</button>
+              <button onClick={handleDelete} className="flex-1 py-2.5 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-red-700">Delete</button>
             </div>
           </div>
         </div>

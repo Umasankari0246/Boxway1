@@ -31,6 +31,17 @@ const ClientsPage = () => {
 
   const toggleMenu = (id) => setOpenMenuId((current) => (current === id ? null : id));
 
+  const handleDelete = (id) => {
+    if (!window.confirm('Are you sure you want to delete this client?')) return;
+    setClients(clients.filter(c => c.id !== id));
+    setOpenMenuId(null);
+  };
+
+  const handleStatusChange = (id, newStatus) => {
+    setClients(clients.map(c => c.id === id ? { ...c, status: newStatus } : c));
+    setOpenMenuId(null);
+  };
+
   const statuses = ['All', 'Active', 'Inactive'];
   const filtered = clients.filter(c =>
     (filter === 'All' || c.status === filter) &&
@@ -55,10 +66,10 @@ const ClientsPage = () => {
       {/* KPIs */}
       <div className="grid grid-cols-4 gap-4 mb-6">
         {[
-          { label: 'Total Clients', val: MOCK_CLIENTS.length, icon: 'person_pin', color: 'text-slate-900' },
-          { label: 'Active', val: MOCK_CLIENTS.filter(c => c.status === 'Active').length, icon: 'check_circle', color: 'text-green-600' },
-          { label: 'Total Projects', val: MOCK_CLIENTS.reduce((s, c) => s + c.totalProjects, 0), icon: 'architecture', color: 'text-blue-600' },
-          { label: 'Total Value', val: '$' + (MOCK_CLIENTS.reduce((s, c) => s + c.totalValue, 0) / 1000000).toFixed(1) + 'M', icon: 'attach_money', color: 'text-primary' },
+          { label: 'Total Clients', val: clients.length, icon: 'person_pin', color: 'text-slate-900' },
+          { label: 'Active', val: clients.filter(c => c.status === 'Active').length, icon: 'check_circle', color: 'text-green-600' },
+          { label: 'Total Projects', val: clients.reduce((s, c) => s + (c.totalProjects || 0), 0), icon: 'architecture', color: 'text-blue-600' },
+          { label: 'Total Value', val: '$' + (clients.reduce((s, c) => s + (c.totalValue || 0), 0) / 1000000).toFixed(1) + 'M', icon: 'attach_money', color: 'text-primary' },
         ].map(k => {
           const Icon = iconMap[k.icon] || User;
           return (
@@ -92,7 +103,7 @@ const ClientsPage = () => {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
         <table className="w-full text-left">
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
@@ -118,7 +129,19 @@ const ClientsPage = () => {
                 <td className="px-6 py-4 text-sm font-medium text-slate-700">{c.totalProjects}</td>
                 <td className="px-6 py-4 text-sm font-semibold text-slate-900">${c.totalValue.toLocaleString()}</td>
                 <td className="px-6 py-4">
-                  <span className={`px-2.5 py-0.5 text-[10px] font-bold rounded uppercase ${c.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>{c.status}</span>
+                  <select
+                    value={c.status}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      handleStatusChange(c.id, e.target.value);
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className={`px-3 py-1 text-[10px] font-bold rounded uppercase border-0 cursor-pointer min-w-[100px] ${c.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
                 </td>
                 <td className="px-6 py-4 text-right" onClick={e => e.stopPropagation()}>
                   <div className="relative inline-flex">
@@ -133,7 +156,7 @@ const ClientsPage = () => {
                       <MoreVertical className="h-5 w-5" />
                     </button>
                     {openMenuId === c.id && (
-                      <div className="absolute right-0 top-full mt-2 w-44 rounded-xl border border-slate-200 bg-white shadow-xl shadow-black/5 z-20">
+                      <div className="absolute right-0 top-full mt-2 w-44 rounded-xl border border-slate-200 bg-white shadow-xl shadow-black/5 z-50">
                         <button
                           onClick={() => { setOpenMenuId(null); navigate(`/clients/${c.id}`); }}
                           className="w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-slate-50"
@@ -147,8 +170,14 @@ const ClientsPage = () => {
                           Edit
                         </button>
                         <button
-                          onClick={() => setOpenMenuId(null)}
+                          onClick={() => handleDelete(c.id)}
                           className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-slate-50"
+                        >
+                          Delete
+                        </button>
+                        <button
+                          onClick={() => setOpenMenuId(null)}
+                          className="w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-slate-50"
                         >
                           Close
                         </button>

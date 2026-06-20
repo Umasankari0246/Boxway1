@@ -7,9 +7,48 @@ const ReviewInvoicePage = () => {
   const navigate = useNavigate();
   const { invoiceData, resetInvoice } = useInvoiceStore();
 
+  // Generate dynamic invoice number
+  const generateInvoiceNumber = () => {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const random = Math.floor(Math.random() * 9000) + 1000;
+    return `#INV-${year}-${month}-${random}`;
+  };
+
   const handleBack = () => navigate('/invoices/new');
-  
+
+  const handleSaveDraft = () => {
+    // Save invoice as draft - for now just show alert
+    alert('Invoice saved as draft!');
+  };
+
   const handleConfirm = () => {
+    // Generate and save the invoice
+    const subtotal = invoiceData.items.reduce((acc, item) => {
+      const amount = item.qty * item.rate;
+      const discountAmount = amount * (item.disc / 100);
+      return acc + (amount - discountAmount);
+    }, 0);
+
+    const cgst = subtotal * 0.09;
+    const sgst = subtotal * 0.09;
+    const total = subtotal + cgst + sgst;
+
+    const newInvoice = {
+      id: generateInvoiceNumber(),
+      client: invoiceData.clientName || 'Unknown Client',
+      project: invoiceData.projectLink || 'Unknown Project',
+      date: invoiceData.issueDate || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      amount: total,
+      status: 'Pending'
+    };
+
+    // Save to localStorage
+    const existingInvoices = JSON.parse(localStorage.getItem('invoices') || '[]');
+    localStorage.setItem('invoices', JSON.stringify([newInvoice, ...existingInvoices]));
+
+    alert('Invoice generated successfully!');
     resetInvoice();
     navigate('/invoices');
   };
@@ -49,7 +88,7 @@ const ReviewInvoicePage = () => {
           </div>
           <div className="text-right">
             <h1 className="text-4xl font-black text-slate-900 mb-2">INVOICE</h1>
-            <p className="text-slate-500 font-medium">#INV-2023-0842</p>
+            <p className="text-slate-500 font-medium">{generateInvoiceNumber()}</p>
           </div>
         </div>
 
@@ -156,7 +195,7 @@ const ReviewInvoicePage = () => {
           </button>
         </div>
         <div className="flex items-center gap-3">
-          <button className="px-6 py-3 text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg font-bold text-sm transition-all">
+          <button onClick={handleSaveDraft} className="px-6 py-3 text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg font-bold text-sm transition-all">
             Save as Draft
           </button>
           <button onClick={handleConfirm} className="flex items-center gap-2 px-8 py-3 bg-primary hover:bg-rose-700 text-white rounded-lg font-black text-sm uppercase tracking-wide shadow-lg shadow-rose-200 transition-all active:scale-95 cursor-pointer">

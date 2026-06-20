@@ -208,7 +208,7 @@ const EmployeesPage = () => {
                       value={emp.status} 
                       onChange={(e) => { e.stopPropagation(); handleStatusChange(emp.id, e.target.value); }} 
                       onClick={(e) => e.stopPropagation()}
-                      className={`text-[10px] font-bold rounded uppercase px-2 py-1 outline-none cursor-pointer border border-transparent hover:border-slate-200 ${
+                      className={`text-[10px] font-bold rounded uppercase px-3 py-1 outline-none cursor-pointer border border-transparent hover:border-slate-200 min-w-[100px] ${
                         emp.status === 'Active' ? 'bg-green-100 text-green-700' : 
                         emp.status === 'On Leave' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'
                       }`}
