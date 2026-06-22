@@ -1,0 +1,8 @@
+# Virtual Environment
+boxway-api/venv/
+boxway-api/__pycache__/
+boxway-api/models/__pycache__/
+boxway-api/routes/__pycache__/
+
+# Dependencies
+node_modules/
