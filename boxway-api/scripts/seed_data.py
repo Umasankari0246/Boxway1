@@ -7,12 +7,12 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 
-# Utilizing certifi to avoid TLS/SSL internal handshake errors on certain systems with older python openssl bindings
-password = urllib.parse.quote_plus('liZXEumSsakcDldF') 
-uri = f"mongodb+srv://developer_db_user:{password}@movicloudlabscluster.p08qogp.mongodb.net/?retryWrites=true&w=majority&appName=MoviCloudLabsCluster"
+from database import get_database
 
-client = MongoClient(uri, server_api=ServerApi('1'), tlsCAFile=certifi.where(), tlsAllowInvalidCertificates=True)
-db = client.boxway_db
+db = get_database()
+if db is None:
+    print("Error: Could not connect to MongoDB (neither cloud nor local).")
+    sys.exit(1)
 employees_collection = db.get_collection("employees")
 
 mock_employees = [

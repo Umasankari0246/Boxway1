@@ -11,8 +11,47 @@ const ReviewProposalPage = () => {
   const form = state?.form || {};
 
   const handleSubmit = () => {
-    // In a real app, save to API
-    navigate('/proposals', { state: { submitted: true } });
+    const newProposal = {
+      id: Date.now().toString(),
+      title: form.projectTitle || 'Untitled Proposal',
+      client: form.fullName || 'Unknown Client',
+      clientContact: form.email || '',
+      lead: 'Marcus Johnson',
+      value: 0,
+      status: 'Submitted',
+      phase: 'Initial',
+      version: 1,
+      submittedDate: new Date().toISOString().split('T')[0],
+      createdAt: new Date().toISOString().split('T')[0],
+      ...form
+    };
+    const stored = localStorage.getItem('proposals');
+    const proposals = stored ? JSON.parse(stored) : [];
+    const updated = [newProposal, ...proposals];
+    localStorage.setItem('proposals', JSON.stringify(updated));
+    navigate('/proposals');
+  };
+
+  const handleSaveDraft = () => {
+    const newProposal = {
+      id: Date.now().toString(),
+      title: form.projectTitle || 'Untitled Proposal',
+      client: form.fullName || 'Unknown Client',
+      clientContact: form.email || '',
+      lead: 'Marcus Johnson',
+      value: 0,
+      status: 'Draft',
+      phase: 'Initial',
+      version: 1,
+      submittedDate: null,
+      createdAt: new Date().toISOString().split('T')[0],
+      ...form
+    };
+    const stored = localStorage.getItem('proposals');
+    const proposals = stored ? JSON.parse(stored) : [];
+    const updated = [newProposal, ...proposals];
+    localStorage.setItem('proposals', JSON.stringify(updated));
+    navigate('/proposals');
   };
 
   const sections = [
@@ -226,7 +265,7 @@ const ReviewProposalPage = () => {
                 <Icon name="send" className="text-[16px]" />
                 Submit Enquiry
               </button>
-              <button onClick={() => navigate(-1)} className="w-full mt-2 py-3 border border-zinc-200 text-zinc-500 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors">
+              <button onClick={handleSaveDraft} className="w-full mt-2 py-3 border border-zinc-200 text-zinc-500 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors">
                 Save as Draft
               </button>
             </div>
