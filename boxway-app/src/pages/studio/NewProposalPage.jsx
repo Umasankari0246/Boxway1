@@ -31,8 +31,53 @@ const NewProposalPage = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState(DEFAULT_FORM);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
 
   const set = (field, val) => setForm(p => ({ ...p, [field]: val }));
+
+  const handleFileUpload = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      const filePromises = files.map(file => new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve({
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          data: reader.result
+        });
+        reader.readAsDataURL(file);
+      }));
+      Promise.all(filePromises).then(base64Files => {
+        setUploadedFiles([...uploadedFiles, ...base64Files]);
+        alert(`${files.length} file(s) uploaded successfully`);
+      });
+    }
+  };
+
+  const handleSaveDraft = () => {
+    const newProposal = {
+      id: Date.now().toString(),
+      title: form.projectTitle || 'Untitled Proposal',
+      client: form.fullName || 'Unknown Client',
+      clientContact: form.email || '',
+      lead: 'Marcus Johnson',
+      value: 0,
+      status: 'Draft',
+      phase: 'Initial',
+      version: 1,
+      submittedDate: null,
+      createdAt: new Date().toISOString().split('T')[0],
+      ...form,
+      files: uploadedFiles
+    };
+    const stored = localStorage.getItem('proposals');
+    const proposals = stored ? JSON.parse(stored) : [];
+    const updated = [newProposal, ...proposals];
+    localStorage.setItem('proposals', JSON.stringify(updated));
+    alert('Proposal saved as draft');
+    navigate('/proposals');
+  };
 
   const togglePillar = (p) => setForm(f => ({
     ...f,
@@ -58,7 +103,7 @@ const NewProposalPage = () => {
           <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mt-0.5 ml-8">Status: Drafting Phase · v1.0</p>
         </div>
         <div className="flex gap-3">
-          <button className="px-5 py-2.5 bg-zinc-100 text-zinc-700 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-200 transition-colors">
+          <button onClick={handleSaveDraft} className="px-5 py-2.5 bg-zinc-100 text-zinc-700 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-200 transition-colors">
             Save Draft
           </button>
           <button onClick={handleNext} className="px-6 py-2.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors flex items-center gap-2">
@@ -278,11 +323,22 @@ const NewProposalPage = () => {
                   <textarea value={form.siteNotes} onChange={e => set('siteNotes', e.target.value)} rows={3} placeholder="Conservation area constraints, neighboring buildings, planning history..." className={INPUT + ' resize-none'} />
                 </div>
                 <div className="border-2 border-dashed border-zinc-200 p-8 flex flex-col items-center text-center gap-3 hover:border-primary cursor-pointer transition-colors group">
-                  <Icon name="cloud_upload" className="text-zinc-300 group-hover:text-primary text-[36px] transition-colors" />
-                  <div>
-                    <p className="text-xs font-black uppercase tracking-widest text-zinc-700">Upload Site Files</p>
-                    <p className="text-[10px] text-zinc-400 mt-1">CAD, PDF, or Site Imagery — max 50MB</p>
-                  </div>
+                  <input type="file" multiple accept=".pdf,.doc,.docx,.dwg,.jpg,.jpeg,.png" onChange={handleFileUpload} className="hidden" id="file-upload" />
+                  <label htmlFor="file-upload" className="cursor-pointer">
+                    <Icon name="cloud_upload" className="text-zinc-300 group-hover:text-primary text-[36px] transition-colors" />
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-widest text-zinc-700">Upload Site Files</p>
+                      <p className="text-[10px] text-zinc-400 mt-1">CAD, PDF, or Site Imagery — max 50MB</p>
+                    </div>
+                  </label>
+                  {uploadedFiles.length > 0 && (
+                    <div className="mt-4 text-left w-full">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Uploaded Files:</p>
+                      {uploadedFiles.map((file, idx) => (
+                        <div key={idx} className="text-[10px] text-zinc-600 truncate">{file.name}</div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </section>
             )}
@@ -395,20 +451,6 @@ const NewProposalPage = () => {
               </div>
             </div>
 
-            {/* Navigation steps helper */}
-            <div className="bg-white border border-zinc-100 p-5">
-              <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-3">Steps</p>
-              <div className="space-y-1">
-                {STEPS.map((s, i) => (
-                  <button key={s.id} onClick={() => setStep(i)} className={`w-full flex items-center gap-3 px-3 py-2 text-left transition-colors ${i === step ? 'bg-primary/5 text-primary' : 'hover:bg-zinc-50 text-zinc-500'}`}>
-                    <span className={`w-5 h-5 text-[9px] font-black flex items-center justify-center ${i < step ? 'bg-primary text-white' : i === step ? 'bg-primary text-white' : 'bg-zinc-100 text-zinc-400'}`}>
-                      {i < step ? '✓' : s.id}
-                    </span>
-                    <span className="text-[10px] font-black uppercase tracking-wider">{s.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
 
