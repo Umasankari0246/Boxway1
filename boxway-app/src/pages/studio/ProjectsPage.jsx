@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_PROJECTS } from '../../data/mockData';
+import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
+
+const api = axios.create({
+  baseURL: 'http://localhost:8000/api'
+});
 
 const STATUS_CFG = {
   'In Progress': { cls: 'bg-blue-100 text-blue-700',   dot: 'bg-blue-500' },
@@ -22,6 +26,8 @@ const STATUSES = ['All', 'In Progress', 'Planning', 'On Hold', 'Completed'];
 
 const ProjectsPage = () => {
   const navigate = useNavigate();
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [typeFilter, setTypeFilter] = useState('All');
@@ -29,14 +35,28 @@ const ProjectsPage = () => {
   const [sortDir, setSortDir] = useState('asc');
   const [deletingId, setDeletingId] = useState(null);
 
-  const types = ['All', ...Array.from(new Set(MOCK_PROJECTS.map(p => p.type)))];
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await api.get('/projects/');
+        setProjects(response.data.data);
+      } catch (err) {
+        console.error("Error fetching projects:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProjects();
+  }, []);
+
+  const types = ['All', ...Array.from(new Set(projects.map(p => p.type)))];
 
   const toggleSort = (col) => {
     if (sortBy === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
     else { setSortBy(col); setSortDir('asc'); }
   };
 
-  const filtered = MOCK_PROJECTS
+  const filtered = projects
     .filter(p =>
       (statusFilter === 'All' || p.status === statusFilter) &&
       (typeFilter === 'All' || p.type === typeFilter) &&
@@ -51,8 +71,19 @@ const ProjectsPage = () => {
       return sortDir === 'asc' ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1);
     });
 
-  const totalBudget = MOCK_PROJECTS.reduce((s, p) => s + p.budget, 0);
-  const totalSpent  = MOCK_PROJECTS.reduce((s, p) => s + p.spent, 0);
+  const totalBudget = projects.reduce((s, p) => s + (p.budget || 0), 0);
+  const totalSpent  = projects.reduce((s, p) => s + (p.spent || 0), 0);
+
+  const handleDelete = async () => {
+    try {
+      await api.delete(`/projects/${deletingId}`);
+      setProjects(projects.filter(p => p.id !== deletingId));
+      setDeletingId(null);
+    } catch (err) {
+      console.error("Error deleting project:", err);
+      alert("Failed to delete project");
+    }
+  };
 
   const SortIcon = ({ col }) => (
     <Icon name={sortBy === col ? (sortDir === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'} className={`text-[14px] ml-0.5 ${sortBy === col ? 'text-primary' : 'text-zinc-300'}`} />
@@ -63,10 +94,10 @@ const ProjectsPage = () => {
       {/* KPIs */}
       <div className="px-8 pt-6 pb-4 grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Total Projects',  val: MOCK_PROJECTS.length,                                                                          icon: 'architecture',       color: 'text-zinc-900' },
-          { label: 'In Progress',     val: MOCK_PROJECTS.filter(p => p.status === 'In Progress').length,                                 icon: 'pending_actions',    color: 'text-blue-600' },
+          { label: 'Total Projects',  val: projects.length,                                                                          icon: 'architecture',       color: 'text-zinc-900' },
+          { label: 'In Progress',     val: projects.filter(p => p.status === 'In Progress').length,                                 icon: 'pending_actions',    color: 'text-blue-600' },
           { label: 'Total Budget',    val: '$' + (totalBudget / 1000000).toFixed(1) + 'M',                                               icon: 'monetization_on',    color: 'text-primary'  },
-          { label: 'Avg. Progress',   val: Math.round(MOCK_PROJECTS.reduce((s, p) => s + p.progress, 0) / MOCK_PROJECTS.length) + '%',   icon: 'trending_up',        color: 'text-emerald-600' },
+          { label: 'Avg. Progress',   val: projects.length ? Math.round(projects.reduce((s, p) => s + (p.progress || 0), 0) / projects.length) + '%' : '0%',   icon: 'trending_up',        color: 'text-emerald-600' },
         ].map(k => (
           <div key={k.label} className="bg-white border border-zinc-100 shadow-sm p-5 flex items-center justify-between">
             <div>
@@ -193,7 +224,7 @@ const ProjectsPage = () => {
             </tbody>
           </table>
           <div className="px-5 py-3 border-t border-zinc-50 text-[9px] font-black uppercase tracking-widest text-zinc-400 flex justify-between">
-            <span>Showing {filtered.length} of {MOCK_PROJECTS.length} projects</span>
+            <span>Showing {filtered.length} of {projects.length} projects</span>
             <span>Total budget: ${(totalBudget / 1000000).toFixed(1)}M · Spent: ${(totalSpent / 1000000).toFixed(1)}M</span>
           </div>
         </div>
@@ -208,7 +239,7 @@ const ProjectsPage = () => {
             <p className="text-sm text-zinc-500 mb-6">This will permanently delete the project and all associated data.</p>
             <div className="flex gap-3">
               <button onClick={() => setDeletingId(null)} className="flex-1 py-2.5 border border-zinc-200 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50">Cancel</button>
-              <button onClick={() => setDeletingId(null)} className="flex-1 py-2.5 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-red-700">Delete</button>
+              <button onClick={handleDelete} className="flex-1 py-2.5 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-red-700">Delete</button>
             </div>
           </div>
         </div>

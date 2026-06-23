@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check } from 'lucide-react';
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: 'http://localhost:8000/api'
+});
 
 const STEPS = ['Basic Info', 'Project Requirements'];
 
@@ -16,6 +21,14 @@ const NewClientPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validate = () => {
+    if (!form.companyName) {
+      setError('Company Name is required.');
+      return false;
+    }
+    if (!form.contactPerson) {
+      setError('Contact Person is required.');
+      return false;
+    }
     const phoneDigits = form.phone.replace(/\D/g, '');
     if (!phoneDigits || phoneDigits.length !== 10) {
       setError('Phone number is required and must contain exactly 10 digits.');
@@ -28,27 +41,34 @@ const NewClientPage = () => {
     return true;
   };
 
-  const addClient = () => {
+  const addClient = async () => {
     if (!validate()) return;
     setIsSubmitting(true);
-    const newClient = {
-      id: `CLT${String(Date.now()).slice(-6)}`,
-      name: form.companyName,
-      contactPerson: form.contactPerson,
-      email: form.email,
-      phone: `+1 ${form.phone.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3')}`,
-      type: form.type || 'Corporate',
-      status: 'Active',
-      totalProjects: parseInt(form.numberOfProjects) || 0,
-      totalValue: parseFloat(form.estimatedBudget) || 0,
-      city: form.city,
-      joinDate: new Date().toISOString().slice(0, 10),
-    };
-    const stored = window.localStorage.getItem('boxwayClients');
-    const clients = stored ? JSON.parse(stored) : [];
-    window.localStorage.setItem('boxwayClients', JSON.stringify([newClient, ...clients]));
-    setIsSubmitting(false);
-    navigate('/clients');
+    setError('');
+    try {
+      const newClient = {
+        name: form.companyName,
+        contactPerson: form.contactPerson,
+        email: form.email,
+        phone: form.phone,
+        type: form.type || 'Corporate',
+        status: 'Active',
+        totalProjects: parseInt(form.numberOfProjects) || 0,
+        totalValue: parseFloat(form.estimatedBudget) || 0,
+        city: form.city,
+      };
+      console.log("Sending client data:", newClient);
+      const response = await api.post('/clients/', newClient);
+      console.log("Server response:", response.data);
+      setIsSubmitting(false);
+      navigate('/clients');
+    } catch (err) {
+      console.error("Error adding client:", err);
+      console.error("Error response:", err.response?.data);
+      const errorMessage = err.response?.data?.detail || err.response?.data?.error || "Failed to add client. Please try again.";
+      setError(errorMessage);
+      setIsSubmitting(false);
+    }
   };
 
   return (

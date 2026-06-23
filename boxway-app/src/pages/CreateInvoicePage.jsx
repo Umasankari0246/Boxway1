@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInvoiceStore } from '../store/invoiceStore';
+import axios from 'axios';
 import Icon from "../components/ui/Icon.jsx"
+
+const api = axios.create({
+  baseURL: 'http://localhost:8000/api'
+});
 
 const CreateInvoicePage = () => {
   const navigate = useNavigate();
@@ -22,9 +27,35 @@ const CreateInvoicePage = () => {
     navigate('/invoices/review');
   };
 
-  const handleSaveDraft = () => {
-    // Save invoice as draft - for now just show alert
-    alert('Invoice saved as draft!');
+  const handleSaveDraft = async () => {
+    try {
+      const subtotal = invoiceData.items.reduce((acc, item) => {
+        const amount = item.qty * item.rate;
+        const discountAmount = amount * (item.disc / 100);
+        return acc + (amount - discountAmount);
+      }, 0);
+      const cgst = subtotal * 0.09;
+      const sgst = subtotal * 0.09;
+      const total = subtotal + cgst + sgst;
+
+      const invoicePayload = {
+        invoiceId: generateInvoiceNumber(),
+        client: invoiceData.client || 'Unknown Client',
+        project: invoiceData.project || 'Unknown Project',
+        date: invoiceData.issueDate || new Date().toISOString().split('T')[0],
+        amount: total,
+        status: 'Draft',
+        dueDate: invoiceData.dueDate,
+        notes: invoiceData.notes,
+      };
+
+      await api.post('/invoices/', invoicePayload);
+      alert('Invoice saved as draft!');
+      navigate('/invoices');
+    } catch (err) {
+      console.error('Error saving invoice:', err);
+      alert('Failed to save invoice. Please try again.');
+    }
   };
 
   const handleDiscard = () => {

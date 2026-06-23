@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_EXPENSES } from '../../data/mockData';
+import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
+
+const api = axios.create({
+  baseURL: 'http://localhost:8000/api'
+});
 
 const statusColors = { Approved: 'bg-green-100 text-green-700', Pending: 'bg-yellow-100 text-yellow-700', Rejected: 'bg-red-100 text-red-700' };
 
 const ExpensesPage = () => {
   const navigate = useNavigate();
-  const [expenses, setExpenses] = useState(() => {
-    const stored = localStorage.getItem('expenses');
-    return stored ? JSON.parse(stored) : MOCK_EXPENSES;
-  });
+  const [expenses, setExpenses] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('All');
   const [showCreate, setShowCreate] = useState(false);
@@ -19,6 +21,20 @@ const ExpensesPage = () => {
   const [deletingId, setDeletingId] = useState(null);
   const [statusDropdownId, setStatusDropdownId] = useState(null);
   const [form, setForm] = useState({ title: '', category: '', amount: '', date: '', project: '', notes: '' });
+
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      try {
+        const response = await api.get('/expenses/');
+        setExpenses(response.data.data);
+      } catch (err) {
+        console.error("Error fetching expenses:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchExpenses();
+  }, []);
 
   const categories = ['All', 'Software', 'Travel', 'Office', 'Entertainment'];
   const filtered = expenses.filter(e =>
@@ -30,37 +46,50 @@ const ExpensesPage = () => {
   const totalPending = expenses.filter(e => e.status === 'Pending').reduce((s, e) => s + e.amount, 0);
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
-  const handleDelete = () => {
-    const updated = expenses.filter(e => e.id !== deletingId);
-    setExpenses(updated);
-    localStorage.setItem('expenses', JSON.stringify(updated));
-    setDeletingId(null);
-  };
-
-  const handleStatusChange = (id, newStatus) => {
-    const updated = expenses.map(e => e.id === id ? { ...e, status: newStatus } : e);
-    setExpenses([...updated]);
-    localStorage.setItem('expenses', JSON.stringify(updated));
-  };
-
-  const handleAddExpense = () => {
-    if (form.title && form.amount) {
-      const newExpense = {
-        id: Date.now().toString(),
-        title: form.title,
-        category: form.category || 'Other',
-        amount: Number(form.amount),
-        date: form.date || new Date().toISOString().split('T')[0],
-        project: form.project || '',
-        notes: form.notes || '',
-        submittedBy: 'Current User',
-        status: 'Pending'
-      };
-      const updated = [newExpense, ...expenses];
+  const handleDelete = async () => {
+    try {
+      await api.delete(`/expenses/${deletingId}`);
+      const updated = expenses.filter(e => e.id !== deletingId);
       setExpenses(updated);
-      localStorage.setItem('expenses', JSON.stringify(updated));
-      setForm({ title: '', category: '', amount: '', date: '', project: '', notes: '' });
-      setShowCreate(false);
+      setDeletingId(null);
+    } catch (err) {
+      console.error("Error deleting expense:", err);
+      alert("Failed to delete expense");
+    }
+  };
+
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await api.patch(`/expenses/${id}`, { status: newStatus });
+      const updated = expenses.map(e => e.id === id ? { ...e, status: newStatus } : e);
+      setExpenses([...updated]);
+    } catch (err) {
+      console.error("Error updating status:", err);
+      alert("Failed to update status");
+    }
+  };
+
+  const handleAddExpense = async () => {
+    if (form.title && form.amount) {
+      try {
+        const newExpense = {
+          title: form.title,
+          category: form.category || 'Other',
+          amount: Number(form.amount),
+          date: form.date || new Date().toISOString().split('T')[0],
+          project: form.project || '',
+          notes: form.notes || '',
+          submittedBy: 'Current User',
+          status: 'Pending'
+        };
+        const response = await api.post('/expenses/', newExpense);
+        setExpenses([response.data.data, ...expenses]);
+        setForm({ title: '', category: '', amount: '', date: '', project: '', notes: '' });
+        setShowCreate(false);
+      } catch (err) {
+        console.error("Error adding expense:", err);
+        alert("Failed to add expense");
+      }
     }
   };
 
@@ -69,7 +98,7 @@ const ExpensesPage = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-black text-slate-900">Expenses</h2>
-          <p className="text-sm text-slate-500">{MOCK_EXPENSES.length} expense records</p>
+          <p className="text-sm text-slate-500">{expenses.length} expense records</p>
         </div>
         <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-bold rounded shadow-lg shadow-primary/20 hover:bg-primary/90">
           <Icon name="add" className="text-lg" /> Log Expense

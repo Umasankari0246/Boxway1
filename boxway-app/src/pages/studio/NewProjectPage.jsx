@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
+
+const api = axios.create({
+  baseURL: 'http://localhost:8000/api'
+});
 
 const STEPS = [
   { id: '01', label: 'Details',    icon: 'architecture' },
@@ -74,9 +79,31 @@ const NewProjectPage = () => {
     set('phases', phases);
   };
 
-  const handleNext = () => {
-    if (step < STEPS.length - 1) setStep(s => s + 1);
-    else navigate('/projects');
+  const handleNext = async () => {
+    if (step < STEPS.length - 1) {
+      setStep(s => s + 1);
+    } else {
+      try {
+        const projectPayload = {
+          name: form.name,
+          client: form.client,
+          lead: form.leadArchitect,
+          type: form.type,
+          status: 'Planning',
+          budget: parseFloat(form.budget) || 0,
+          spent: 0,
+          progress: 0,
+          startDate: form.startDate,
+          endDate: form.endDate,
+          city: '',
+        };
+        await api.post('/projects/', projectPayload);
+        navigate('/projects');
+      } catch (err) {
+        console.error('Error creating project:', err);
+        alert('Failed to create project. Please try again.');
+      }
+    }
   };
 
   return (

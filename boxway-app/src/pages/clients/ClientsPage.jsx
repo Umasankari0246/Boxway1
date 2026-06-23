@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Plus, MoreVertical, User, CheckCircle, Building2, DollarSign } from 'lucide-react';
-import { MOCK_CLIENTS } from '../../data/mockData';
+import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
+
+const api = axios.create({
+  baseURL: 'http://localhost:8000/api'
+});
 
 const iconMap = {
   person_pin: User,
@@ -16,30 +20,46 @@ const ClientsPage = () => {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('All');
   const [clients, setClients] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [openMenuId, setOpenMenuId] = useState(null);
 
   useEffect(() => {
-    const savedClients = window.localStorage.getItem('boxwayClients');
-    setClients(savedClients ? JSON.parse(savedClients) : MOCK_CLIENTS);
+    const fetchClients = async () => {
+      try {
+        const response = await api.get('/clients/');
+        setClients(response.data.data);
+      } catch (err) {
+        console.error("Error fetching clients:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchClients();
   }, []);
-
-  useEffect(() => {
-    if (clients.length) {
-      window.localStorage.setItem('boxwayClients', JSON.stringify(clients));
-    }
-  }, [clients]);
 
   const toggleMenu = (id) => setOpenMenuId((current) => (current === id ? null : id));
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this client?')) return;
-    setClients(clients.filter(c => c.id !== id));
-    setOpenMenuId(null);
+    try {
+      await api.delete(`/clients/${id}`);
+      setClients(clients.filter(c => c.id !== id));
+      setOpenMenuId(null);
+    } catch (err) {
+      console.error("Error deleting client:", err);
+      alert("Failed to delete client");
+    }
   };
 
-  const handleStatusChange = (id, newStatus) => {
-    setClients(clients.map(c => c.id === id ? { ...c, status: newStatus } : c));
-    setOpenMenuId(null);
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await api.patch(`/clients/${id}`, { status: newStatus });
+      setClients(clients.map(c => c.id === id ? { ...c, status: newStatus } : c));
+      setOpenMenuId(null);
+    } catch (err) {
+      console.error("Error updating status:", err);
+      alert("Failed to update status");
+    }
   };
 
   const statuses = ['All', 'Active', 'Inactive'];
@@ -54,7 +74,7 @@ const ClientsPage = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-black text-slate-900">Clients</h2>
-          <p className="text-sm text-slate-500 mt-0.5">{MOCK_CLIENTS.length} registered clients</p>
+          <p className="text-sm text-slate-500 mt-0.5">{clients.length} registered clients</p>
         </div>
         <button onClick={() => navigate('/clients/new')}
           className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-bold rounded shadow-lg shadow-primary/20 hover:bg-primary/90 transition-colors">

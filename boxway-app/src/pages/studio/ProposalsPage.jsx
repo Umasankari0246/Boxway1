@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_PROPOSALS } from '../../data/mockData';
+import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
+
+const api = axios.create({
+  baseURL: 'http://localhost:8000/api'
+});
 
 const statusConfig = {
   Draft: { cls: 'bg-zinc-100 text-zinc-600', dot: 'bg-zinc-400' },
@@ -15,16 +19,28 @@ const STATUSES = ['All', 'Draft', 'Submitted', 'Under Review', 'Won', 'Lost'];
 
 const ProposalsPage = () => {
   const navigate = useNavigate();
-  const [proposals, setProposals] = useState(() => {
-    const stored = localStorage.getItem('proposals');
-    return stored ? JSON.parse(stored) : MOCK_PROPOSALS;
-  });
+  const [proposals, setProposals] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('All');
   const [sortBy, setSortBy] = useState('date');
   const [deletingId, setDeletingId] = useState(null);
   const [statusDropdownId, setStatusDropdownId] = useState(null);
   const [phaseDropdownId, setPhaseDropdownId] = useState(null);
+
+  useEffect(() => {
+    const fetchProposals = async () => {
+      try {
+        const response = await api.get('/proposals/');
+        setProposals(response.data.data);
+      } catch (err) {
+        console.error("Error fetching proposals:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProposals();
+  }, []);
 
   const won = proposals.filter(p => p.status === 'Won').length;
   const closed = proposals.filter(p => ['Won', 'Lost'].includes(p.status)).length;
@@ -44,23 +60,38 @@ const ProposalsPage = () => {
     return 0;
   });
 
-  const handleDelete = () => {
-    const updated = proposals.filter(p => p.id !== deletingId);
-    setProposals(updated);
-    localStorage.setItem('proposals', JSON.stringify(updated));
-    setDeletingId(null);
+  const handleDelete = async () => {
+    try {
+      await api.delete(`/proposals/${deletingId}`);
+      const updated = proposals.filter(p => p.id !== deletingId);
+      setProposals(updated);
+      setDeletingId(null);
+    } catch (err) {
+      console.error("Error deleting proposal:", err);
+      alert("Failed to delete proposal");
+    }
   };
 
-  const handleStatusChange = (id, newStatus) => {
-    const updated = proposals.map(p => p.id === id ? { ...p, status: newStatus } : p);
-    setProposals(updated);
-    localStorage.setItem('proposals', JSON.stringify(updated));
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await api.patch(`/proposals/${id}`, { status: newStatus });
+      const updated = proposals.map(p => p.id === id ? { ...p, status: newStatus } : p);
+      setProposals(updated);
+    } catch (err) {
+      console.error("Error updating status:", err);
+      alert("Failed to update status");
+    }
   };
 
-  const handlePhaseChange = (id, newPhase) => {
-    const updated = proposals.map(p => p.id === id ? { ...p, phase: newPhase } : p);
-    setProposals(updated);
-    localStorage.setItem('proposals', JSON.stringify(updated));
+  const handlePhaseChange = async (id, newPhase) => {
+    try {
+      await api.patch(`/proposals/${id}`, { phase: newPhase });
+      const updated = proposals.map(p => p.id === id ? { ...p, phase: newPhase } : p);
+      setProposals(updated);
+    } catch (err) {
+      console.error("Error updating phase:", err);
+      alert("Failed to update phase");
+    }
   };
 
   return (

@@ -1,21 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_PAYROLL_RUNS, MOCK_PAYSLIPS } from '../../data/mockData';
+import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx";
 import jsPDF from 'jspdf';
+
+const api = axios.create({
+  baseURL: 'http://localhost:8000/api'
+});
 
 const TABS = ['Dashboard', 'Payroll Runs', 'Payslips', 'Settings'];
 
 const PayrollDashboardTab = ({ navigate }) => {
-  const [payrollRuns, setPayrollRuns] = useState(MOCK_PAYROLL_RUNS);
+  const [payrollRuns, setPayrollRuns] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [selectedRun, setSelectedRun] = useState(null);
   const [showViewModal, setShowViewModal] = useState(false);
 
-  const handleApprove = (id) => {
-    setPayrollRuns(runs => runs.map(run => 
-      run.id === id ? { ...run, status: 'Completed', processedDate: new Date().toISOString().split('T')[0], approvedBy: 'Admin' } : run
-    ));
+  useEffect(() => {
+    const fetchPayrollRuns = async () => {
+      try {
+        const response = await api.get('/payroll-runs/');
+        setPayrollRuns(response.data.data);
+      } catch (err) {
+        console.error("Error fetching payroll runs:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPayrollRuns();
+  }, []);
+
+  const handleApprove = async (id) => {
+    try {
+      await api.patch(`/payroll-runs/${id}`, { 
+        status: 'Completed', 
+        processedDate: new Date().toISOString().split('T')[0], 
+        approvedBy: 'Admin' 
+      });
+      setPayrollRuns(runs => runs.map(run => 
+        run.id === id ? { ...run, status: 'Completed', processedDate: new Date().toISOString().split('T')[0], approvedBy: 'Admin' } : run
+      ));
+    } catch (err) {
+      console.error("Error approving payroll run:", err);
+      alert("Failed to approve payroll run");
+    }
   };
 
   const toggleDropdown = (id) => {
@@ -255,52 +284,88 @@ const PayrollDashboardTab = ({ navigate }) => {
   );
 };
 
-const PayrollRunsTab = ({ navigate }) => (
-  <div>
-    <div className="flex items-center justify-between mb-6">
-      <h3 className="text-lg font-bold text-slate-900">All Payroll Runs</h3>
-      <div className="flex gap-3">
-        <button onClick={() => navigate('/payroll/run/single/step1')} className="flex items-center gap-2 px-4 py-2 border border-slate-200 bg-white text-slate-700 text-sm font-bold rounded hover:bg-slate-50">
-          <Icon name="person" className="text-lg" /> Single Run
-        </button>
-        <button onClick={() => navigate('/payroll/run/multi/step1')} className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20">
-          <Icon name="group" className="text-lg" /> Multi Run
-        </button>
+const PayrollRunsTab = ({ navigate }) => {
+  const [payrollRuns, setPayrollRuns] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPayrollRuns = async () => {
+      try {
+        const response = await api.get('/payroll-runs/');
+        setPayrollRuns(response.data.data);
+      } catch (err) {
+        console.error("Error fetching payroll runs:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPayrollRuns();
+  }, []);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-lg font-bold text-slate-900">All Payroll Runs</h3>
+        <div className="flex gap-3">
+          <button onClick={() => navigate('/payroll/run/single/step1')} className="flex items-center gap-2 px-4 py-2 border border-slate-200 bg-white text-slate-700 text-sm font-bold rounded hover:bg-slate-50">
+            <Icon name="person" className="text-lg" /> Single Run
+          </button>
+          <button onClick={() => navigate('/payroll/run/multi/step1')} className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20">
+            <Icon name="group" className="text-lg" /> Multi Run
+          </button>
+        </div>
+      </div>
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+        <table className="w-full text-left">
+          <thead className="bg-slate-50 border-b border-slate-200">
+            <tr>{['Period', 'Employees', 'Ad Hoc', 'Gross', 'Net', 'Status', 'Processed', 'Approved By'].map(col => (
+              <th key={col} className="px-6 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">{col}</th>
+            ))}</tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {payrollRuns.map(run => (
+              <tr key={run.id} className="hover:bg-slate-50">
+                <td className="px-6 py-4 font-semibold text-sm text-slate-700">{run.period}</td>
+                <td className="px-6 py-4 text-sm text-slate-600">{run.employees}</td>
+                <td className="px-6 py-4 text-sm text-slate-600">{run.adHoc}</td>
+                <td className="px-6 py-4 text-sm font-medium text-slate-900">${run.grossAmount.toLocaleString()}</td>
+                <td className="px-6 py-4 text-sm text-slate-600">${run.netAmount.toLocaleString()}</td>
+                <td className="px-6 py-4">
+                  <span className={`px-2 py-1 text-[10px] font-bold rounded uppercase ${run.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{run.status}</span>
+                </td>
+                <td className="px-6 py-4 text-sm text-slate-500">{run.processedDate || '—'}</td>
+                <td className="px-6 py-4 text-sm text-slate-500">{run.approvedBy || '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
-    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-      <table className="w-full text-left">
-        <thead className="bg-slate-50 border-b border-slate-200">
-          <tr>{['Period', 'Employees', 'Ad Hoc', 'Gross', 'Net', 'Status', 'Processed', 'Approved By'].map(col => (
-            <th key={col} className="px-6 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">{col}</th>
-          ))}</tr>
-        </thead>
-        <tbody className="divide-y divide-slate-100">
-          {MOCK_PAYROLL_RUNS.map(run => (
-            <tr key={run.id} className="hover:bg-slate-50">
-              <td className="px-6 py-4 font-semibold text-sm text-slate-700">{run.period}</td>
-              <td className="px-6 py-4 text-sm text-slate-600">{run.employees}</td>
-              <td className="px-6 py-4 text-sm text-slate-600">{run.adHoc}</td>
-              <td className="px-6 py-4 text-sm font-medium text-slate-900">${run.grossAmount.toLocaleString()}</td>
-              <td className="px-6 py-4 text-sm text-slate-600">${run.netAmount.toLocaleString()}</td>
-              <td className="px-6 py-4">
-                <span className={`px-2 py-1 text-[10px] font-bold rounded uppercase ${run.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{run.status}</span>
-              </td>
-              <td className="px-6 py-4 text-sm text-slate-500">{run.processedDate || '—'}</td>
-              <td className="px-6 py-4 text-sm text-slate-500">{run.approvedBy || '—'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  </div>
-);
+  );
+};
 
 const PayslipsTab = () => {
+  const [payslips, setPayslips] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedPayslip, setSelectedPayslip] = useState(null);
   const [showViewModal, setShowViewModal] = useState(false);
-  const filtered = MOCK_PAYSLIPS.filter(p =>
+
+  useEffect(() => {
+    const fetchPayslips = async () => {
+      try {
+        const response = await api.get('/payslips/');
+        setPayslips(response.data.data);
+      } catch (err) {
+        console.error("Error fetching payslips:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPayslips();
+  }, []);
+
+  const filtered = payslips.filter(p =>
     p.employeeName.toLowerCase().includes(search.toLowerCase())
   );
 

@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
-import { MOCK_DOCUMENTS, MOCK_PROJECTS, MOCK_CLIENTS } from '../../data/mockData';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
+
+const api = axios.create({
+  baseURL: 'http://localhost:8000/api'
+});
 
 /* ── Folder/Type config matching client's drive structure ─────────────────── */
 const FOLDER_TYPES = [
@@ -17,20 +21,6 @@ const FOLDER_TYPES = [
 
 const FILE_TYPE_ICON  = { PDF: 'picture_as_pdf', DWG: 'architecture', DOCX: 'article', ZIP: 'folder_zip', PNG: 'panorama', JPG: 'panorama', MP4: 'movie', SKP: 'view_in_ar', RVT: 'domain', AI: 'draw' };
 const FILE_TYPE_COLOR = { PDF: 'text-red-600', DWG: 'text-blue-600', DOCX: 'text-indigo-600', ZIP: 'text-yellow-600', PNG: 'text-purple-600', JPG: 'text-purple-600', MP4: 'text-pink-600', SKP: 'text-orange-600', RVT: 'text-emerald-600', AI: 'text-teal-600' };
-
-/* ── Extended mock data ───────────────────────────────────────────────────── */
-const RICH_DOCS = [
-  ...(MOCK_DOCUMENTS || []).map((d, i) => ({ ...d, folderType: FOLDER_TYPES[i % FOLDER_TYPES.length].key, projectCode: 'BW24-01BFN-DGL', version: '1.0', client: 'Meridian Properties', comments: [] })),
-  { id: 'D101', name: 'Site_Survey_BW24-01BFN-DGL.dwg',      type: 'DWG', folderType: 'Site',        size: '18.4 MB', uploadedBy: 'Marcus Johnson', uploadDate: 'Mar 12, 2024', project: 'Meridian Highrise',     projectCode: 'BW24-01BFN-DGL', client: 'Meridian Properties',    category: 'Survey', version: '2.1', comments: [{ id:1, author:'Priya Nair', avatar:'PN', color:'bg-blue-600', role:'PM', time:'2 days ago', text:'Confirmed coordinates match the planning application reference points.', likes:2, liked:false }] },
-  { id: 'D102', name: 'Scheme_CAD_v3.2_BW24-02HRZ.dwg',     type: 'DWG', folderType: 'Scheme/CAD',  size: '64.1 MB', uploadedBy: 'Nina Patel',     uploadDate: 'Mar 15, 2024', project: 'Horizon Cultural Hub',  projectCode: 'BW24-02HRZ',     client: 'Horizon Developments', category: 'Design', version: '3.2', comments: [] },
-  { id: 'D103', name: 'Ext_Render_Final_v1.png',             type: 'PNG', folderType: 'Renders',     size: '22.8 MB', uploadedBy: 'Tom Walsh',       uploadDate: 'Mar 18, 2024', project: 'Meridian Highrise',     projectCode: 'BW24-01BFN-DGL', client: 'Meridian Properties',    category: 'Renders', version: '1.0', comments: [{ id:2, author:'Alex Carter', avatar:'AC', color:'bg-primary', role:'Admin', time:'1 day ago', text:'Client loved this render. Please prepare A1 export for printing.', likes:5, liked:false }] },
-  { id: 'D104', name: 'BIM_Model_BW24-03SV.rvt',            type: 'RVT', folderType: 'Revit',       size: '312 MB',  uploadedBy: 'Marcus Johnson', uploadDate: 'Mar 10, 2024', project: 'Savoy Boutique Hotel',  projectCode: 'BW24-03SV',      client: 'Savoy Hospitality',     category: 'Design', version: '2.0', comments: [] },
-  { id: 'D105', name: 'Email_In_Structural_2024-03-14.pdf', type: 'PDF', folderType: 'Email In',    size: '3.2 MB',  uploadedBy: 'Priya Nair',     uploadDate: 'Mar 14, 2024', project: 'Horizon Cultural Hub',  projectCode: 'BW24-02HRZ',     client: 'Horizon Developments', category: 'Engineering', version: '1.0', comments: [] },
-  { id: 'D106', name: 'Interior_Sketch_v2.skp',             type: 'SKP', folderType: 'SketchUp',    size: '87.5 MB', uploadedBy: 'Elena Rodriguez', uploadDate: 'Mar 17, 2024', project: 'Meridian Highrise',    projectCode: 'BW24-01BFN-DGL', client: 'Meridian Properties',   category: 'Design', version: '2.0', comments: [] },
-  { id: 'D107', name: 'Animation_Flythrough_v1.mp4',        type: 'MP4', folderType: '2D Animation', size: '1.2 GB', uploadedBy: 'Tom Walsh',      uploadDate: 'Mar 19, 2024', project: 'Savoy Boutique Hotel', projectCode: 'BW24-03SV',       client: 'Savoy Hospitality',    category: 'Renders', version: '1.0', comments: [] },
-  { id: 'D108', name: 'Email_Out_Client_2024-03-11.pdf',    type: 'PDF', folderType: 'Email Out',   size: '0.9 MB',  uploadedBy: 'Alex Carter',    uploadDate: 'Mar 11, 2024', project: 'Meridian Highrise',    projectCode: 'BW24-01BFN-DGL', client: 'Meridian Properties',   category: 'Brief', version: '1.0', comments: [] },
-  { id: 'D109', name: '2D_Graphics_Branding_Kit.ai',        type: 'AI',  folderType: '2D Graphics', size: '15.6 MB', uploadedBy: 'Elena Rodriguez', uploadDate: 'Mar 16, 2024', project: 'Horizon Cultural Hub', projectCode: 'BW24-02HRZ',      client: 'Horizon Developments', category: 'Design', version: '1.0', comments: [] },
-];
 
 const CATEGORY_FILTERS = ['All', 'Site', 'Scheme/CAD', 'Email Out', 'Email In', 'SketchUp', 'Revit', 'Renders', '2D Graphics', '2D Animation'];
 
@@ -447,8 +437,23 @@ const DocumentsPage = () => {
   const [showUpload, setShowUpload] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
-  const [documents, setDocuments] = useState(RICH_DOCS);
+  const [documents, setDocuments] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [editingDoc, setEditingDoc] = useState(null);
+
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      try {
+        const response = await api.get('/documents/');
+        setDocuments(response.data.data);
+      } catch (err) {
+        console.error("Error fetching documents:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDocuments();
+  }, []);
 
   const projects = ['All', ...Array.from(new Set(documents.map(d => d.projectCode)))];
 
@@ -470,30 +475,41 @@ const DocumentsPage = () => {
 
   const ft = (key) => FOLDER_TYPES.find(f => f.key === key);
 
-  const handleUpload = (form) => {
+  const handleUpload = async (form) => {
     const fileExt = form.file.name.split('.').pop().toUpperCase();
     const fileSize = (form.file.size / (1024 * 1024)).toFixed(1) + ' MB';
-    const newDoc = {
-      id: `D${String(Date.now()).slice(-6)}`,
-      name: form.file.name,
-      type: fileExt,
-      folderType: form.folderType,
-      size: fileSize,
-      uploadedBy: 'Alex Carter',
-      uploadDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      project: form.project || 'Unknown Project',
-      projectCode: form.projectCode,
-      client: form.client,
-      version: form.version,
-      comments: []
-    };
-    setDocuments([newDoc, ...documents]);
-    setShowUpload(false);
+    try {
+      const newDoc = {
+        name: form.file.name,
+        type: fileExt,
+        folderType: form.folderType,
+        size: fileSize,
+        uploadedBy: 'Alex Carter',
+        uploadDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        project: form.project || 'Unknown Project',
+        projectCode: form.projectCode,
+        client: form.client,
+        version: form.version,
+        comments: []
+      };
+      const response = await api.post('/documents/', newDoc);
+      setDocuments([response.data.data, ...documents]);
+      setShowUpload(false);
+    } catch (err) {
+      console.error("Error uploading document:", err);
+      alert("Failed to upload document");
+    }
   };
 
-  const handleDelete = () => {
-    setDocuments(documents.filter(d => d.id !== deletingId));
-    setDeletingId(null);
+  const handleDelete = async () => {
+    try {
+      await api.delete(`/documents/${deletingId}`);
+      setDocuments(documents.filter(d => d.id !== deletingId));
+      setDeletingId(null);
+    } catch (err) {
+      console.error("Error deleting document:", err);
+      alert("Failed to delete document");
+    }
   };
 
   const handleDownload = (doc) => {
@@ -514,9 +530,15 @@ const DocumentsPage = () => {
     setEditingDoc(doc);
   };
 
-  const handleUpdateDocument = (updatedDoc) => {
-    setDocuments(documents.map(d => d.id === updatedDoc.id ? { ...d, ...updatedDoc } : d));
-    setEditingDoc(null);
+  const handleUpdateDocument = async (updatedDoc) => {
+    try {
+      await api.patch(`/documents/${updatedDoc.id}`, updatedDoc);
+      setDocuments(documents.map(d => d.id === updatedDoc.id ? { ...d, ...updatedDoc } : d));
+      setEditingDoc(null);
+    } catch (err) {
+      console.error("Error updating document:", err);
+      alert("Failed to update document");
+    }
   };
 
   return (

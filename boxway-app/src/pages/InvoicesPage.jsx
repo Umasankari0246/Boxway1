@@ -1,25 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import Icon from "../components/ui/Icon.jsx"
 
-const MOCK_INVOICES = [
-  { id: '#INV-2024-001', client: 'Metropolis Development', project: 'Skyline Tower Phase II', date: 'Oct 12, 2023', amount: 12400, status: 'Paid' },
-  { id: '#INV-2024-002', client: 'Urban Green Co.', project: 'Riverside Pavillion', date: 'Oct 24, 2023', amount: 8200, status: 'Pending' },
-  { id: '#INV-2024-003', client: 'Vanguard Estates', project: 'Oakridge Residential Complex', date: 'Nov 02, 2023', amount: 24500, status: 'Overdue' },
-  { id: '#INV-2024-004', client: 'Apex Logistics', project: 'Warehouse Retrofit Plan', date: 'Nov 15, 2023', amount: 5750, status: 'Paid' },
-];
+const api = axios.create({
+  baseURL: 'http://localhost:8000/api'
+});
 
 const InvoicesPage = () => {
-  const [invoices, setInvoices] = useState(() => {
-    const stored = localStorage.getItem('invoices');
-    return stored ? JSON.parse(stored) : MOCK_INVOICES;
-  });
+  const [invoices, setInvoices] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All Statuses');
   const [deletingId, setDeletingId] = useState(null);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      try {
+        const response = await api.get('/invoices/');
+        setInvoices(response.data.data);
+      } catch (err) {
+        console.error("Error fetching invoices:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInvoices();
+  }, []);
 
   const filtered = invoices.filter(inv => {
     const matchesSearch = search === '' ||
@@ -30,17 +40,27 @@ const InvoicesPage = () => {
     return matchesSearch && matchesStatus;
   }).sort((a, b) => new Date(b.date) - new Date(a.date));
 
-  const handleDelete = () => {
-    const updated = invoices.filter(inv => inv.id !== deletingId);
-    setInvoices(updated);
-    localStorage.setItem('invoices', JSON.stringify(updated));
-    setDeletingId(null);
+  const handleDelete = async () => {
+    try {
+      await api.delete(`/invoices/${deletingId}`);
+      const updated = invoices.filter(inv => inv.id !== deletingId);
+      setInvoices(updated);
+      setDeletingId(null);
+    } catch (err) {
+      console.error("Error deleting invoice:", err);
+      alert("Failed to delete invoice");
+    }
   };
 
-  const handleStatusChange = (id, newStatus) => {
-    const updated = invoices.map(inv => inv.id === id ? { ...inv, status: newStatus } : inv);
-    setInvoices(updated);
-    localStorage.setItem('invoices', JSON.stringify(updated));
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await api.patch(`/invoices/${id}`, { status: newStatus });
+      const updated = invoices.map(inv => inv.id === id ? { ...inv, status: newStatus } : inv);
+      setInvoices(updated);
+    } catch (err) {
+      console.error("Error updating status:", err);
+      alert("Failed to update status");
+    }
   };
 
   const paginated = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -61,10 +81,6 @@ const InvoicesPage = () => {
   const overdue = invoices.filter(inv => inv.status === 'Overdue').reduce((sum, inv) => sum + inv.amount, 0);
   const paidThisMonth = invoices.filter(inv => inv.status === 'Paid').reduce((sum, inv) => sum + inv.amount, 0);
 
-  // Update localStorage when invoices change
-  React.useEffect(() => {
-    localStorage.setItem('invoices', JSON.stringify(invoices));
-  }, [invoices]);
 
   return (
     <div className="flex-1 p-6 overflow-y-auto no-scrollbar space-y-6">
