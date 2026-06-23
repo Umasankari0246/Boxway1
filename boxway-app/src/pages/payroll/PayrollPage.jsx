@@ -1,18 +1,62 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MOCK_PAYROLL_RUNS, MOCK_PAYSLIPS } from '../../data/mockData';
-import Icon from "../../components/ui/Icon.jsx"
+import Icon from "../../components/ui/Icon.jsx";
+import jsPDF from 'jspdf';
 
 const TABS = ['Dashboard', 'Payroll Runs', 'Payslips', 'Settings'];
 
-const PayrollDashboardTab = ({ navigate }) => (
+const PayrollDashboardTab = ({ navigate }) => {
+  const [payrollRuns, setPayrollRuns] = useState(MOCK_PAYROLL_RUNS);
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const [selectedRun, setSelectedRun] = useState(null);
+  const [showViewModal, setShowViewModal] = useState(false);
+
+  const handleApprove = (id) => {
+    setPayrollRuns(runs => runs.map(run => 
+      run.id === id ? { ...run, status: 'Completed', processedDate: new Date().toISOString().split('T')[0], approvedBy: 'Admin' } : run
+    ));
+  };
+
+  const toggleDropdown = (id) => {
+    setActiveDropdown(activeDropdown === id ? null : id);
+  };
+
+  const handleView = (run) => {
+    setSelectedRun(run);
+    setShowViewModal(true);
+    setActiveDropdown(null);
+  };
+
+  const handleDownload = (run) => {
+    const doc = new jsPDF();
+    
+    doc.setFontSize(20);
+    doc.text('Payroll Run Details', 20, 20);
+    
+    doc.setFontSize(12);
+    doc.text(`Payroll ID: ${run.id}`, 20, 35);
+    doc.text(`Period: ${run.period}`, 20, 45);
+    doc.text(`Employees: ${run.employees}`, 20, 55);
+    doc.text(`Ad Hoc Payments: ${run.adHoc}`, 20, 65);
+    doc.text(`Gross Amount: $${run.grossAmount.toLocaleString()}`, 20, 75);
+    doc.text(`Net Amount: $${run.netAmount.toLocaleString()}`, 20, 85);
+    doc.text(`Status: ${run.status}`, 20, 95);
+    doc.text(`Processed Date: ${run.processedDate || '—'}`, 20, 105);
+    doc.text(`Approved By: ${run.approvedBy || '—'}`, 20, 115);
+    
+    doc.save(`${run.id}-payroll-details.pdf`);
+    setActiveDropdown(null);
+  };
+
+  return (
   <div className="max-w-[1400px] mx-auto grid grid-cols-12 gap-6">
     {/* KPIs */}
     <div className="col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {[
         { label: 'Total Employees Paid', val: '8', trend: '+2.4%', trendUp: true },
         { label: 'Ad Hoc Payments', val: '3', sub: 'This month' },
-        { label: 'Pending Approvals', val: '1', sub: 'Needs action', color: 'text-primary' },
+        { label: 'Pending Approvals', val: payrollRuns.filter(r => r.status === 'Pending Approval').length, sub: 'Needs action', color: 'text-primary' },
         { label: 'Total Payroll Amount', val: '$68,750', sub: 'Oct 2023' },
       ].map(k => (
         <div key={k.label} className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
@@ -43,7 +87,7 @@ const PayrollDashboardTab = ({ navigate }) => (
               ))}</tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {MOCK_PAYROLL_RUNS.map(run => (
+              {payrollRuns.map(run => (
                 <tr key={run.id} className={run.status === 'Pending Approval' ? 'bg-primary/5' : 'hover:bg-slate-50'}>
                   <td className="px-6 py-4 font-semibold text-sm text-slate-700">{run.period}</td>
                   <td className="px-6 py-4 text-sm text-slate-600">{run.employees}</td>
@@ -52,11 +96,40 @@ const PayrollDashboardTab = ({ navigate }) => (
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 text-[10px] font-bold rounded uppercase ${run.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{run.status}</span>
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    {run.status === 'Pending Approval'
-                      ? <button className="px-3 py-1 bg-primary text-white text-xs font-bold rounded hover:bg-primary/90">Approve</button>
-                      : <button className="text-slate-400 hover:text-primary"><Icon name="more_vert" className="text-xl" /></button>
-                    }
+                  <td className="px-6 py-4 text-right relative">
+                    {run.status === 'Pending Approval' ? (
+                      <button 
+                        onClick={() => handleApprove(run.id)}
+                        className="px-3 py-1 bg-primary text-white text-xs font-bold rounded hover:bg-primary/90"
+                      >
+                        Approve
+                      </button>
+                    ) : (
+                      <>
+                        <button 
+                          onClick={() => toggleDropdown(run.id)}
+                          className="text-slate-400 hover:text-primary p-1"
+                        >
+                          <Icon name="more_vert" className="text-xl" />
+                        </button>
+                        {activeDropdown === run.id && (
+                          <div className="absolute right-0 top-0 mt-8 bg-white border border-slate-200 rounded-lg shadow-lg z-10 min-w-[120px]">
+                            <button 
+                              onClick={() => handleView(run)}
+                              className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2"
+                            >
+                              <Icon name="visibility" className="text-lg" /> View
+                            </button>
+                            <button 
+                              onClick={() => handleDownload(run)}
+                              className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2"
+                            >
+                              <Icon name="download" className="text-lg" /> Download
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -110,8 +183,77 @@ const PayrollDashboardTab = ({ navigate }) => (
         </div>
       </div>
     </div>
+
+    {/* View Modal */}
+    {showViewModal && selectedRun && (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowViewModal(false)}>
+        <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+          <div className="p-6 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white">
+            <h3 className="text-xl font-bold text-slate-900">Payroll Run Details</h3>
+            <button onClick={() => setShowViewModal(false)} className="text-slate-400 hover:text-slate-600">
+              <Icon name="close" className="text-2xl" />
+            </button>
+          </div>
+          <div className="p-6 space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Payroll ID</p>
+                <p className="text-sm font-semibold text-slate-900">{selectedRun.id}</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Period</p>
+                <p className="text-sm font-semibold text-slate-900">{selectedRun.period}</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Employees</p>
+                <p className="text-sm font-semibold text-slate-900">{selectedRun.employees}</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Ad Hoc Payments</p>
+                <p className="text-sm font-semibold text-slate-900">{selectedRun.adHoc}</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Gross Amount</p>
+                <p className="text-sm font-semibold text-slate-900">${selectedRun.grossAmount.toLocaleString()}</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Net Amount</p>
+                <p className="text-sm font-semibold text-slate-900">${selectedRun.netAmount.toLocaleString()}</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Status</p>
+                <span className={`px-2 py-1 text-[10px] font-bold rounded uppercase ${selectedRun.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{selectedRun.status}</span>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Processed Date</p>
+                <p className="text-sm font-semibold text-slate-900">{selectedRun.processedDate || '—'}</p>
+              </div>
+              <div className="col-span-2">
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Approved By</p>
+                <p className="text-sm font-semibold text-slate-900">{selectedRun.approvedBy || '—'}</p>
+              </div>
+            </div>
+          </div>
+          <div className="p-6 border-t border-slate-200 flex justify-end gap-3 sticky bottom-0 bg-white">
+            <button 
+              onClick={() => handleDownload(selectedRun)}
+              className="px-4 py-2 border border-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-50 flex items-center gap-2"
+            >
+              <Icon name="download" className="text-lg" /> Download
+            </button>
+            <button 
+              onClick={() => setShowViewModal(false)}
+              className="px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
   </div>
-);
+  );
+};
 
 const PayrollRunsTab = ({ navigate }) => (
   <div>
@@ -156,9 +298,43 @@ const PayrollRunsTab = ({ navigate }) => (
 
 const PayslipsTab = () => {
   const [search, setSearch] = useState('');
+  const [selectedPayslip, setSelectedPayslip] = useState(null);
+  const [showViewModal, setShowViewModal] = useState(false);
   const filtered = MOCK_PAYSLIPS.filter(p =>
     p.employeeName.toLowerCase().includes(search.toLowerCase())
   );
+
+  const handleView = (payslip) => {
+    setSelectedPayslip(payslip);
+    setShowViewModal(true);
+  };
+
+  const handleDownload = (payslip) => {
+    const doc = new jsPDF();
+    
+    doc.setFontSize(20);
+    doc.text('Payslip Details', 20, 20);
+    
+    doc.setFontSize(12);
+    doc.text(`Payslip ID: ${payslip.id}`, 20, 35);
+    doc.text(`Employee ID: ${payslip.employeeId}`, 20, 45);
+    doc.text(`Employee Name: ${payslip.employeeName}`, 20, 55);
+    doc.text(`Period: ${payslip.period}`, 20, 65);
+    doc.text(`Gross Salary: $${payslip.grossSalary.toLocaleString()}`, 20, 75);
+    doc.text(`Deductions: $${payslip.deductions.toLocaleString()}`, 20, 85);
+    doc.text(`Net Salary: $${payslip.net.toLocaleString()}`, 20, 95);
+    doc.text(`Status: ${payslip.status}`, 20, 105);
+    doc.text(`Issued Date: ${payslip.issuedDate}`, 20, 115);
+    
+    doc.save(`${payslip.id}-payslip.pdf`);
+  };
+
+  const handleEmail = (payslip) => {
+    const subject = encodeURIComponent(`Payslip for ${payslip.period} - ${payslip.employeeName}`);
+    const body = encodeURIComponent(`Please find attached the payslip for ${payslip.period}.\n\nEmployee: ${payslip.employeeName}\nNet Salary: $${payslip.net.toLocaleString()}`);
+    window.open(`mailto:?subject=${subject}&body=${body}`);
+  };
+
   return (
     <div>
       <div className="flex items-center gap-4 mb-6">
@@ -193,9 +369,27 @@ const PayslipsTab = () => {
                 <td className="px-6 py-4"><span className="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold rounded uppercase">{p.status}</span></td>
                 <td className="px-6 py-4">
                   <div className="flex gap-2">
-                    <button title="View" className="p-1 text-slate-400 hover:text-primary"><Icon name="visibility" className="text-lg" /></button>
-                    <button title="Download" className="p-1 text-slate-400 hover:text-primary"><Icon name="download" className="text-lg" /></button>
-                    <button title="Email" className="p-1 text-slate-400 hover:text-primary"><Icon name="mail" className="text-lg" /></button>
+                    <button 
+                      onClick={() => handleView(p)}
+                      title="View" 
+                      className="p-1 text-slate-400 hover:text-primary transition-colors"
+                    >
+                      <Icon name="visibility" className="text-lg" />
+                    </button>
+                    <button 
+                      onClick={() => handleDownload(p)}
+                      title="Download" 
+                      className="p-1 text-slate-400 hover:text-primary transition-colors"
+                    >
+                      <Icon name="download" className="text-lg" />
+                    </button>
+                    <button 
+                      onClick={() => handleEmail(p)}
+                      title="Email" 
+                      className="p-1 text-slate-400 hover:text-primary transition-colors"
+                    >
+                      <Icon name="mail" className="text-lg" />
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -203,6 +397,74 @@ const PayslipsTab = () => {
           </tbody>
         </table>
       </div>
+
+      {/* View Modal */}
+      {showViewModal && selectedPayslip && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowViewModal(false)}>
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="p-6 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white">
+              <h3 className="text-xl font-bold text-slate-900">Payslip Details</h3>
+              <button onClick={() => setShowViewModal(false)} className="text-slate-400 hover:text-slate-600">
+                <Icon name="close" className="text-2xl" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Payslip ID</p>
+                  <p className="text-sm font-semibold text-slate-900">{selectedPayslip.id}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Employee ID</p>
+                  <p className="text-sm font-semibold text-slate-900">{selectedPayslip.employeeId}</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Employee Name</p>
+                  <p className="text-sm font-semibold text-slate-900">{selectedPayslip.employeeName}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Period</p>
+                  <p className="text-sm font-semibold text-slate-900">{selectedPayslip.period}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Issued Date</p>
+                  <p className="text-sm font-semibold text-slate-900">{selectedPayslip.issuedDate}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Gross Salary</p>
+                  <p className="text-sm font-semibold text-slate-900">${selectedPayslip.grossSalary.toLocaleString()}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Deductions</p>
+                  <p className="text-sm font-semibold text-red-600">-${selectedPayslip.deductions.toLocaleString()}</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Net Salary</p>
+                  <p className="text-2xl font-bold text-slate-900">${selectedPayslip.net.toLocaleString()}</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Status</p>
+                  <span className="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded uppercase">{selectedPayslip.status}</span>
+                </div>
+              </div>
+            </div>
+            <div className="p-6 border-t border-slate-200 flex justify-end gap-3 sticky bottom-0 bg-white">
+              <button 
+                onClick={() => handleDownload(selectedPayslip)}
+                className="px-4 py-2 border border-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-50 flex items-center gap-2"
+              >
+                <Icon name="download" className="text-lg" /> Download
+              </button>
+              <button 
+                onClick={() => setShowViewModal(false)}
+                className="px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
