@@ -1,6 +1,11 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
+
+const api = axios.create({
+  baseURL: 'http://localhost:8000/api'
+});
 
 const LABEL = 'text-[9px] uppercase tracking-[0.15em] font-black text-zinc-400';
 const VAL = 'text-sm font-semibold text-zinc-900 mt-0.5';
@@ -10,48 +15,46 @@ const ReviewProposalPage = () => {
   const { state } = useLocation();
   const form = state?.form || {};
 
-  const handleSubmit = () => {
-    const newProposal = {
-      id: Date.now().toString(),
-      title: form.projectTitle || 'Untitled Proposal',
-      client: form.fullName || 'Unknown Client',
-      clientContact: form.email || '',
-      lead: 'Marcus Johnson',
-      value: 0,
-      status: 'Submitted',
-      phase: 'Initial',
-      version: 1,
-      submittedDate: new Date().toISOString().split('T')[0],
-      createdAt: new Date().toISOString().split('T')[0],
-      ...form
-    };
-    const stored = localStorage.getItem('proposals');
-    const proposals = stored ? JSON.parse(stored) : [];
-    const updated = [newProposal, ...proposals];
-    localStorage.setItem('proposals', JSON.stringify(updated));
-    navigate('/proposals');
+  const handleSubmit = async () => {
+    try {
+      const newProposal = {
+        title: form.projectTitle || 'Untitled Proposal',
+        client: form.fullName || 'Unknown Client',
+        clientContact: form.email || '',
+        lead: 'Marcus Johnson',
+        value: 0,
+        status: 'Submitted',
+        phase: 'Initial',
+        version: 1,
+        submittedDate: new Date().toISOString().split('T')[0],
+      };
+      await api.post('/proposals/', newProposal);
+      navigate('/proposals');
+    } catch (err) {
+      console.error('Error submitting proposal:', err);
+      alert('Failed to submit proposal. Please try again.');
+    }
   };
 
-  const handleSaveDraft = () => {
-    const newProposal = {
-      id: Date.now().toString(),
-      title: form.projectTitle || 'Untitled Proposal',
-      client: form.fullName || 'Unknown Client',
-      clientContact: form.email || '',
-      lead: 'Marcus Johnson',
-      value: 0,
-      status: 'Draft',
-      phase: 'Initial',
-      version: 1,
-      submittedDate: null,
-      createdAt: new Date().toISOString().split('T')[0],
-      ...form
-    };
-    const stored = localStorage.getItem('proposals');
-    const proposals = stored ? JSON.parse(stored) : [];
-    const updated = [newProposal, ...proposals];
-    localStorage.setItem('proposals', JSON.stringify(updated));
-    navigate('/proposals');
+  const handleSaveDraft = async () => {
+    try {
+      const newProposal = {
+        title: form.projectTitle || 'Untitled Proposal',
+        client: form.fullName || 'Unknown Client',
+        clientContact: form.email || '',
+        lead: 'Marcus Johnson',
+        value: 0,
+        status: 'Draft',
+        phase: 'Initial',
+        version: 1,
+        submittedDate: null,
+      };
+      await api.post('/proposals/', newProposal);
+      navigate('/proposals');
+    } catch (err) {
+      console.error('Error saving draft:', err);
+      alert('Failed to save draft. Please try again.');
+    }
   };
 
   const sections = [

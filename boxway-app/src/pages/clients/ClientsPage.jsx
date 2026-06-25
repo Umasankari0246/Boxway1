@@ -184,7 +184,7 @@ const ClientsPage = () => {
                           View Details
                         </button>
                         <button
-                          onClick={() => { setOpenMenuId(null); navigate(`/clients/new`); }}
+                          onClick={() => { setOpenMenuId(null); navigate(`/clients/${c.id}/edit`); }}
                           className="w-full text-left px-4 py-3 text-sm text-slate-700 hover:bg-slate-50"
                         >
                           Edit

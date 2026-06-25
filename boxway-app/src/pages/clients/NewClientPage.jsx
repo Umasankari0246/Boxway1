@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Check } from 'lucide-react';
 import axios from 'axios';
 
@@ -11,6 +11,8 @@ const STEPS = ['Basic Info', 'Project Requirements'];
 
 const NewClientPage = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const isEditMode = !!id;
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     companyName: '', contactPerson: '', email: '', phone: '', type: '', city: '',
@@ -19,6 +21,34 @@ const NewClientPage = () => {
   const set = (field, val) => setForm(f => ({ ...f, [field]: val }));
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (isEditMode) {
+      const fetchClient = async () => {
+        try {
+          const response = await api.get(`/clients/${id}`);
+          const client = response.data.data;
+          setForm({
+            companyName: client.name,
+            contactPerson: client.contactPerson,
+            email: client.email,
+            phone: client.phone,
+            type: client.type,
+            city: client.city,
+            projectType: client.projectType || '',
+            estimatedBudget: client.totalValue || '',
+            numberOfProjects: client.totalProjects || '',
+            timeline: client.timeline || '',
+            description: client.description || '',
+          });
+        } catch (err) {
+          console.error("Error fetching client:", err);
+          setError("Failed to load client data");
+        }
+      };
+      fetchClient();
+    }
+  }, [id, isEditMode]);
 
   const validate = () => {
     if (!form.companyName) {
@@ -46,7 +76,7 @@ const NewClientPage = () => {
     setIsSubmitting(true);
     setError('');
     try {
-      const newClient = {
+      const clientData = {
         name: form.companyName,
         contactPerson: form.contactPerson,
         email: form.email,
@@ -56,16 +86,24 @@ const NewClientPage = () => {
         totalProjects: parseInt(form.numberOfProjects) || 0,
         totalValue: parseFloat(form.estimatedBudget) || 0,
         city: form.city,
+        projectType: form.projectType,
+        timeline: form.timeline,
+        description: form.description,
       };
-      console.log("Sending client data:", newClient);
-      const response = await api.post('/clients/', newClient);
+      console.log("Sending client data:", clientData);
+      let response;
+      if (isEditMode) {
+        response = await api.patch(`/clients/${id}`, clientData);
+      } else {
+        response = await api.post('/clients/', clientData);
+      }
       console.log("Server response:", response.data);
       setIsSubmitting(false);
       navigate('/clients');
     } catch (err) {
-      console.error("Error adding client:", err);
+      console.error("Error saving client:", err);
       console.error("Error response:", err.response?.data);
-      const errorMessage = err.response?.data?.detail || err.response?.data?.error || "Failed to add client. Please try again.";
+      const errorMessage = err.response?.data?.detail || err.response?.data?.error || `Failed to ${isEditMode ? 'update' : 'add'} client. Please try again.`;
       setError(errorMessage);
       setIsSubmitting(false);
     }
@@ -79,8 +117,8 @@ const NewClientPage = () => {
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
-            <h2 className="text-2xl font-black text-slate-900">Register New Client</h2>
-            <p className="text-sm text-slate-500 mt-0.5">Add a new client to your roster</p>
+            <h2 className="text-2xl font-black text-slate-900">{isEditMode ? 'Edit Client' : 'Register New Client'}</h2>
+            <p className="text-sm text-slate-500 mt-0.5">{isEditMode ? 'Update client information' : 'Add a new client to your roster'}</p>
           </div>
         </div>
 
@@ -158,7 +196,7 @@ const NewClientPage = () => {
             disabled={isSubmitting}
             className="px-6 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20 disabled:opacity-60"
           >
-            {step === 2 ? (isSubmitting ? 'Saving...' : 'Register Client') : 'Continue'}
+            {step === 2 ? (isSubmitting ? 'Saving...' : (isEditMode ? 'Update Client' : 'Register Client')) : 'Continue'}
           </button>
         </div>
       </div>

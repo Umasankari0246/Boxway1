@@ -27,6 +27,7 @@ const ProposalsPage = () => {
   const [deletingId, setDeletingId] = useState(null);
   const [statusDropdownId, setStatusDropdownId] = useState(null);
   const [phaseDropdownId, setPhaseDropdownId] = useState(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
 
   useEffect(() => {
     const fetchProposals = async () => {
@@ -95,7 +96,7 @@ const ProposalsPage = () => {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-[#fcf9f8]">
+    <div className="flex-1 overflow-visible bg-[#fcf9f8]">
       {/* Sticky sub-header */}
       <div className="sticky top-0 z-20 bg-[#fcf9f8]/90 backdrop-blur border-b border-zinc-100 px-8 py-5 flex items-center justify-between">
         <div>
@@ -111,7 +112,7 @@ const ProposalsPage = () => {
         </button>
       </div>
 
-      <div className="p-8 space-y-6">
+      <div className="p-8 space-y-6 overflow-visible">
         {/* KPI Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
@@ -165,7 +166,7 @@ const ProposalsPage = () => {
         </div>
 
         {/* Proposals Table */}
-        <div className="bg-white border border-zinc-100 shadow-sm overflow-hidden">
+        <div className="bg-white border border-zinc-100 shadow-sm overflow-visible relative">
           <table className="w-full text-left">
             <thead className="border-b border-zinc-100 bg-zinc-50/50">
               <tr>
@@ -174,7 +175,7 @@ const ProposalsPage = () => {
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-50">
+            <tbody className="divide-y divide-zinc-50 overflow-visible">
               {sorted.length === 0 && (
                 <tr>
                   <td colSpan={8} className="px-6 py-16 text-center">
@@ -188,7 +189,7 @@ const ProposalsPage = () => {
                 return (
                   <tr
                     key={p.id}
-                    className="hover:bg-zinc-50/70 transition-colors cursor-pointer group"
+                    className="hover:bg-zinc-50/70 transition-colors cursor-pointer group overflow-visible"
                     onClick={() => navigate(`/proposals/${p.id}`)}
                   >
                     <td className="px-5 py-4">
@@ -201,7 +202,7 @@ const ProposalsPage = () => {
                     </td>
                     <td className="px-5 py-4 text-xs text-zinc-600">{p.lead}</td>
                     <td className="px-5 py-4 text-xs font-black text-zinc-900">${p.value.toLocaleString()}</td>
-                    <td className="px-5 py-4">
+                    <td className="px-5 py-4 overflow-visible">
                       <div className="relative" onClick={e => e.stopPropagation()}>
                         <button
                           onClick={() => setStatusDropdownId(statusDropdownId === p.id ? null : p.id)}
@@ -211,12 +212,12 @@ const ProposalsPage = () => {
                           {p.status}
                         </button>
                         {statusDropdownId === p.id && (
-                          <div className="absolute top-full left-0 mt-1 bg-white border border-zinc-200 rounded shadow-lg z-50 min-w-[100px]">
+                          <div className="absolute top-full left-0 mt-1 bg-white border border-zinc-200 rounded shadow-lg z-[99999] min-w-[120px] max-h-48 overflow-y-auto">
                             {['Draft', 'Submitted', 'Under Review', 'Won', 'Lost'].map(status => (
                               <button
                                 key={status}
                                 onClick={() => { handleStatusChange(p.id, status); setStatusDropdownId(null); }}
-                                className="w-full px-3 py-2 text-left text-[10px] font-black uppercase hover:bg-zinc-50"
+                                className="w-full px-3 py-2 text-left text-[10px] font-black uppercase hover:bg-zinc-50 whitespace-nowrap"
                               >
                                 {status}
                               </button>
@@ -225,7 +226,7 @@ const ProposalsPage = () => {
                         )}
                       </div>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-5 py-4 overflow-visible">
                       <div className="relative" onClick={e => e.stopPropagation()}>
                         <button
                           onClick={() => setPhaseDropdownId(phaseDropdownId === p.id ? null : p.id)}
@@ -234,12 +235,12 @@ const ProposalsPage = () => {
                           {p.phase || 'Initial'}
                         </button>
                         {phaseDropdownId === p.id && (
-                          <div className="absolute top-full left-0 mt-1 bg-white border border-zinc-200 rounded shadow-lg z-50 min-w-[80px]">
+                          <div className="absolute top-full left-0 mt-1 bg-white border border-zinc-200 rounded shadow-lg z-[99999] min-w-[100px] max-h-48 overflow-y-auto">
                             {['Initial', 'Review', 'Approved'].map(phase => (
                               <button
                                 key={phase}
                                 onClick={() => { handlePhaseChange(p.id, phase); setPhaseDropdownId(null); }}
-                                className="w-full px-3 py-2 text-left text-[10px] font-black uppercase hover:bg-zinc-50"
+                                className="w-full px-3 py-2 text-left text-[10px] font-black uppercase hover:bg-zinc-50 whitespace-nowrap"
                               >
                                 {phase}
                               </button>
@@ -252,7 +253,7 @@ const ProposalsPage = () => {
                     <td className="px-5 py-4" onClick={e => e.stopPropagation()}>
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button onClick={() => navigate(`/proposals/${p.id}`)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-900 transition-colors" title="View"><Icon name="visibility" className="text-[16px]" /></button>
-                        <button onClick={() => navigate(`/proposals/new`)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors" title="Edit"><Icon name="edit" className="text-[16px]" /></button>
+                        <button onClick={() => navigate(`/proposals/${p.id}/edit`)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors" title="Edit"><Icon name="edit" className="text-[16px]" /></button>
                         <button
                           onClick={() => setDeletingId(p.id)}
                           className="p-1.5 hover:bg-red-50 text-zinc-400 hover:text-red-600 transition-colors" title="Delete"

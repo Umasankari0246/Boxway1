@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
 
@@ -34,11 +34,58 @@ const PILLARS = ['Sustainable Materials', 'Minimalist Void', 'Brutalist Elements
 
 const NewProposalPage = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState(DEFAULT_FORM);
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const set = (field, val) => setForm(p => ({ ...p, [field]: val }));
+
+  useEffect(() => {
+    if (id) {
+      setIsEditMode(true);
+      setLoading(true);
+      const fetchProposal = async () => {
+        try {
+          const response = await api.get(`/proposals/${id}`);
+          const proposal = response.data.data;
+          setForm({
+            fullName: proposal.client,
+            email: proposal.clientContact,
+            phone: '',
+            company: '',
+            commMode: 'Video Call (Zoom/Teams)',
+            isPrimary: true,
+            stakeholders: '',
+            projectTitle: proposal.title,
+            projectType: 'High-End Residential',
+            siteAddress: '',
+            plotSize: '',
+            buildupArea: '',
+            budgetRange: '$1.5M – $3.0M',
+            timelineFlexibility: 50,
+            includesInterior: true,
+            includesLandscape: false,
+            includesBIM: true,
+            vision: '',
+            pillars: ['Minimalist Void'],
+            siteNotes: '',
+            scopeServices: ['RIBA Stages 0-4 (Design)', 'Contract Administration'],
+            leadSource: '',
+            priority: 'Hot',
+          });
+        } catch (err) {
+          console.error('Error fetching proposal:', err);
+          alert('Failed to load proposal data');
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchProposal();
+    }
+  }, [id]);
 
   const handleFileUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -62,7 +109,7 @@ const NewProposalPage = () => {
 
   const handleSaveDraft = async () => {
     try {
-      const newProposal = {
+      const proposalData = {
         title: form.projectTitle || 'Untitled Proposal',
         client: form.fullName || 'Unknown Client',
         clientContact: form.email || '',
@@ -73,8 +120,13 @@ const NewProposalPage = () => {
         version: 1,
         submittedDate: null,
       };
-      await api.post('/proposals/', newProposal);
-      alert('Proposal saved as draft');
+      if (isEditMode) {
+        await api.patch(`/proposals/${id}`, proposalData);
+        alert('Proposal updated successfully');
+      } else {
+        await api.post('/proposals/', proposalData);
+        alert('Proposal saved as draft');
+      }
       navigate('/proposals');
     } catch (err) {
       console.error('Error saving proposal:', err);
@@ -101,7 +153,7 @@ const NewProposalPage = () => {
             <button onClick={() => navigate('/proposals')} className="text-zinc-400 hover:text-zinc-700 transition-colors">
               <Icon name="arrow_back" className="text-[20px]" />
             </button>
-            <h2 className="text-xl font-black tracking-tight text-zinc-900 uppercase">New Enquiry / Initial Meeting</h2>
+            <h2 className="text-xl font-black tracking-tight text-zinc-900 uppercase">{isEditMode ? 'Edit Proposal' : 'New Enquiry / Initial Meeting'}</h2>
           </div>
           <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mt-0.5 ml-8">Status: Drafting Phase · v1.0</p>
         </div>

@@ -68,6 +68,7 @@ function App() {
           {/* Clients */}
           <Route path="clients" element={<ClientsPage />} />
           <Route path="clients/new" element={<NewClientPage />} />
+          <Route path="clients/:id/edit" element={<NewClientPage />} />
           <Route path="clients/:id" element={<ClientProfilePage />} />
 
           {/* Studio */}
@@ -76,6 +77,7 @@ function App() {
           <Route path="projects/:id" element={<ProjectViewPage />} />
           <Route path="proposals" element={<ProposalsPage />} />
           <Route path="proposals/new" element={<NewProposalPage />} />
+          <Route path="proposals/:id/edit" element={<NewProposalPage />} />
           <Route path="proposals/review" element={<ReviewProposalPage />} />
           <Route path="proposals/:id" element={<ViewProposalPage />} />
           <Route path="documents" element={<DocumentsPage />} />

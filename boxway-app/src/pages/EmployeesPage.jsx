@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Search, Download, Plus, ChevronRight, MapPin, RefreshCw, Users, Edit3, Trash2 } from 'lucide-react';
+import { Search, Download, Plus, ChevronRight, MapPin, RefreshCw, Users, Edit3, Trash2, UserCheck, UserX, Clock } from 'lucide-react';
 
 const api = axios.create({
   baseURL: 'http://localhost:8000/api'
@@ -155,7 +155,30 @@ const EmployeesPage = () => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-8">
+      {/* KPI Cards */}
+      <div className="px-8 py-6 bg-[#f8f6f6]">
+        <div className="grid grid-cols-4 gap-4">
+          {[
+            { label: 'Total Employees', val: employees.length, icon: Users, color: 'text-slate-900' },
+            { label: 'Active', val: employees.filter(e => e.status === 'Active').length, icon: UserCheck, color: 'text-green-600' },
+            { label: 'Inactive', val: employees.filter(e => e.status === 'Inactive').length, icon: UserX, color: 'text-yellow-600' },
+            { label: 'On Leave', val: employees.filter(e => e.status === 'On Leave').length, icon: Clock, color: 'text-blue-600' },
+          ].map(k => {
+            const Icon = k.icon;
+            return (
+              <div key={k.label} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+                <div className="flex items-center gap-3 mb-2">
+                  <Icon className={`${k.color} h-5 w-5`} />
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">{k.label}</span>
+                </div>
+                <p className={`text-3xl font-black ${k.color}`}>{k.val}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-8 pb-8">
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
           {/* List Header */}
           <div className="grid grid-cols-[auto_2fr_1.5fr_1.5fr_1fr_120px] gap-4 px-8 py-4 bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider items-center">
