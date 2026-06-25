@@ -1,7 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { usePayrollStore } from '../../../store/payrollStore';
 import Icon from "../../../components/ui/Icon.jsx"
+
+const api = axios.create({
+  baseURL: 'http://localhost:8000/api'
+});
 
 const STEPS = ['Select Employee', 'Setup Salary', 'Review & Confirm'];
 
@@ -11,9 +16,43 @@ const Step3 = () => {
   const { selectedEmployee: emp, salarySetup: s } = singleRun;
   if (!emp || !s.net) { navigate('/payroll/run/single/step1'); return null; }
 
-  const handleSubmit = () => {
-    confirmSingleRun();
-    setTimeout(() => { resetSingleRun(); navigate('/payroll'); }, 500);
+  const handleSubmit = async () => {
+    try {
+      // Create payroll run
+      const payrollRunPayload = {
+        period: new Date().toLocaleString('default', { month: 'long', year: 'numeric' }),
+        employees: 1,
+        adHoc: 0,
+        grossAmount: s.gross,
+        netAmount: s.net,
+        status: 'Pending Approval',
+        processedDate: null,
+        approvedBy: null,
+      };
+      const payrollResponse = await api.post('/payroll-runs/', payrollRunPayload);
+      const payrollRunId = payrollResponse.data.data.id;
+
+      // Create payslip
+      const payslipPayload = {
+        employeeId: emp.id,
+        employeeName: emp.name,
+        payrollRunId: payrollRunId,
+        period: new Date().toLocaleString('default', { month: 'long', year: 'numeric' }),
+        grossSalary: s.gross,
+        deductions: s.deductions,
+        net: s.net,
+        status: 'Pending',
+        issuedDate: null,
+        notes: s.notes || null,
+      };
+      await api.post('/payslips/', payslipPayload);
+
+      confirmSingleRun();
+      setTimeout(() => { resetSingleRun(); navigate('/payroll'); }, 500);
+    } catch (err) {
+      console.error('Error processing payroll:', err);
+      alert('Failed to process payroll. Please try again.');
+    }
   };
 
   return (
