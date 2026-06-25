@@ -4,9 +4,7 @@ import { useInvoiceStore } from '../store/invoiceStore';
 import axios from 'axios';
 import Icon from "../components/ui/Icon.jsx"
 
-const api = axios.create({
-  baseURL: 'http://localhost:8000/api'
-});
+window.location.hostname === 'localhost' ? 'http://localhost:8000' : 'https://boxxway.onrender.com'
 
 const CreateInvoicePage = () => {
   const navigate = useNavigate();

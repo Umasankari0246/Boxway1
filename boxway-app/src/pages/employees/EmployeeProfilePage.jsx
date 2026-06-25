@@ -5,7 +5,9 @@ import { MOCK_PAYSLIPS } from '../../data/mockData';
 import Icon from "../../components/ui/Icon.jsx"
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api'
+  baseURL: window.location.hostname === 'localhost'
+    ? 'http://localhost:8000/api'
+    : 'https://boxxway.onrender.com/api'
 });
 
 const EmployeeProfilePage = () => {

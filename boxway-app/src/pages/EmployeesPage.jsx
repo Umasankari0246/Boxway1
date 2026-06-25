@@ -4,7 +4,9 @@ import axios from 'axios';
 import { Search, Download, Plus, ChevronRight, MapPin, RefreshCw, Users, Edit3, Trash2, UserCheck, UserX, Clock } from 'lucide-react';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api'
+  baseURL: window.location.hostname === 'localhost'
+    ? 'http://localhost:8000/api'
+    : 'https://boxxway.onrender.com/api'
 });
 
 const EmployeesPage = () => {

@@ -4,7 +4,9 @@ import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api'
+  baseURL: window.location.hostname === 'localhost'
+    ? 'http://localhost:8000/api'
+    : 'https://boxxway.onrender.com/api'
 });
 
 const LABEL = 'text-[9px] uppercase tracking-[0.15em] font-black text-zinc-400';

@@ -4,7 +4,9 @@ import { ArrowLeft, Check } from 'lucide-react';
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api'
+  baseURL: window.location.hostname === 'localhost'
+    ? 'http://localhost:8000/api'
+    : 'https://boxxway.onrender.com/api'
 });
 
 const STEPS = ['Basic Info', 'Project Requirements'];

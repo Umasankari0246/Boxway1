@@ -3,9 +3,10 @@ import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api'
+  baseURL: window.location.hostname === 'localhost'
+    ? 'http://localhost:8000/api'
+    : 'https://boxxway.onrender.com/api'
 });
-
 /* ── Folder/Type config matching client's drive structure ─────────────────── */
 const FOLDER_TYPES = [
   { key: 'Site',          label: 'Site',              icon: 'terrain',          color: 'bg-amber-50 text-amber-700',   exts: 'DWG · PDF' },

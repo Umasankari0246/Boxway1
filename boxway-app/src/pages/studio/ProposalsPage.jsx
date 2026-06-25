@@ -4,9 +4,10 @@ import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api'
+  baseURL: window.location.hostname === 'localhost'
+    ? 'http://localhost:8000/api'
+    : 'https://boxxway.onrender.com/api'
 });
-
 const statusConfig = {
   Draft: { cls: 'bg-zinc-100 text-zinc-600', dot: 'bg-zinc-400' },
   Submitted: { cls: 'bg-blue-100 text-blue-700', dot: 'bg-blue-500' },
