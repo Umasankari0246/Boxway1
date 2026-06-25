@@ -6,3 +6,5 @@ motor
 python-multipart
 requests
 certifi
+passlib[bcrypt]
+bcrypt
