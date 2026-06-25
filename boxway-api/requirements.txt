@@ -5,3 +5,4 @@ pydantic
 motor
 python-multipart
 requests
+certifi
