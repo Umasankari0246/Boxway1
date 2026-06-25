@@ -1,31 +1,21 @@
-import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
     ? 'http://localhost:8000/api'
-    : 'https://boxxway.onrender.com/api'
+    : 'https://boxxway.onrender.com/api',
 });
 
 const STEPS = [
   { id: '01', label: 'Details',    icon: 'architecture' },
-  { id: '02', label: 'Client',     icon: 'person_pin'   },
+  { id: '02', label: 'Client',    icon: 'person_pin'   },
   { id: '03', label: 'Resources',  icon: 'group'        },
-  { id: '04', label: 'Phases',     icon: 'timeline'     },
-  { id: '05', label: 'Budget',     icon: 'payments'     },
-  { id: '06', label: 'Review',     icon: 'fact_check'   },
-];
-
-const EMPLOYEES = [
-  { id: 'EMP001', name: 'Marcus Johnson',  role: 'Senior Architect' },
-  { id: 'EMP002', name: 'Priya Nair',      role: 'Project Manager'  },
-  { id: 'EMP003', name: 'Tom Walsh',       role: 'Junior Architect' },
-  { id: 'EMP004', name: 'Elena Rodriguez', role: 'Interior Designer'},
-  { id: 'EMP005', name: 'James Kim',       role: 'Structural Eng.'  },
-  { id: 'EMP006', name: 'Lisa Park',       role: 'CAD Technician'   },
-  { id: 'EMP008', name: 'Nina Patel',      role: 'Architect'        },
+  { id: '04', label: 'Phases',    icon: 'timeline'     },
+  { id: '05', label: 'Budget',    icon: 'payments'     },
+  { id: '06', label: 'Review',    icon: 'fact_check'   },
 ];
 
 const PROJECT_PHASES = {
@@ -43,9 +33,14 @@ const INPUT = 'w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focu
 const NewProjectPage = () => {
   const navigate = useNavigate();
   const loc = useLocation();
+  const { id } = useParams();
   const fromProposal = loc.state?.proposal || null;
 
   const [step, setStep] = useState(0);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [employees, setEmployees] = useState([]);
+
   const [form, setForm] = useState({
     name: fromProposal?.title || '',
     type: fromProposal?.projectType || 'High-End Residential',
@@ -58,8 +53,8 @@ const NewProjectPage = () => {
     clientEmail: fromProposal?.email || '',
     clientProjectCode: 'BW24-',
     // Resources
-    leadArchitect: 'EMP001',
-    teamMembers: ['EMP001'],
+    leadArchitect: '',
+    teamMembers: [],
     // Budget
     budget: '',
     // Phases — auto-generated from type
@@ -67,6 +62,59 @@ const NewProjectPage = () => {
   });
 
   const set = (f, v) => setForm(p => ({ ...p, [f]: v }));
+
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const res = await api.get('/employees/');
+        setEmployees(res.data.data);
+        if (res.data.data.length > 0) {
+          setForm(prev => ({
+            ...prev,
+            leadArchitect: prev.leadArchitect || (res.data.data[0].id || res.data.data[0].employeeId),
+            teamMembers: prev.teamMembers.length > 0 ? prev.teamMembers : [(res.data.data[0].id || res.data.data[0].employeeId)]
+          }));
+        }
+      } catch (err) {
+        console.error('Error fetching employees:', err);
+      }
+    };
+    fetchEmployees();
+  }, []);
+
+  useEffect(() => {
+    if (id) {
+      setIsEditMode(true);
+      setLoading(true);
+      const fetchProject = async () => {
+        try {
+          const response = await api.get(`/projects/${id}`);
+          const project = response.data.data;
+          setForm({
+            name: project.name || '',
+            type: project.type || 'High-End Residential',
+            description: project.description || '',
+            startDate: project.startDate || '',
+            endDate: project.endDate || '',
+            client: project.client || '',
+            clientContact: project.clientContact || '',
+            clientEmail: project.clientEmail || '',
+            clientProjectCode: project.clientProjectCode || 'BW24-',
+            leadArchitect: project.lead || '',
+            teamMembers: project.teamMembers || [],
+            budget: project.budget || '',
+            phases: (PROJECT_PHASES[project.type] || PROJECT_PHASES['Default']).map((p, i) => ({ name: p, active: true, order: i })),
+          });
+        } catch (err) {
+          console.error('Error fetching project:', err);
+          alert('Failed to load project data');
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchProject();
+    }
+  }, [id]);
 
   const updateType = (type) => {
     const phases = (PROJECT_PHASES[type] || PROJECT_PHASES['Default']).map((p, i) => ({ name: p, active: true, order: i }));
@@ -86,6 +134,8 @@ const NewProjectPage = () => {
       setStep(s => s + 1);
     } else {
       try {
+        const totalPhases = (PROJECT_PHASES[form.type] || PROJECT_PHASES['Default']).length;
+        const initialProgress = Math.round((1 / totalPhases) * 100);
         const projectPayload = {
           name: form.name,
           client: form.client,
@@ -94,16 +144,26 @@ const NewProjectPage = () => {
           status: 'Planning',
           budget: parseFloat(form.budget) || 0,
           spent: 0,
-          progress: 0,
+          progress: initialProgress,
           startDate: form.startDate,
           endDate: form.endDate,
           city: '',
+          description: form.description,
+          phase: 1,
+          totalPhases,
+          teamMembers: form.teamMembers,
         };
-        await api.post('/projects/', projectPayload);
+        if (isEditMode) {
+          await api.patch(`/projects/${id}`, projectPayload);
+          alert('Project updated successfully!');
+        } else {
+          await api.post('/projects/', projectPayload);
+          alert('Project created successfully!');
+        }
         navigate('/projects');
       } catch (err) {
-        console.error('Error creating project:', err);
-        alert('Failed to create project. Please try again.');
+        console.error('Error saving project:', err);
+        alert('Failed to save project. Please try again.');
       }
     }
   };
@@ -117,7 +177,7 @@ const NewProjectPage = () => {
             <Icon name="arrow_back" className="text-[20px]" />
           </button>
           <div>
-            <h2 className="text-xl font-black tracking-tight text-zinc-900 uppercase">New Project</h2>
+            <h2 className="text-xl font-black tracking-tight text-zinc-900 uppercase">{isEditMode ? 'Edit Project' : 'New Project'}</h2>
             <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mt-0.5">
               {fromProposal ? `From Proposal: ${fromProposal.id}` : 'Create project from scratch'}
             </p>
@@ -234,28 +294,31 @@ const NewProjectPage = () => {
             <div>
               <label className={LABEL}>Lead Architect</label>
               <select value={form.leadArchitect} onChange={e => set('leadArchitect', e.target.value)} className={INPUT + ' mb-6'}>
-                {EMPLOYEES.map(e => <option key={e.id} value={e.id}>{e.name} — {e.role}</option>)}
+                {employees.map(e => <option key={e.id || e.employeeId} value={e.id || e.employeeId}>{e.name} — {e.role}</option>)}
               </select>
             </div>
             <div>
               <label className={LABEL + ' mb-3'}>Team Members (select all that apply)</label>
               <p className="text-[10px] text-zinc-400 mb-3">Resources can also be added/changed mid-project</p>
               <div className="space-y-2">
-                {EMPLOYEES.map(e => (
-                  <label key={e.id} className="flex items-center gap-3 p-3 bg-zinc-50 hover:bg-zinc-100 transition-colors cursor-pointer">
-                    <div
-                      onClick={() => toggleMember(e.id)}
-                      className={`w-4 h-4 border-2 flex items-center justify-center transition-colors shrink-0 ${form.teamMembers.includes(e.id) ? 'border-primary bg-primary' : 'border-zinc-300'}`}
-                    >
-                      {form.teamMembers.includes(e.id) && <Icon name="check" style={{ fontVariationSettings: "'wght' 700" }} className="text-white text-[12px]" />}
-                    </div>
-                    <div className="w-8 h-8 bg-primary/10 text-primary text-[11px] font-black flex items-center justify-center shrink-0">{e.name.charAt(0)}</div>
-                    <div>
-                      <p className="text-xs font-black text-zinc-800">{e.name}</p>
-                      <p className="text-[9px] text-zinc-400">{e.role}</p>
-                    </div>
-                  </label>
-                ))}
+                {employees.map(e => {
+                  const empId = e.id || e.employeeId;
+                  return (
+                    <label key={empId} className="flex items-center gap-3 p-3 bg-zinc-50 hover:bg-zinc-100 transition-colors cursor-pointer">
+                      <div
+                        onClick={() => toggleMember(empId)}
+                        className={`w-4 h-4 border-2 flex items-center justify-center transition-colors shrink-0 ${form.teamMembers.includes(empId) ? 'border-primary bg-primary' : 'border-zinc-300'}`}
+                      >
+                        {form.teamMembers.includes(empId) && <Icon name="check" style={{ fontVariationSettings: "'wght' 700" }} className="text-white text-[12px]" />}
+                      </div>
+                      <div className="w-8 h-8 bg-primary/10 text-primary text-[11px] font-black flex items-center justify-center shrink-0">{e.name.charAt(0)}</div>
+                      <div>
+                        <p className="text-xs font-black text-zinc-800">{e.name}</p>
+                        <p className="text-[9px] text-zinc-400">{e.role}</p>
+                      </div>
+                    </label>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -373,8 +436,8 @@ const NewProjectPage = () => {
                 <div className="px-4 py-3 bg-zinc-50 border-l-4 border-zinc-100">
                   <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-2">Team ({form.teamMembers.length} members)</p>
                   <div className="flex flex-wrap gap-1.5">
-                    {EMPLOYEES.filter(e => form.teamMembers.includes(e.id)).map(e => (
-                      <span key={e.id} className="text-[9px] font-black uppercase px-2 py-0.5 bg-zinc-200 text-zinc-700">{e.name}</span>
+                    {employees.filter(e => form.teamMembers.includes(e.id || e.employeeId)).map(e => (
+                      <span key={e.id || e.employeeId} className="text-[9px] font-black uppercase px-2 py-0.5 bg-zinc-200 text-zinc-700">{e.name}</span>
                     ))}
                   </div>
                 </div>

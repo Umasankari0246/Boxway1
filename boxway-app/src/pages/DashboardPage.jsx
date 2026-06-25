@@ -1,13 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Icon from '../components/ui/Icon.jsx';
 
-const revenueBars = [
-  { month: 'Jul', value: 145, color: 'bg-primary' },
-  { month: 'Aug', value: 128, color: 'bg-slate-800' },
-  { month: 'Sep', value: 165, color: 'bg-primary' },
-  { month: 'Oct', value: 182, color: 'bg-slate-800' },
-  { month: 'Nov', value: 156, color: 'bg-primary' },
-  { month: 'Dec', value: 174, color: 'bg-slate-800' },
+const api = axios.create({
+  baseURL: window.location.hostname === 'localhost'
+    ? 'http://localhost:8000/api'
+    : 'https://boxxway.onrender.com/api',
+});
+
+// Mock financial data for the graph (last 3 months)
+const mockFinancialData = [
+  { month: 'Apr', revenue: 180, expenses: 110 },
+  { month: 'May', revenue: 165, expenses: 90 },
+  { month: 'Jun', revenue: 200, expenses: 120 },
 ];
 
 const upcomingCalendar = [
@@ -18,10 +23,156 @@ const upcomingCalendar = [
   { title: 'Team sync', date: 'Nov 14, 2023', status: 'Medium' },
 ];
 
-const DashboardPage = () => {
-  const [showCalendar, setShowCalendar] = React.useState(false);
+// Mock recent activity data
+const mockRecentActivity = [
+  {
+    id: 1,
+    type: 'invoice',
+    user: 'Sarah Chen',
+    action: 'created invoice',
+    item: '#INV-1234',
+    time: '2 hours ago',
+    avatar: 'S',
+    color: 'bg-primary',
+  },
+  {
+    id: 2,
+    type: 'project',
+    user: 'Marcus T.',
+    action: 'updated project',
+    item: 'Villa Renovation',
+    time: '4 hours ago',
+    avatar: 'M',
+    color: 'bg-black',
+  },
+  {
+    id: 3,
+    type: 'expense',
+    user: 'Emily R.',
+    action: 'submitted expense',
+    item: 'Materials',
+    time: '6 hours ago',
+    avatar: 'E',
+    color: 'bg-amber-500',
+  },
+  {
+    id: 4,
+    type: 'employee',
+    user: 'David K.',
+    action: 'joined team',
+    item: 'Senior Architect',
+    time: 'Yesterday',
+    avatar: 'D',
+    color: 'bg-sky-500',
+  },
+];
 
-  const maxValue = Math.max(...revenueBars.map((item) => item.value));
+const DashboardPage = () => {
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [projects, setProjects] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [invoices, setInvoices] = useState([]);
+  const [expenses, setExpenses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [projectsRes, employeesRes, invoicesRes, expensesRes] = await Promise.all([
+          api.get('/projects/'),
+          api.get('/employees/'),
+          api.get('/invoices/'),
+          api.get('/expenses/'),
+        ]);
+        setProjects(projectsRes.data.data);
+        setEmployees(employeesRes.data.data);
+        setInvoices(invoicesRes.data.data);
+        setExpenses(expensesRes.data.data);
+      } catch (err) {
+        console.error("Error fetching dashboard data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // Calculate KPI values
+  const activeProjects = projects.filter(p => p.status === 'In Progress' || p.status === 'Planning').length;
+  const pendingProjects = projects.filter(p => p.status === 'On Hold').length;
+  const totalBudget = projects.reduce((sum, p) => sum + (p.budget || 0), 0);
+  const teamCount = employees.length;
+
+  // Use mock financial data for the graph
+  const financialData = mockFinancialData;
+  const allValues = financialData.flatMap(d => [d.revenue, d.expenses]);
+  const maxValue = Math.max(...allValues, 1) || 1;
+
+  // Generate recent activity from real data
+  const generateRecentActivity = () => {
+    const activities = [];
+
+    // Add invoice activities
+    invoices.slice(0, 2).forEach(invoice => {
+      activities.push({
+        id: `invoice-${invoice.id}`,
+        type: 'invoice',
+        user: invoice.client || 'Client',
+        action: invoice.status === 'Paid' ? 'paid invoice' : 'created invoice',
+        item: invoice.invoiceId || `#${invoice.id}`,
+        time: 'Recently',
+        avatar: 'I',
+        color: 'bg-primary',
+      });
+    });
+
+    // Add expense activities
+    expenses.slice(0, 2).forEach(expense => {
+      activities.push({
+        id: `expense-${expense.id}`,
+        type: 'expense',
+        user: expense.submittedBy || 'User',
+        action: 'submitted expense',
+        item: expense.title || 'Expense',
+        time: 'Recently',
+        avatar: 'E',
+        color: 'bg-amber-500',
+      });
+    });
+
+    // Add project activities
+    projects.slice(0, 2).forEach(project => {
+      activities.push({
+        id: `project-${project.id}`,
+        type: 'project',
+        user: project.lead || 'Lead',
+        action: 'updated project',
+        item: project.name,
+        time: 'Recently',
+        avatar: 'P',
+        color: 'bg-black',
+      });
+    });
+
+    // Add employee activities
+    employees.slice(0, 1).forEach(employee => {
+      activities.push({
+        id: `employee-${employee.id}`,
+        type: 'employee',
+        user: employee.firstName || 'Employee',
+        action: 'joined team',
+        item: employee.role || 'Team Member',
+        time: 'Recently',
+        avatar: (employee.firstName || 'E')[0].toUpperCase(),
+        color: 'bg-sky-500',
+      });
+    });
+
+    // Take first 4 activities
+    return activities.slice(0, 4);
+  };
+
+  const recentActivity = generateRecentActivity();
 
   return (
     <div className="flex-1 p-6 overflow-y-auto no-scrollbar space-y-6">
@@ -34,7 +185,7 @@ const DashboardPage = () => {
             </div>
             <div>
               <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Active Projects</p>
-              <h3 className="text-2xl font-black">12</h3>
+              <h3 className="text-2xl font-black">{loading ? '...' : activeProjects}</h3>
             </div>
           </div>
         </div>
@@ -44,8 +195,10 @@ const DashboardPage = () => {
               <Icon name="payments" className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Revenue</p>
-              <h3 className="text-2xl font-black">$84,200</h3>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Total Budget</p>
+              <h3 className="text-2xl font-black">
+                {loading ? '...' : `$${(totalBudget / 1000).toFixed(0)}K`}
+              </h3>
             </div>
           </div>
         </div>
@@ -56,7 +209,7 @@ const DashboardPage = () => {
             </div>
             <div>
               <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Pending</p>
-              <h3 className="text-2xl font-black">05</h3>
+              <h3 className="text-2xl font-black">{loading ? '...' : pendingProjects}</h3>
             </div>
           </div>
         </div>
@@ -67,7 +220,7 @@ const DashboardPage = () => {
             </div>
             <div>
               <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Team</p>
-              <h3 className="text-2xl font-black">28</h3>
+              <h3 className="text-2xl font-black">{loading ? '...' : teamCount}</h3>
             </div>
           </div>
         </div>
@@ -89,57 +242,39 @@ const DashboardPage = () => {
             </div>
             
             <div className="space-y-6">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-[11px] font-bold">
-                  <div className="flex items-center gap-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-                    <span>Modern Villa Design - Palm Jumeirah</span>
-                  </div>
-                  <span className="text-zinc-500 uppercase">Phase: Concept (75%)</span>
-                </div>
-                <div className="h-1 bg-zinc-100 overflow-hidden">
-                  <div className="h-full bg-primary" style={{ width: '75%' }}></div>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-[11px] font-bold">
-                  <div className="flex items-center gap-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-black"></span>
-                    <span>Skyline Office Tower - Central Plaza</span>
-                  </div>
-                  <span className="text-zinc-500 uppercase">Phase: Documentation (40%)</span>
-                </div>
-                <div className="h-1 bg-zinc-100 overflow-hidden">
-                  <div className="h-full bg-black" style={{ width: '40%' }}></div>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-[11px] font-bold">
-                  <div className="flex items-center gap-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
-                    <span>Urban Park Renovation - Sector 4</span>
-                  </div>
-                  <span className="text-zinc-500 uppercase">Phase: Construction (90%)</span>
-                </div>
-                <div className="h-1 bg-zinc-100 overflow-hidden">
-                  <div className="h-full bg-primary" style={{ width: '90%' }}></div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-[11px] font-bold">
-                  <div className="flex items-center gap-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-zinc-300"></span>
-                    <span>Coastal Resort Planning - Blue Bay</span>
-                  </div>
-                  <span className="text-zinc-500 uppercase">Phase: Planning (20%)</span>
-                </div>
-                <div className="h-1 bg-zinc-100 overflow-hidden">
-                  <div className="h-full bg-zinc-300" style={{ width: '20%' }}></div>
-                </div>
-              </div>
+              {loading ? (
+                <div className="text-center py-8 text-zinc-400">Loading projects...</div>
+              ) : (
+                projects.slice(0, 4).map((project) => {
+                  // Calculate progress if missing
+                  let progress = project.progress;
+                  if (progress === undefined || progress === null || progress === 0 && (project.phase || 1) > 1) {
+                    const totalPhases = project.totalPhases || 8;
+                    const phase = project.phase || 1;
+                    progress = Math.round((phase / totalPhases) * 100);
+                  }
+                  
+                  const isActive = project.status === 'In Progress' || project.status === 'Planning';
+                  const barColor = isActive ? 'bg-primary' : 'bg-zinc-300';
+                  
+                  return (
+                    <div key={project.id} className="space-y-2">
+                      <div className="flex items-center justify-between text-[11px] font-bold">
+                        <div className="flex items-center gap-3">
+                          <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-primary' : 'bg-zinc-300'}`}></span>
+                          <span>{project.name}</span>
+                        </div>
+                        <span className="text-zinc-500 uppercase">
+                          Phase: {project.phase || 1} ({progress}%)
+                        </span>
+                      </div>
+                      <div className="h-1 bg-zinc-100 overflow-hidden">
+                        <div className={`h-full ${barColor}`} style={{ width: `${progress}%` }}></div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </section>
 
@@ -152,9 +287,9 @@ const DashboardPage = () => {
               </div>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1.5"><span className="w-2 h-2 bg-primary"></span><span className="text-[10px] font-bold uppercase">Revenue</span></div>
-                <div className="flex items-center gap-1.5"><span className="w-2 h-2 bg-black/10"></span><span className="text-[10px] font-bold uppercase">Expenses</span></div>
+                <div className="flex items-center gap-1.5"><span className="w-2 h-2 bg-slate-800"></span><span className="text-[10px] font-bold uppercase">Expenses</span></div>
                 <div className="h-4 w-[1px] bg-zinc-200"></div>
-                <span className="text-[10px] font-bold text-zinc-400 uppercase">Last 6 Months</span>
+                <span className="text-[10px] font-bold text-zinc-400 uppercase">Last 3 Months</span>
               </div>
             </div>
             
@@ -165,15 +300,35 @@ const DashboardPage = () => {
               <div className="absolute inset-x-4 top-40 h-px bg-zinc-200" />
               <div className="absolute inset-x-4 bottom-14 h-px bg-zinc-200" />
               <div className="relative h-full flex items-end gap-3 pt-2 pb-2">
-                {revenueBars.map((item) => {
-                  const height = `${Math.max((item.value / maxValue) * 100, 18)}%`;
-                  return (
-                    <div key={item.month} className="flex-1 flex flex-col items-center gap-2">
-                      <div className={`w-full rounded-t-3xl ${item.color}`} style={{ height }} />
-                      <span className="text-[10px] font-bold text-zinc-500">{item.month}</span>
-                    </div>
-                  );
-                })}
+                {loading ? (
+                  <div className="w-full flex items-center justify-center text-zinc-400 text-[10px]">Loading financial data...</div>
+                ) : (
+                  financialData.map((item) => {
+                    const revenueHeightPercent = Math.max((item.revenue / maxValue) * 100, 2);
+                    const expenseHeightPercent = Math.max((item.expenses / maxValue) * 100, 2);
+                    return (
+                      <div key={item.month} className="flex-1 flex flex-col items-center gap-2">
+                        <div className="flex w-full gap-2 items-end justify-center">
+                          {/* Revenue bar */}
+                          <div className="flex-1 flex flex-col items-center">
+                            <div 
+                              className="w-full bg-primary rounded-t-sm" 
+                              style={{ height: `${revenueHeightPercent}%`, minHeight: '4px', maxHeight: '100%' }} 
+                            />
+                          </div>
+                          {/* Expenses bar */}
+                          <div className="flex-1 flex flex-col items-center">
+                            <div 
+                              className="w-full bg-slate-800 rounded-t-sm" 
+                              style={{ height: `${expenseHeightPercent}%`, minHeight: '4px', maxHeight: '100%' }} 
+                            />
+                          </div>
+                        </div>
+                        <span className="text-[10px] font-bold text-zinc-500">{item.month}</span>
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4 mt-4 text-[10px] font-bold text-zinc-400 uppercase">
@@ -273,35 +428,19 @@ const DashboardPage = () => {
             <div className="space-y-6 relative">
               <div className="absolute left-[13px] top-2 bottom-4 w-[1px] bg-zinc-100"></div>
               
-              <div className="flex gap-4 relative">
-                <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center shrink-0 z-10 font-bold text-sm">
-                  S
+              {recentActivity.map((activity) => (
+                <div key={activity.id} className="flex gap-4 relative">
+                  <div className={`w-7 h-7 rounded-full ${activity.color} text-white flex items-center justify-center shrink-0 z-10 font-bold text-sm`}>
+                    {activity.avatar}
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-bold">
+                      {activity.user} <span className="text-zinc-500 font-normal">{activity.action} {activity.item}</span>
+                    </p>
+                    <p className="text-[9px] text-zinc-400 font-bold uppercase mt-1">{activity.time}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-[11px] font-bold">Sarah Chen <span className="text-zinc-500 font-normal">uploaded Floor_Plan_v3.pdf</span></p>
-                  <p className="text-[9px] text-zinc-400 font-bold uppercase mt-1">2 hours ago</p>
-                </div>
-              </div>
-
-              <div className="flex gap-4 relative">
-                <div className="w-7 h-7 rounded-full bg-black text-white flex items-center justify-center shrink-0 z-10 font-bold text-sm">
-                  M
-                </div>
-                <div>
-                  <p className="text-[11px] font-bold">Marcus T. <span className="text-zinc-500 font-normal">commented on Concept Slides</span></p>
-                  <p className="text-[9px] text-zinc-400 font-bold uppercase mt-1">4 hours ago</p>
-                </div>
-              </div>
-
-              <div className="flex gap-4 relative">
-                <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center shrink-0 z-10 font-bold text-sm">
-                  P
-                </div>
-                <div>
-                  <p className="text-[11px] font-bold">Project Bot <span className="text-zinc-500 font-normal">marked Site Survey complete</span></p>
-                  <p className="text-[9px] text-zinc-400 font-bold uppercase mt-1">6 hours ago</p>
-                </div>
-              </div>
+              ))}
             </div>
           </section>
         </div>

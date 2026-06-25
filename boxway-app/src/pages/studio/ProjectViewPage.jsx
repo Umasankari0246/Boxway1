@@ -1,15 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { MOCK_PROJECTS } from '../../data/mockData';
+import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
+
+const api = axios.create({
+  baseURL: window.location.hostname === 'localhost'
+    ? 'http://localhost:8000/api'
+    : 'https://boxxway.onrender.com/api',
+});
 
 /* ── Phase definitions by project type ────────────────────────────────────── */
 const PHASE_MAP = {
-  'Commercial':   ['Initial Meeting','Site Survey','Concept Design','Planning Submission','Design Development','Construction Docs','Tendering','Construction','Fit-Out','Handover'],
-  'Residential':  ['Initial Meeting','Site Analysis','Schematic Design','Design Development','Client Approval','Construction Docs','Construction','Interior Design','Material Purchase','Vendor Finalization','Handover'],
-  'Hospitality':  ['Initial Meeting','Feasibility','Concept Design','Design Development','Construction Docs','Procurement','Construction','Interior Design','Fit-Out','Handover'],
-  'Municipal':    ['Initial Meeting','Site Analysis','Brief Development','Concept Design','Planning Submission','Design Development','Tender','Construction','Commissioning','Handover'],
-  DEFAULT:        ['Initial Meeting','Resource Assignment','Design','Construction','Interior Design','Material Purchase','Vendor Finalization','Handover'],
+  'Commercial': ['Initial Meeting','Site Survey','Concept Design','Planning Submission','Design Development','Construction Docs','Tendering','Construction','Fit-Out','Handover'],
+  'Residential': ['Initial Meeting','Site Analysis','Schematic Design','Design Development','Client Approval','Construction Docs','Construction','Interior Design','Material Purchase','Vendor Finalization','Handover'],
+  'Hospitality': ['Initial Meeting','Feasibility','Concept Design','Design Development','Construction Docs','Procurement','Construction','Interior Design','Fit-Out','Handover'],
+  'Municipal': ['Initial Meeting','Site Analysis','Brief Development','Concept Design','Planning Submission','Design Development','Tender','Construction','Commissioning','Handover'],
+  'High-End Residential': ['Initial Meeting','Site Analysis','Schematic Design','Design Development','Client Approval','Construction Docs','Construction','Interior Design','Material Purchase','Vendor Finalization','Handover'],
+  'Commercial / Retail': ['Initial Meeting','Site Survey','Concept Design','Planning Submission','Design Development','Construction Docs','Tendering','Construction','Fit-Out','Handover'],
+  'Hospitality / Boutique Hotel': ['Initial Meeting','Feasibility Study','Concept Design','Design Development','Construction Docs','Procurement','Construction','Interior Design','Fit-Out','Handover'],
+  'Renovation / Restoration': ['Initial Meeting','Condition Survey','Design Brief','Conservation Analysis','Planning Consent','Design Development','Construction Docs','Construction','Handover'],
+  'Cultural / Institutional': ['Initial Meeting','Site Analysis','Brief Development','Concept Design','Planning Submission','Design Development','Tender','Construction','Commissioning','Handover'],
+  DEFAULT: ['Initial Meeting','Resource Assignment','Design','Construction','Interior Design','Material Purchase','Vendor Finalization','Handover'],
 };
 
 const STATUS_CFG = {
@@ -18,13 +29,6 @@ const STATUS_CFG = {
   'Completed':   { cls: 'bg-emerald-100 text-emerald-700', dot: 'bg-emerald-500' },
   'On Hold':     { cls: 'bg-zinc-100 text-zinc-500',     dot: 'bg-zinc-400'    },
 };
-
-const MOCK_TEAM = [
-  { id: 'EMP001', name: 'Marcus Johnson', role: 'Lead Architect',  color: 'bg-primary' },
-  { id: 'EMP002', name: 'Priya Nair',     role: 'Project Manager', color: 'bg-blue-600' },
-  { id: 'EMP003', name: 'Tom Walsh',      role: 'Junior Architect', color: 'bg-zinc-600' },
-  { id: 'EMP006', name: 'Lisa Park',      role: 'CAD Technician',  color: 'bg-violet-600' },
-];
 
 const MOCK_DOCS = [
   { name: 'Site_Survey_PRJ001.dwg',    type: 'DWG', size: '18.4 MB', folder: 'Site',       date: 'Mar 12, 2024' },
@@ -52,19 +56,89 @@ const TABS = [
 const ProjectViewPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const project = MOCK_PROJECTS.find(p => p.id === id) || MOCK_PROJECTS[0];
-
-  const phases = PHASE_MAP[project.type] || PHASE_MAP.DEFAULT;
-  const [activePhaseIdx, setActivePhaseIdx] = useState(project.phase - 1);
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [employees, setEmployees] = useState([]);
+  const [activePhaseIdx, setActivePhaseIdx] = useState(0);
   const [tab, setTab] = useState('overview');
   const [comments, setComments] = useState(INITIAL_COMMENTS);
   const [newComment, setNewComment] = useState('');
   const [likedIds, setLikedIds] = useState([]);
   const [showAdvanceModal, setShowAdvanceModal] = useState(false);
   const [showResourceModal, setShowResourceModal] = useState(false);
-  const [team, setTeam] = useState(MOCK_TEAM);
   const [editingStatus, setEditingStatus] = useState(false);
-  const [projectStatus, setProjectStatus] = useState(project.status);
+  const [projectStatus, setProjectStatus] = useState('Planning');
+  const [team, setTeam] = useState([]);
+  
+  // Initialize team from project.teamMembers
+  const getEmployeeById = (empId) => employees.find(e => e.id === empId || e.employeeId === empId);
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [projectRes, employeesRes] = await Promise.all([
+          api.get(`/projects/${id}`),
+          api.get('/employees/'),
+        ]);
+        let projectData = projectRes.data.data;
+        
+        // Calculate progress if not present
+        let progress = projectData.progress;
+        if (progress === undefined || progress === null || progress === 0 && projectData.phase > 1) {
+          const totalPhases = projectData.totalPhases || 8;
+          const phase = projectData.phase || 1;
+          progress = Math.round((phase / totalPhases) * 100);
+          // Update project in backend with calculated progress
+          await api.patch(`/projects/${id}`, { progress });
+          projectData = { ...projectData, progress };
+        }
+        
+        setProject(projectData);
+        setEmployees(employeesRes.data.data);
+        setActivePhaseIdx(projectData.phase - 1);
+        setProjectStatus(projectData.status);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [id]);
+  
+  // Update team when project or employees change
+  useEffect(() => {
+    if (project && employees.length > 0) {
+      const initialTeam = project.teamMembers?.map(empId => {
+        const emp = getEmployeeById(empId);
+        return {
+          id: empId,
+          name: emp?.name || 'Unknown',
+          role: emp?.role || 'Member',
+          color: ['bg-primary', 'bg-blue-600', 'bg-zinc-600', 'bg-violet-600', 'bg-teal-600', 'bg-rose-600'][Math.floor(Math.random() * 6)],
+        };
+      }) || [];
+      setTeam(initialTeam);
+    }
+  }, [project, employees]);
+
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <p className="text-zinc-500">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!project) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <p className="text-zinc-500">Project not found</p>
+      </div>
+    );
+  }
+
+  const phases = PHASE_MAP[project.type] || PHASE_MAP.DEFAULT;
 
   const sc = STATUS_CFG[projectStatus] || STATUS_CFG['In Progress'];
   const budgetPct = Math.round((project.spent / project.budget) * 100);
@@ -80,19 +154,46 @@ const ProjectViewPage = () => {
     setNewComment('');
   };
 
-  const advancePhase = () => {
+  const advancePhase = async () => {
     if (activePhaseIdx < phases.length - 1) {
       const nextIdx = activePhaseIdx + 1;
       setActivePhaseIdx(nextIdx);
+      
+      // Calculate progress percentage
+      const progress = Math.round(((nextIdx + 1) / phases.length) * 100);
+      
+      // Update project in backend
+      try {
+        const updates = { phase: nextIdx + 1, progress };
+        if (nextIdx === phases.length - 1) {
+          updates.status = 'Completed';
+          setProjectStatus('Completed');
+        } else if (projectStatus === 'Planning') {
+          updates.status = 'In Progress';
+          setProjectStatus('In Progress');
+        }
+        await api.patch(`/projects/${id}`, updates);
+        setProject(prev => ({ ...prev, ...updates }));
+      } catch (err) {
+        console.error("Error updating project:", err);
+      }
+
       setComments(prev => [...prev, {
         id: Date.now(), author: 'System', avatar: '⚡', color: 'bg-zinc-500', role: 'Boxway Studio',
         time: 'Just now', phase: phases[nextIdx], isSystem: true,
         text: `Phase advanced to "${phases[nextIdx]}". Previous phase "${phases[activePhaseIdx]}" marked as complete.`, likes: 0,
       }]);
-      if (nextIdx === phases.length - 1) setProjectStatus('Completed');
-      else if (projectStatus === 'Planning') setProjectStatus('In Progress');
     }
     setShowAdvanceModal(false);
+  };
+
+  const saveStatus = async (newStatus) => {
+    try {
+      await api.patch(`/projects/${id}`, { status: newStatus });
+      setProject(prev => ({ ...prev, status: newStatus }));
+    } catch (err) {
+      console.error("Error updating status:", err);
+    }
   };
 
   return (
@@ -105,11 +206,20 @@ const ProjectViewPage = () => {
           </button>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 flex-wrap mb-1">
-              <span className="text-[9px] font-mono font-black text-zinc-400">{project.id}</span>
+              <span className="text-[9px] font-mono font-black text-zinc-400">{project.projectId || project.id}</span>
               {/* Editable status */}
               {editingStatus ? (
-                <select autoFocus value={projectStatus} onChange={e => { setProjectStatus(e.target.value); setEditingStatus(false); }} onBlur={() => setEditingStatus(false)}
-                  className="text-[9px] font-black uppercase border border-primary px-2 py-0.5 focus:outline-none">
+                <select 
+                  autoFocus 
+                  value={projectStatus} 
+                  onChange={(e) => { 
+                    setProjectStatus(e.target.value); 
+                    saveStatus(e.target.value);
+                    setEditingStatus(false); 
+                  }} 
+                  onBlur={() => setEditingStatus(false)}
+                  className="text-[9px] font-black uppercase border border-primary px-2 py-0.5 focus:outline-none"
+                >
                   {Object.keys(STATUS_CFG).map(s => <option key={s}>{s}</option>)}
                 </select>
               ) : (
@@ -122,13 +232,13 @@ const ProjectViewPage = () => {
               <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-zinc-100 text-zinc-500">{project.type}</span>
             </div>
             <h2 className="text-2xl font-black tracking-tight text-zinc-900 truncate">{project.name}</h2>
-            <p className="text-xs text-zinc-500 mt-0.5">{project.client} · Led by {project.lead} · {project.teamSize} team members</p>
+            <p className="text-xs text-zinc-500 mt-0.5">{project.client} · Led by {project.lead} · {team.length} team members</p>
           </div>
           <div className="flex gap-2 shrink-0">
             <button onClick={() => setShowResourceModal(true)} className="flex items-center gap-1.5 px-4 py-2 border border-zinc-200 text-zinc-700 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors">
               <Icon name="group_add" className="text-[16px]" />Resources
             </button>
-            <button onClick={() => navigate('/projects/new')} className="flex items-center gap-1.5 px-4 py-2 bg-zinc-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors">
+            <button onClick={() => navigate(`/projects/${id}/edit`)} className="flex items-center gap-1.5 px-4 py-2 bg-zinc-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors">
               <Icon name="edit" className="text-[16px]" />Edit
             </button>
             {activePhaseIdx < phases.length - 1 && (
@@ -159,21 +269,21 @@ const ProjectViewPage = () => {
               {/* Description */}
               <div className="bg-white border border-zinc-100 shadow-sm p-6">
                 <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-3">Project Description</h3>
-                <p className="text-sm text-zinc-600 leading-relaxed">{project.description}</p>
+                <p className="text-sm text-zinc-600 leading-relaxed">{project.description || "No description provided."}</p>
               </div>
               {/* Budget */}
               <div className="bg-white border border-zinc-100 shadow-sm p-6">
                 <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-4">Budget Utilisation</h3>
                 <div className="flex justify-between text-sm mb-3">
-                  <span className="text-zinc-500">Spent: <strong className="text-zinc-900">${project.spent.toLocaleString()}</strong></span>
-                  <span className="text-zinc-500">Budget: <strong className="text-zinc-900">${project.budget.toLocaleString()}</strong></span>
+                  <span className="text-zinc-500">Spent: <strong className="text-zinc-900">${project.spent?.toLocaleString() || 0}</strong></span>
+                  <span className="text-zinc-500">Budget: <strong className="text-zinc-900">${project.budget?.toLocaleString() || 0}</strong></span>
                 </div>
                 <div className="h-2 bg-zinc-100">
                   <div className={`h-2 transition-all ${budgetPct > 90 ? 'bg-red-500' : budgetPct > 70 ? 'bg-amber-500' : 'bg-primary'}`} style={{ width: `${budgetPct}%` }} />
                 </div>
                 <div className="flex justify-between mt-2">
                   <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">{budgetPct}% used</p>
-                  <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Remaining: ${(project.budget - project.spent).toLocaleString()}</p>
+                  <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Remaining: ${(project.budget - project.spent)?.toLocaleString() || 0}</p>
                 </div>
               </div>
               {/* Phase quick view */}
@@ -201,7 +311,11 @@ const ProjectViewPage = () => {
               {/* Key dates */}
               <div className="bg-white border border-zinc-100 shadow-sm p-5 space-y-3">
                 <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Key Dates</h3>
-                {[{ label: 'Start Date', val: project.startDate }, { label: 'End Date', val: project.endDate }, { label: 'Team Size', val: `${project.teamSize} members` }].map(f => (
+                {[
+                  { label: 'Start Date', val: project.startDate || '-' }, 
+                  { label: 'End Date', val: project.endDate || '-' }, 
+                  { label: 'Team Size', val: `${team.length} members` },
+                ].map(f => (
                   <div key={f.label} className="flex justify-between items-center">
                     <p className="text-[9px] text-zinc-400 uppercase tracking-widest font-black">{f.label}</p>
                     <p className="text-xs font-bold text-zinc-900">{f.val}</p>
@@ -212,16 +326,16 @@ const ProjectViewPage = () => {
               <div className="bg-white border border-zinc-100 shadow-sm p-5 space-y-2">
                 <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-3">Quick Actions</h3>
                 <button onClick={() => { setTab('activity'); }} className="w-full flex items-center gap-2 px-3 py-2 bg-zinc-50 hover:bg-zinc-100 transition-colors text-[10px] font-black text-left">
-                  <Icon name="chat" className="text-[16px] text-zinc-400" />Add Comment
+                  <Icon name="chat" className="text-[16px]" text-zinc-400 />Add Comment
                 </button>
                 <button onClick={() => navigate('/documents')} className="w-full flex items-center gap-2 px-3 py-2 bg-zinc-50 hover:bg-zinc-100 transition-colors text-[10px] font-black text-left">
-                  <Icon name="upload" className="text-[16px] text-zinc-400" />Upload Document
+                  <Icon name="upload" className="text-[16px]" text-zinc-400 />Upload Document
                 </button>
                 <button onClick={() => navigate('/invoices/new')} className="w-full flex items-center gap-2 px-3 py-2 bg-zinc-50 hover:bg-zinc-100 transition-colors text-[10px] font-black text-left">
-                  <Icon name="receipt_long" className="text-[16px] text-zinc-400" />Create Invoice
+                  <Icon name="receipt_long" className="text-[16px]" text-zinc-400 />Create Invoice
                 </button>
                 <button onClick={() => navigate('/proposals')} className="w-full flex items-center gap-2 px-3 py-2 bg-zinc-50 hover:bg-zinc-100 transition-colors text-[10px] font-black text-left">
-                  <Icon name="description" className="text-[16px] text-zinc-400" />View Parent Proposal
+                  <Icon name="description" className="text-[16px]" text-zinc-400 />View Parent Proposal
                 </button>
               </div>
             </div>
@@ -247,7 +361,7 @@ const ProjectViewPage = () => {
                     {/* Status icon */}
                     <div className={`w-10 h-10 flex items-center justify-center shrink-0 ${isDone ? 'bg-emerald-500' : isCurrent ? 'bg-primary' : 'bg-zinc-100'}`}>
                       {isDone ? <Icon name="check" className="text-white text-[18px]" />
-                        : isCurrent ? <Icon name="pending" className="text-white text-[18px] animate-pulse" />
+                        : isCurrent ? <Icon name="pending" className="text-white text-[18px]" animate-pulse />
                         : <span className="text-zinc-400 text-xs font-black">{String(i + 1).padStart(2, '0')}</span>}
                     </div>
                     {/* Phase info */}
@@ -270,9 +384,11 @@ const ProjectViewPage = () => {
                       {isCurrent && (
                         <>
                           <button onClick={() => navigate('/documents')} className="px-3 py-1.5 bg-zinc-100 hover:bg-zinc-200 text-[9px] font-black uppercase tracking-widest transition-colors flex items-center gap-1">
-                            <Icon name="upload" className="text-[13px]" />Upload</button>
+                            <Icon name="upload" className="text-[13px]" />Upload
+                          </button>
                           <button onClick={() => setShowAdvanceModal(true)} className="px-3 py-1.5 bg-primary text-white text-[9px] font-black uppercase tracking-widest hover:bg-black transition-colors flex items-center gap-1">
-                            <Icon name="check" className="text-[13px]" />Approve & Advance</button>
+                            <Icon name="check" className="text-[13px]" />Approve & Advance
+                          </button>
                         </>
                       )}
                     </div>
@@ -435,7 +551,7 @@ const ProjectViewPage = () => {
                     <p className={`text-sm leading-relaxed ${c.isSystem ? 'text-zinc-400 italic' : 'text-zinc-700'}`}>{c.text}</p>
                     {!c.isSystem && (
                       <button
-                        onClick={() => setLikedIds(prev => prev.includes(c.id) ? prev.filter(x => x !== c.id) : [...prev, c.id])}
+                        onClick={() => setLikedIds(prev => prev.includes(c.id) ? prev.filter(x => x.id !== c.id) : [...prev, c.id])}
                         className={`flex items-center gap-1 mt-2 text-[9px] font-bold uppercase tracking-wider transition-colors ${likedIds.includes(c.id) ? 'text-primary' : 'text-zinc-300 hover:text-zinc-600'}`}
                       >
                         <Icon name="thumb_up" style={{ fontVariationSettings: `'FILL' ${likedIds.includes(c.id) ? 1 : 0}` }} className="text-[14px]" />
@@ -476,25 +592,31 @@ const ProjectViewPage = () => {
             <h3 className="text-lg font-black uppercase tracking-tight mb-5">Assign / Reassign Resources</h3>
             <p className="text-xs text-zinc-400 mb-4">Resources can be changed at any phase of the project.</p>
             <div className="space-y-2">
-              {[
-                { id: 'EMP001', name: 'Marcus Johnson', role: 'Senior Architect', color: 'bg-primary' },
-                { id: 'EMP002', name: 'Priya Nair', role: 'Project Manager', color: 'bg-blue-600' },
-                { id: 'EMP003', name: 'Tom Walsh', role: 'Junior Architect', color: 'bg-zinc-600' },
-                { id: 'EMP004', name: 'Elena Rodriguez', role: 'Interior Designer', color: 'bg-violet-600' },
-                { id: 'EMP005', name: 'James Kim', role: 'Structural Engineer', color: 'bg-emerald-600' },
-                { id: 'EMP006', name: 'Lisa Park', role: 'CAD Technician', color: 'bg-teal-600' },
-                { id: 'EMP008', name: 'Nina Patel', role: 'Architect', color: 'bg-rose-600' },
-              ].map(e => {
-                const assigned = team.some(t => t.id === e.id);
+              {employees.map(e => {
+                const assigned = team.some(t => t.id === e.id || t.id === e.employeeId);
+                const colors = ['bg-primary', 'bg-blue-600', 'bg-zinc-600', 'bg-violet-600', 'bg-teal-600', 'bg-rose-600'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
                 return (
-                  <label key={e.id} className="flex items-center gap-3 p-3 bg-zinc-50 hover:bg-zinc-100 cursor-pointer transition-colors">
+                  <label key={e.id || e.employeeId} className="flex items-center gap-3 p-3 bg-zinc-50 hover:bg-zinc-100 cursor-pointer transition-colors">
                     <div
-                      onClick={() => setTeam(prev => assigned ? prev.filter(x => x.id !== e.id) : [...prev, { ...e }])}
+                      onClick={() => {
+                        const empId = e.id || e.employeeId;
+                        if (assigned) {
+                          setTeam(prev => prev.filter(x => x.id !== empId));
+                        } else {
+                          setTeam(prev => [...prev, {
+                            id: empId,
+                            name: e.name,
+                            role: e.role,
+                            color,
+                          }]);
+                        }
+                      }}
                       className={`w-4 h-4 border-2 flex items-center justify-center transition-colors ${assigned ? 'border-primary bg-primary' : 'border-zinc-300'}`}
                     >
                       {assigned && <Icon name="check" style={{ fontVariationSettings: "'wght' 700" }} className="text-white text-[12px]" />}
                     </div>
-                    <div className={`w-8 h-8 ${e.color} text-white text-[10px] font-black flex items-center justify-center shrink-0`}>{e.name.charAt(0)}</div>
+                    <div className={`w-8 h-8 ${color} text-white text-[10px] font-black flex items-center justify-center shrink-0`}>{e.name.charAt(0)}</div>
                     <div>
                       <p className="text-xs font-black">{e.name}</p>
                       <p className="text-[9px] text-zinc-400">{e.role}</p>
@@ -505,7 +627,19 @@ const ProjectViewPage = () => {
             </div>
             <div className="flex gap-3 mt-6">
               <button onClick={() => setShowResourceModal(false)} className="flex-1 py-2.5 border border-zinc-200 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50">Cancel</button>
-              <button onClick={() => setShowResourceModal(false)} className="flex-1 py-2.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors">Save Team</button>
+              <button 
+                onClick={async () => {
+                  try {
+                    await api.patch(`/projects/${id}`, { teamMembers: team.map(t => t.id) });
+                    setShowResourceModal(false);
+                  } catch (err) {
+                    console.error("Error updating team:", err);
+                  }
+                }} 
+                className="flex-1 py-2.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors"
+              >
+                Save Team
+              </button>
             </div>
           </div>
         </div>

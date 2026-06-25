@@ -21,6 +21,24 @@ async def add_project(project: ProjectSchema = Body(...)):
     if not project_dict.get("projectId"):
         project_dict["projectId"] = f"PRJ-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
     
+    # Set default phase and totalPhases if not provided
+    if not project_dict.get("phase"):
+        project_dict["phase"] = 1
+    # Calculate totalPhases from type
+    PROJECT_PHASE_COUNTS = {
+        "Commercial": 10,
+        "Residential": 11,
+        "Hospitality": 10,
+        "Municipal": 10,
+        "High-End Residential": 11,
+        "Cultural / Institutional": 10,
+        "Renovation / Restoration": 10,
+        "Commercial / Retail": 10,
+        "Hospitality / Boutique Hotel": 10,
+    }
+    if not project_dict.get("totalPhases"):
+        project_dict["totalPhases"] = PROJECT_PHASE_COUNTS.get(project_dict.get("type"), 8)
+    
     new_project = project_collection.insert_one(project_dict)
     created_project = project_collection.find_one({"_id": new_project.inserted_id})
     return {"message": "Success", "data": project_helper(created_project)}

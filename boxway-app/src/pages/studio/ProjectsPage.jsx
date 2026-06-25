@@ -59,6 +59,16 @@ const ProjectsPage = () => {
   };
 
   const filtered = projects
+    .map(p => {
+      // Calculate progress if not present
+      let progress = p.progress;
+      if (progress === undefined || progress === null || progress === 0 && p.phase > 1) {
+        const totalPhases = p.totalPhases || 8;
+        const phase = p.phase || 1;
+        progress = Math.round((phase / totalPhases) * 100);
+      }
+      return { ...p, progress };
+    })
     .filter(p =>
       (statusFilter === 'All' || p.status === statusFilter) &&
       (typeFilter === 'All' || p.type === typeFilter) &&
@@ -96,10 +106,10 @@ const ProjectsPage = () => {
       {/* KPIs */}
       <div className="px-8 pt-6 pb-4 grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Total Projects',  val: projects.length,                                                                          icon: 'architecture',       color: 'text-zinc-900' },
-          { label: 'In Progress',     val: projects.filter(p => p.status === 'In Progress').length,                                 icon: 'pending_actions',    color: 'text-blue-600' },
-          { label: 'Total Budget',    val: '$' + (totalBudget / 1000000).toFixed(1) + 'M',                                               icon: 'monetization_on',    color: 'text-primary'  },
-          { label: 'Avg. Progress',   val: projects.length ? Math.round(projects.reduce((s, p) => s + (p.progress || 0), 0) / projects.length) + '%' : '0%',   icon: 'trending_up',        color: 'text-emerald-600' },
+          { label: 'Total Projects',  val: projects.length, icon: 'architecture', color: 'text-zinc-900' },
+          { label: 'In Progress',     val: projects.filter(p => p.status === 'In Progress').length, icon: 'pending_actions', color: 'text-blue-600' },
+          { label: 'Total Budget',    val: '$' + (totalBudget / 1000000).toFixed(1) + 'M', icon: 'monetization_on', color: 'text-primary' },
+          { label: 'Avg. Progress',   val: projects.length ? Math.round(projects.reduce((s, p) => s + (p.progress || 0), 0) / projects.length) + '%' : '0%', icon: 'trending_up', color: 'text-emerald-600' },
         ].map(k => (
           <div key={k.label} className="bg-white border border-zinc-100 shadow-sm p-5 flex items-center justify-between">
             <div>
@@ -156,7 +166,6 @@ const ProjectsPage = () => {
                   { label: 'Lead', col: 'lead' },
                   { label: 'Budget', col: 'budget' },
                   { label: 'Progress', col: 'progress' },
-                  { label: 'Phase', col: 'phase' },
                   { label: 'Status', col: 'status' },
                   { label: 'End Date', col: 'endDate' },
                   { label: 'Actions', col: null },
@@ -198,13 +207,10 @@ const ProjectsPage = () => {
                     <td className="px-5 py-3.5 min-w-[100px]">
                       <div className="flex items-center gap-2">
                         <div className="flex-1 h-1.5 bg-zinc-100">
-                          <div className={`h-1.5 transition-all ${budgetPct > 90 ? 'bg-red-500' : 'bg-primary'}`} style={{ width: `${p.progress}%` }} />
+                          <div className={`h-1.5 transition-all ${p.progress > 90 ? 'bg-emerald-500' : p.progress > 60 ? 'bg-primary' : 'bg-amber-500'}`} style={{ width: `${p.progress}%` }} />
                         </div>
                         <span className="text-[9px] font-black text-zinc-500 w-8">{p.progress}%</span>
                       </div>
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <span className="text-[9px] font-mono font-black text-zinc-500">{p.phase}/{p.totalPhases}</span>
                     </td>
                     <td className="px-5 py-3.5">
                       <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest ${sc.cls}`}>

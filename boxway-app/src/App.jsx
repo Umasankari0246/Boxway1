@@ -74,6 +74,7 @@ function App() {
           {/* Studio */}
           <Route path="projects" element={<ProjectsPage />} />
           <Route path="projects/new" element={<NewProjectPage />} />
+          <Route path="projects/:id/edit" element={<NewProjectPage />} />
           <Route path="projects/:id" element={<ProjectViewPage />} />
           <Route path="proposals" element={<ProposalsPage />} />
           <Route path="proposals/new" element={<NewProposalPage />} />

@@ -6,3 +6,5 @@ boxway-api/routes/__pycache__/
 
 # Dependencies
 node_modules/
+boxway-app/.env
+boxway-app/.env.production

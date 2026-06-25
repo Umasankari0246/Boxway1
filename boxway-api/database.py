@@ -16,10 +16,10 @@ try:
 
     # Test connection
     client.admin.command('ping')
-    print("✅ Connected to MongoDB Cloud")
+    print("Connected to MongoDB Cloud")
 
 except Exception as e:
-    print(f"❌ Could not connect to MongoDB Cloud: {e}")
+    print(f"Could not connect to MongoDB Cloud: {e}")
     print("Falling back to local MongoDB...")
 
     try:
@@ -30,16 +30,17 @@ except Exception as e:
         )
 
         client.admin.command('ping')
-        print("✅ Connected to local MongoDB")
+        print("Connected to local MongoDB")
 
     except Exception as local_error:
-        print(f"❌ Could not connect to local MongoDB: {local_error}")
+        print(f"Could not connect to local MongoDB: {local_error}")
         print("Using in-memory mock database")
         client = None
 
 # Connect to the boxway database
 db = client["boxway"] if client else None
-print("Databases:", client.list_database_names())
+if client:
+    print("Databases:", client.list_database_names())
 
 def get_database():
     return db

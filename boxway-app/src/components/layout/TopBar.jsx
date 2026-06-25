@@ -1,6 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import axios from 'axios';
 import Icon from '../ui/Icon.jsx';
+
+const api = axios.create({
+  baseURL: window.location.hostname === 'localhost'
+    ? 'http://localhost:8000/api'
+    : 'https://boxxway.onrender.com/api',
+});
 
 const ROUTE_TITLES = {
   '/': 'Dashboard',
@@ -39,12 +46,66 @@ const TopBar = () => {
 
   const [timeStr, setTimeStr] = React.useState('10:42 AM');
   const [showNotifications, setShowNotifications] = React.useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const notifications = [
-    { id: 1, title: 'New project milestone due', time: '2 hrs ago' },
-    { id: 2, title: 'Invoice #INV-032 pending approval', time: '5 hrs ago' },
-    { id: 3, title: 'Client meeting scheduled for tomorrow', time: '1 day ago' },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [invoicesRes, projectsRes, employeesRes, expensesRes] = await Promise.all([
+          api.get('/invoices/'),
+          api.get('/projects/'),
+          api.get('/employees/'),
+          api.get('/expenses/'),
+        ]);
+        
+        const newNotifications = [];
+
+        // Add invoice notifications
+        invoicesRes.data.data.slice(0, 2).forEach(invoice => {
+          newNotifications.push({
+            id: `invoice-${invoice.id}`,
+            title: `Invoice ${invoice.invoiceId || `#${invoice.id}`} ${invoice.status === 'Paid' ? 'has been paid' : 'pending approval'}`,
+            time: 'Recently'
+          });
+        });
+
+        // Add project notifications
+        projectsRes.data.data.slice(0, 1).forEach(project => {
+          newNotifications.push({
+            id: `project-${project.id}`,
+            title: `Project "${project.name}" updated`,
+            time: 'Recently'
+          });
+        });
+
+        // Add employee notifications
+        employeesRes.data.data.slice(0, 1).forEach(employee => {
+          newNotifications.push({
+            id: `employee-${employee.id}`,
+            title: `New employee joined: ${employee.firstName || 'Employee'} ${employee.lastName || ''}`,
+            time: 'Recently'
+          });
+        });
+
+        // Add expense notifications
+        expensesRes.data.data.slice(0, 1).forEach(expense => {
+          newNotifications.push({
+            id: `expense-${expense.id}`,
+            title: `Expense report "${expense.title || 'Expense'}" ${expense.status === 'Approved' ? 'approved' : 'pending approval'}`,
+            time: 'Recently'
+          });
+        });
+
+        setNotifications(newNotifications);
+      } catch (err) {
+        console.error("Error fetching notifications:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   React.useEffect(() => {
     const updateTime = () => {
