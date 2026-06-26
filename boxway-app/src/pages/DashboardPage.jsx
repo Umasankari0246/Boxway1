@@ -8,64 +8,8 @@ const api = axios.create({
     : 'https://boxxway.onrender.com/api',
 });
 
-// Mock financial data for the graph (last 3 months)
-const mockFinancialData = [
-  { month: 'Apr', revenue: 180, expenses: 110 },
-  { month: 'May', revenue: 165, expenses: 90 },
-  { month: 'Jun', revenue: 200, expenses: 120 },
-];
 
-const upcomingCalendar = [
-  { title: 'DA submission - Villa 4', date: 'Oct 24, 2023', status: 'High' },
-  { title: 'Structural review', date: 'Oct 28, 2023', status: 'Mid' },
-  { title: 'Client kickoff', date: 'Nov 02, 2023', status: 'Low' },
-  { title: 'Permitting deadline', date: 'Nov 10, 2023', status: 'High' },
-  { title: 'Team sync', date: 'Nov 14, 2023', status: 'Medium' },
-];
 
-// Mock recent activity data
-const mockRecentActivity = [
-  {
-    id: 1,
-    type: 'invoice',
-    user: 'Sarah Chen',
-    action: 'created invoice',
-    item: '#INV-1234',
-    time: '2 hours ago',
-    avatar: 'S',
-    color: 'bg-primary',
-  },
-  {
-    id: 2,
-    type: 'project',
-    user: 'Marcus T.',
-    action: 'updated project',
-    item: 'Villa Renovation',
-    time: '4 hours ago',
-    avatar: 'M',
-    color: 'bg-black',
-  },
-  {
-    id: 3,
-    type: 'expense',
-    user: 'Emily R.',
-    action: 'submitted expense',
-    item: 'Materials',
-    time: '6 hours ago',
-    avatar: 'E',
-    color: 'bg-amber-500',
-  },
-  {
-    id: 4,
-    type: 'employee',
-    user: 'David K.',
-    action: 'joined team',
-    item: 'Senior Architect',
-    time: 'Yesterday',
-    avatar: 'D',
-    color: 'bg-sky-500',
-  },
-];
 
 const DashboardPage = () => {
   const [showCalendar, setShowCalendar] = useState(false);
@@ -103,8 +47,8 @@ const DashboardPage = () => {
   const totalBudget = projects.reduce((sum, p) => sum + (p.budget || 0), 0);
   const teamCount = employees.length;
 
-  // Use mock financial data for the graph
-  const financialData = mockFinancialData;
+  // Financial data from API
+  const financialData = [];
   const allValues = financialData.flatMap(d => [d.revenue, d.expenses]);
   const maxValue = Math.max(...allValues, 1) || 1;
 
@@ -399,24 +343,7 @@ const DashboardPage = () => {
                     </button>
                   </div>
                   <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
-                    {upcomingCalendar.map((event) => (
-                      <div key={event.title} className="flex items-center justify-between gap-4 p-4 bg-zinc-50 rounded-3xl">
-                        <div>
-                          <p className="text-sm font-bold text-slate-900">{event.title}</p>
-                          <p className="text-[11px] text-zinc-500 mt-1">{event.date}</p>
-                        </div>
-                        <span className={`text-[10px] font-black uppercase px-3 py-1 rounded-full ${
-                          event.status === 'High'
-                            ? 'bg-rose-100 text-rose-700'
-                            : event.status === 'Medium'
-                            ? 'bg-amber-100 text-amber-700'
-                            : 'bg-slate-100 text-slate-700'
-                        }`}
-                        >
-                          {event.status}
-                        </span>
-                      </div>
-                    ))}
+                    <p className="text-center text-zinc-400 text-sm">No upcoming events</p>
                   </div>
                 </div>
               </div>

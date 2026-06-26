@@ -1,6 +1,12 @@
-import React, { useState } from 'react';
-import { MOCK_AI_INSIGHTS } from '../../data/mockData';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
+
+const api = axios.create({
+  baseURL: window.location.hostname === 'localhost'
+    ? 'http://localhost:8000/api'
+    : 'https://boxxway.onrender.com/api',
+});
 
 const typeConfig = {
   warning: { bgCard: 'border-l-4 border-red-500 bg-red-50', iconColor: 'text-red-500', badge: 'bg-red-100 text-red-700' },
@@ -14,9 +20,25 @@ const AIInsightsPage = () => {
   const [filter, setFilter] = useState('All');
   const [chat, setChat] = useState([{ role: 'ai', text: 'Hello! I\'m your Boxway AI assistant. I can analyze your project data, financials, and team performance. What would you like to explore today?' }]);
   const [input, setInput] = useState('');
+  const [insights, setInsights] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchInsights = async () => {
+      try {
+        const response = await api.get('/insights/');
+        setInsights(response.data.data || []);
+      } catch (err) {
+        console.error('Error fetching insights:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInsights();
+  }, []);
 
   const priorities = ['All', 'High', 'Medium', 'Low'];
-  const filtered = MOCK_AI_INSIGHTS.filter(i => filter === 'All' || i.priority === filter);
+  const filtered = insights.filter(i => filter === 'All' || i.priority === filter);
 
   const predefined = [
     'Which clients are most at risk of churn?',
@@ -58,7 +80,7 @@ const AIInsightsPage = () => {
         <div className="col-span-7">
           <div className="flex items-center gap-3 mb-4">
             <h3 className="font-bold text-slate-900">Smart Alerts & Recommendations</h3>
-            <span className="bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{MOCK_AI_INSIGHTS.length}</span>
+            <span className="bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{insights.length}</span>
           </div>
           <div className="flex gap-2 mb-4">
             {priorities.map(p => (

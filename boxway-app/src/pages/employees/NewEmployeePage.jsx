@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { MOCK_EMPLOYEES } from '../../data/mockData';
 import Icon from "../../components/ui/Icon.jsx"
 
 const api = axios.create({
@@ -35,10 +34,10 @@ const NewEmployeePage = () => {
     const fetchEmployeeCount = async () => {
       try {
         const response = await api.get('/employees/');
-        const count = response.data.data ? response.data.data.length : MOCK_EMPLOYEES.length;
+        const count = response.data.data ? response.data.data.length : 0;
         setEmployeeId(`EMP${String(count + 1).padStart(3, '0')}`);
       } catch (error) {
-        setEmployeeId(`EMP${String(MOCK_EMPLOYEES.length + 1).padStart(3, '0')}`);
+        setEmployeeId(`EMP001`);
       }
     };
     fetchEmployeeCount();

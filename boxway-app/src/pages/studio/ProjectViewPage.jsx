@@ -30,20 +30,6 @@ const STATUS_CFG = {
   'On Hold':     { cls: 'bg-zinc-100 text-zinc-500',     dot: 'bg-zinc-400'    },
 };
 
-const MOCK_DOCS = [
-  { name: 'Site_Survey_PRJ001.dwg',    type: 'DWG', size: '18.4 MB', folder: 'Site',       date: 'Mar 12, 2024' },
-  { name: 'Scheme_CAD_v3.2.dwg',       type: 'DWG', size: '64.1 MB', folder: 'Scheme/CAD', date: 'Mar 15, 2024' },
-  { name: 'Ext_Render_Final_v1.png',   type: 'PNG', size: '22.8 MB', folder: 'Renders',    date: 'Mar 18, 2024' },
-  { name: 'Email_In_Structural.pdf',   type: 'PDF', size: '3.2 MB',  folder: 'Email In',   date: 'Mar 14, 2024' },
-];
-
-const INITIAL_COMMENTS = [
-  { id: 1, author: 'Alex Carter',    avatar: 'AC', color: 'bg-primary',    role: 'Admin',          time: '5 days ago', phase: 'Initial Meeting',   text: 'Project kicked off. All client documentation received and filed. Initial meeting notes uploaded.', likes: 3 },
-  { id: 2, author: 'Marcus Johnson', avatar: 'MJ', color: 'bg-zinc-700',   role: 'Lead Architect',  time: '4 days ago', phase: 'Design',             text: 'Schematic design v1.0 completed and shared with client via email. Awaiting client feedback before advancing to Design Development.', likes: 5 },
-  { id: 3, author: 'Priya Nair',     avatar: 'PN', color: 'bg-blue-600',   role: 'Project Manager', time: '2 days ago', phase: 'Design',             text: 'Client review meeting held. Minor revisions requested on east elevation. Tom has been assigned the CAD revisions. Target: 3 working days.', likes: 2 },
-  { id: 4, author: 'Tom Walsh',      avatar: 'TW', color: 'bg-zinc-600',   role: 'Junior Architect', time: '1 day ago', phase: 'Design',             text: 'East elevation CAD revised per client comments. New DWG uploaded under Scheme/CAD — v3.2. Marcus to review before resending to client.', likes: 4 },
-];
-
 const TABS = [
   { key: 'overview',   label: 'Overview',  icon: 'dashboard_customize' },
   { key: 'phases',     label: 'Phases',    icon: 'timeline'             },
@@ -61,7 +47,8 @@ const ProjectViewPage = () => {
   const [employees, setEmployees] = useState([]);
   const [activePhaseIdx, setActivePhaseIdx] = useState(0);
   const [tab, setTab] = useState('overview');
-  const [comments, setComments] = useState(INITIAL_COMMENTS);
+  const [comments, setComments] = useState([]);
+  const [documents, setDocuments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [likedIds, setLikedIds] = useState([]);
   const [showAdvanceModal, setShowAdvanceModal] = useState(false);
@@ -97,6 +84,22 @@ const ProjectViewPage = () => {
         setEmployees(employeesRes.data.data);
         setActivePhaseIdx(projectData.phase - 1);
         setProjectStatus(projectData.status);
+
+        // Fetch documents
+        try {
+          const docsRes = await api.get('/documents/');
+          setDocuments(docsRes.data.data.filter(d => d.projectId === id) || []);
+        } catch (err) {
+          console.error('Error fetching documents:', err);
+        }
+
+        // Fetch comments/activity
+        try {
+          const commentsRes = await api.get(`/projects/${id}/activity`);
+          setComments(commentsRes.data.data || []);
+        } catch (err) {
+          console.error('Error fetching activity:', err);
+        }
       } catch (err) {
         console.error("Error fetching data:", err);
       } finally {
@@ -457,7 +460,9 @@ const ProjectViewPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-50">
-                  {MOCK_DOCS.map(doc => (
+                  {documents.length === 0 ? (
+                    <tr><td colSpan={6} className="px-6 py-12 text-center text-zinc-400 text-sm">No documents found for this project.</td></tr>
+                  ) : documents.map(doc => (
                     <tr key={doc.name} className="hover:bg-zinc-50 group">
                       <td className="px-5 py-3.5">
                         <p className="text-xs font-black text-zinc-800">{doc.name}</p>

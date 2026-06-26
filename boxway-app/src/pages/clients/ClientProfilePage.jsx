@@ -1,15 +1,51 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { ArrowLeft, User, Mail, MapPin } from 'lucide-react';
-import { MOCK_CLIENTS, MOCK_PROJECTS, MOCK_INVOICES } from '../../data/mockData';
+import Icon from "../../components/ui/Icon.jsx"
+
+const api = axios.create({
+  baseURL: window.location.hostname === 'localhost'
+    ? 'http://localhost:8000/api'
+    : 'https://boxxway.onrender.com/api',
+});
 
 const ClientProfilePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [tab, setTab] = React.useState('overview');
-  const client = MOCK_CLIENTS.find(c => c.id === id) || MOCK_CLIENTS[0];
-  const projects = MOCK_PROJECTS.filter(p => p.clientId === client.id);
-  const invoices = MOCK_INVOICES.filter(i => i.clientId === client.id);
+  const [client, setClient] = React.useState(null);
+  const [projects, setProjects] = React.useState([]);
+  const [invoices, setInvoices] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [clientRes, projectsRes, invoicesRes] = await Promise.all([
+          api.get(`/clients/${id}`),
+          api.get('/projects/'),
+          api.get('/invoices/'),
+        ]);
+        setClient(clientRes.data.data);
+        setProjects(projectsRes.data.data.filter(p => p.clientId === id));
+        setInvoices(invoicesRes.data.data.filter(i => i.clientId === id));
+      } catch (err) {
+        console.error('Error fetching data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [id]);
+
+  if (loading) {
+    return <div className="flex-1 flex items-center justify-center bg-[#f8f6f6]"><p className="text-slate-500">Loading...</p></div>;
+  }
+
+  if (!client) {
+    return <div className="flex-1 flex items-center justify-center bg-[#f8f6f6]"><p className="text-slate-500">Client not found</p></div>;
+  }
 
   return (
     <div className="flex-1 overflow-y-auto bg-[#f8f6f6]">
@@ -19,7 +55,7 @@ const ClientProfilePage = () => {
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black text-xl">
-            {client.name.charAt(0)}
+            {client.name?.charAt(0) || 'C'}
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-3">

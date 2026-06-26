@@ -1,18 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_EMPLOYEES } from '../../../data/mockData';
+import axios from 'axios';
 import { usePayrollStore } from '../../../store/payrollStore';
 import Icon from "../../../components/ui/Icon.jsx"
+
+const api = axios.create({
+  baseURL: window.location.hostname === 'localhost'
+    ? 'http://localhost:8000/api'
+    : 'https://boxxway.onrender.com/api',
+});
 
 const Step1 = () => {
   const navigate = useNavigate();
   const { multiRun, setMultiEmployees } = usePayrollStore();
   const [selected, setSelected] = React.useState(new Set(multiRun.selectedEmployees.map(e => e.id)));
+  const [employees, setEmployees] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const response = await api.get('/employees/');
+        setEmployees(response.data.data);
+      } catch (err) {
+        console.error('Error fetching employees:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEmployees();
+  }, []);
 
   const toggle = (id) => {
     setSelected(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
   };
-  const toggleAll = () => selected.size > 0 ? setSelected(new Set()) : setSelected(new Set(MOCK_EMPLOYEES.map(e => e.id)));
+  const toggleAll = () => selected.size > 0 ? setSelected(new Set()) : setSelected(new Set(employees.map(e => e.id)));
 
   const STEPS = ['Select Employees', 'Setup Payroll', 'Review & Confirm'];
 
@@ -44,11 +66,13 @@ const Step1 = () => {
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-bold text-slate-900">Select Employees ({selected.size} selected)</h3>
             <button onClick={toggleAll} className="text-sm font-semibold text-primary hover:underline">
-              {selected.size === MOCK_EMPLOYEES.length ? 'Deselect All' : 'Select All'}
+              {selected.size === employees.length ? 'Deselect All' : 'Select All'}
             </button>
           </div>
           <div className="space-y-2">
-            {MOCK_EMPLOYEES.map(e => (
+            {loading ? (
+              <div className="text-center py-8 text-slate-400">Loading employees...</div>
+            ) : employees.map(e => (
               <div key={e.id} onClick={() => toggle(e.id)}
                 className={`flex items-center gap-4 p-4 rounded-lg border cursor-pointer transition-all ${selected.has(e.id) ? 'border-primary bg-primary/5' : 'border-slate-200 hover:border-slate-300'}`}>
                 <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors shrink-0 ${selected.has(e.id) ? 'bg-primary border-primary' : 'border-slate-300'}`}>
@@ -71,14 +95,14 @@ const Step1 = () => {
         {selected.size > 0 && (
           <div className="mt-4 p-4 bg-primary/10 rounded-lg flex justify-between text-sm">
             <span className="font-semibold text-primary">{selected.size} employees selected</span>
-            <span className="font-bold text-slate-900">Est. Total: ${MOCK_EMPLOYEES.filter(e => selected.has(e.id)).reduce((s, e) => s + Math.round(e.salary / 12), 0).toLocaleString()}</span>
+            <span className="font-bold text-slate-900">Est. Total: ${employees.filter(e => selected.has(e.id)).reduce((s, e) => s + Math.round((e.salary || 0) / 12), 0).toLocaleString()}</span>
           </div>
         )}
 
         <div className="flex justify-between mt-6">
           <button onClick={() => navigate('/payroll')} className="px-6 py-2.5 border border-slate-200 bg-white text-slate-700 text-sm font-semibold rounded hover:bg-slate-50">Cancel</button>
           <button disabled={selected.size === 0}
-            onClick={() => { setMultiEmployees(MOCK_EMPLOYEES.filter(e => selected.has(e.id))); navigate('/payroll/run/multi/step2'); }}
+            onClick={() => { setMultiEmployees(employees.filter(e => selected.has(e.id))); navigate('/payroll/run/multi/step2'); }}
             className="px-6 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20 disabled:opacity-40">
             Continue
           </button>

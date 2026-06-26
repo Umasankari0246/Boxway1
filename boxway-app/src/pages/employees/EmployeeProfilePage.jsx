@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { MOCK_PAYSLIPS } from '../../data/mockData';
 import Icon from "../../components/ui/Icon.jsx"
 
 const api = axios.create({
@@ -21,6 +20,7 @@ const EmployeeProfilePage = () => {
   const [editForm, setEditForm] = useState({});
   const [documents, setDocuments] = useState([]);
   const [uploadingDoc, setUploadingDoc] = useState(false);
+  const [payslips, setPayslips] = useState([]);
 
   useEffect(() => {
     const fetchEmployee = async () => {
@@ -38,6 +38,14 @@ const EmployeeProfilePage = () => {
           if (savedDocs) {
             setDocuments(JSON.parse(savedDocs));
           }
+        }
+
+        // Fetch payslips
+        try {
+          const payslipsRes = await api.get('/payslips/');
+          setPayslips(payslipsRes.data.data.filter(p => p.employeeId === id) || []);
+        } catch (err) {
+          console.error('Error fetching payslips:', err);
         }
       } catch (err) {
         console.error("Error fetching employee:", err);
@@ -181,7 +189,6 @@ const EmployeeProfilePage = () => {
      );
   }
 
-  const payslips = MOCK_PAYSLIPS.filter(p => p.employeeId === emp.id);
 
   const statusColor = emp.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700';
 

@@ -16,13 +16,6 @@ const APPROVAL_STAGES = [
   { key: 'approved', label: 'Approved', desc: 'Client has signed off' },
 ];
 
-const MOCK_COMMENTS = [
-  { id: 1, author: 'Alex Carter', role: 'Admin', avatar: 'AC', color: 'bg-primary', time: '2 days ago', stage: 'initial', text: 'Enquiry received and logged. All client details verified against our conflict-of-interest register — clear to proceed. Assigned to Marcus Johnson as lead architect.', actions: { like: 4, reply: 1 } },
-  { id: 2, author: 'Marcus Johnson', role: 'Senior Architect', avatar: 'MJ', color: 'bg-zinc-700', time: '1 day ago', stage: 'initial', text: 'Reviewed the site brief. The vision aligns well with our brutalist portfolio. Initial thoughts: the cantilevered east wing will require early structural consultant input. Will schedule a client meeting for this week.', actions: { like: 6, reply: 2 } },
-  { id: 3, author: 'Priya Nair', role: 'Project Manager', avatar: 'PN', color: 'bg-blue-600', time: '1 day ago', stage: 'review', text: 'Client meeting scheduled for Thursday 2PM. Shared the preliminary concept massing with the client — extremely positive response. They want to explore the "void" aesthetic further. Updating the proposal to v1.2.', actions: { like: 3, reply: 0 } },
-  { id: 4, author: 'Alex Carter', role: 'Admin', avatar: 'AC', color: 'bg-primary', time: '18 hours ago', stage: 'review', text: 'Proposal v1.2 reviewed internally. Budget allocation looks solid. Recommend proceeding to client sign-off. Please circulate the updated fee letter.', actions: { like: 2, reply: 1 } },
-];
-
 const statusConfig = {
   Draft: { cls: 'bg-zinc-100 text-zinc-600' },
   Submitted: { cls: 'bg-blue-100 text-blue-700' },
@@ -38,7 +31,7 @@ const ViewProposalPage = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [currentStage, setCurrentStage] = useState(0);
-  const [comments, setComments] = useState(MOCK_COMMENTS);
+  const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [likedIds, setLikedIds] = useState([]);
   const [expandedReplies, setExpandedReplies] = useState([]);
@@ -68,6 +61,14 @@ const ViewProposalPage = () => {
           documentationPhase: 30,
           constructionAdmin: 25,
         });
+
+        // Fetch comments
+        try {
+          const commentsRes = await api.get(`/proposals/${id}/comments`);
+          setComments(commentsRes.data.data || []);
+        } catch (err) {
+          console.error('Error fetching comments:', err);
+        }
       } catch (err) {
         console.error("Error fetching proposal:", err);
       } finally {
