@@ -40,6 +40,7 @@ const NewProjectPage = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [employees, setEmployees] = useState([]);
+  const [clients, setClients] = useState([]);
 
   const [form, setForm] = useState({
     name: fromProposal?.title || '',
@@ -80,6 +81,18 @@ const NewProjectPage = () => {
       }
     };
     fetchEmployees();
+  }, []);
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const res = await api.get('/clients/');
+        setClients(res.data.data);
+      } catch (err) {
+        console.error('Error fetching clients:', err);
+      }
+    };
+    fetchClients();
   }, []);
 
   useEffect(() => {
@@ -265,7 +278,7 @@ const NewProjectPage = () => {
                 <label className={LABEL}>Client / Company</label>
                 <select value={form.client} onChange={e => set('client', e.target.value)} className={INPUT}>
                   <option value="">Select client...</option>
-                  {['Meridian Properties','Horizon Developments','Park & Associates','Sunrise Hospitality','Greenway Urban Co.'].map(c => <option key={c}>{c}</option>)}
+                  {clients.map(c => <option key={c.id || c.clientId} value={c.id || c.clientId}>{c.name}</option>)}
                 </select>
               </div>
               <div>

@@ -28,8 +28,48 @@ const ClientProfilePage = () => {
           api.get('/invoices/'),
         ]);
         setClient(clientRes.data.data);
-        setProjects(projectsRes.data.data.filter(p => p.clientId === id));
-        setInvoices(invoicesRes.data.data.filter(i => i.clientId === id));
+        
+        console.log('=== CLIENT DATA ===');
+        console.log('Client ID from URL:', id);
+        console.log('Client data:', clientRes.data.data);
+        console.log('Client clientId:', clientRes.data.data.clientId);
+        console.log('Client name:', clientRes.data.data.name);
+        
+        console.log('=== ALL PROJECTS ===');
+        console.log('Total projects:', projectsRes.data.data.length);
+        console.log('Projects:', projectsRes.data.data);
+        
+        // Filter projects - match by client ID, clientId, _id, or client name (for backward compatibility)
+        const filteredProjects = projectsRes.data.data.filter(p => {
+          const matches = p.client === id || 
+                          p.client === clientRes.data.data.clientId || 
+                          p.client === clientRes.data.data.id ||
+                          p.client === clientRes.data.data.name;
+          console.log(`Project "${p.name}" - client field: "${p.client}" - matches: ${matches}`);
+          return matches;
+        });
+        console.log('=== FILTERED PROJECTS ===');
+        console.log('Count:', filteredProjects.length);
+        console.log('Filtered projects:', filteredProjects);
+        setProjects(filteredProjects);
+        
+        console.log('=== ALL INVOICES ===');
+        console.log('Total invoices:', invoicesRes.data.data.length);
+        console.log('Invoices:', invoicesRes.data.data);
+        
+        // Filter invoices - match by client ID, clientId, _id, or client name (for backward compatibility)
+        const filteredInvoices = invoicesRes.data.data.filter(i => {
+          const matches = i.client === id || 
+                          i.client === clientRes.data.data.clientId || 
+                          i.client === clientRes.data.data.id ||
+                          i.client === clientRes.data.data.name;
+          console.log(`Invoice "${i.id}" - client field: "${i.client}" - matches: ${matches}`);
+          return matches;
+        });
+        console.log('=== FILTERED INVOICES ===');
+        console.log('Count:', filteredInvoices.length);
+        console.log('Filtered invoices:', filteredInvoices);
+        setInvoices(filteredInvoices);
       } catch (err) {
         console.error('Error fetching data:', err);
       } finally {
@@ -147,7 +187,7 @@ const ClientProfilePage = () => {
                 {invoices.map(inv => (
                   <tr key={inv.id} className="hover:bg-slate-50">
                     <td className="px-6 py-4 text-sm font-semibold text-slate-900">{inv.id}</td>
-                    <td className="px-6 py-4 text-sm font-bold text-slate-900">${inv.total.toLocaleString()}</td>
+                    <td className="px-6 py-4 text-sm font-bold text-slate-900">${(inv.amount || inv.total || 0).toLocaleString()}</td>
                     <td className="px-6 py-4 text-sm text-slate-500">{inv.dueDate}</td>
                     <td className="px-6 py-4">
                       <span className={`px-2 py-0.5 text-[10px] font-bold rounded uppercase ${
