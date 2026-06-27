@@ -63,6 +63,7 @@ function App() {
           {/* Employees */}
           <Route path="employees" element={<EmployeesPage />} />
           <Route path="employees/new" element={<NewEmployeePage />} />
+          <Route path="employees/:id/edit" element={<NewEmployeePage />} />
           <Route path="employees/:id" element={<EmployeeProfilePage />} />
 
           {/* Clients */}

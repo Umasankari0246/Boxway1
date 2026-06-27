@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
 
@@ -13,10 +13,14 @@ const STEPS = ['Basic Info', 'Academic & Tools', 'Documents', 'Payroll (Opt)', '
 
 const NewEmployeePage = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [employeeId, setEmployeeId] = useState('');
   const [error, setError] = useState('');
+  const [projects, setProjects] = useState([]);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: '', email: '', phone: '', dob: '', gender: '', bloodGroup: '', city: '',
     role: '', department: '', employeeType: '', startDate: '', managerId: '',
@@ -34,14 +38,91 @@ const NewEmployeePage = () => {
     const fetchEmployeeCount = async () => {
       try {
         const response = await api.get('/employees/');
-        const count = response.data.data ? response.data.data.length : 0;
-        setEmployeeId(`EMP${String(count + 1).padStart(3, '0')}`);
+        const employees = response.data.data || [];
+        
+        // Extract numeric part from existing employee IDs and find the maximum
+        const employeeNumbers = employees
+          .map(emp => {
+            if (emp.employeeId) {
+              const match = emp.employeeId.match(/EMP(\d+)/);
+              return match ? parseInt(match[1], 10) : 0;
+            }
+            return 0;
+          })
+          .filter(num => num > 0);
+        
+        const maxNumber = employeeNumbers.length > 0 ? Math.max(...employeeNumbers) : 0;
+        const nextNumber = maxNumber + 1;
+        setEmployeeId(`EMP${String(nextNumber).padStart(3, '0')}`);
       } catch (error) {
         setEmployeeId(`EMP001`);
       }
     };
-    fetchEmployeeCount();
+    if (!id) fetchEmployeeCount();
+  }, [id]);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await api.get('/projects/');
+        setProjects(response.data.data || []);
+      } catch (err) {
+        console.error('Error fetching projects:', err);
+      }
+    };
+    fetchProjects();
   }, []);
+
+  useEffect(() => {
+    if (id) {
+      setIsEditMode(true);
+      setLoading(true);
+      const fetchEmployee = async () => {
+        try {
+          const response = await api.get(`/employees/${id}`);
+          const employee = response.data.data;
+          setEmployeeId(employee.employeeId || '');
+          setForm({
+            name: employee.name || '',
+            email: employee.email || '',
+            phone: employee.phone || '',
+            dob: employee.dob || '',
+            gender: employee.gender || '',
+            bloodGroup: employee.bloodGroup || '',
+            city: employee.city || '',
+            role: employee.role || '',
+            department: employee.department || '',
+            employeeType: employee.employeeType || '',
+            startDate: employee.startDate || '',
+            managerId: employee.managerId || '',
+            emergencyContactName: employee.emergencyContactName || '',
+            emergencyContactRelation: employee.emergencyContactRelation || '',
+            emergencyPhone: employee.emergencyPhone || '',
+            familyMembers: employee.familyMembers || '',
+            highestQualification: employee.highestQualification || '',
+            university: employee.university || '',
+            graduationYear: employee.graduationYear || '',
+            architectureSkills: employee.architectureSkills || [],
+            toolsSelection: employee.toolsSelection || [],
+            photoUrl: employee.photoUrl || null,
+            collegeDocs: employee.collegeDocs || null,
+            salary: employee.salary || '',
+            basicPay: employee.basicPay || '',
+            hra: employee.hra || '',
+            allowances: employee.allowances || '',
+            taxId: employee.taxId || '',
+            projects: employee.projects || []
+          });
+        } catch (err) {
+          console.error('Error fetching employee:', err);
+          alert('Failed to load employee data');
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchEmployee();
+    }
+  }, [id]);
 
   const validateForm = () => {
     const digitsOnly = form.phone.replace(/\D/g, '');
@@ -51,6 +132,18 @@ const NewEmployeePage = () => {
     }
     if (!form.email || !form.email.includes('@')) {
       setError('A valid email address is required and must contain the @ symbol.');
+      return false;
+    }
+    if (!form.highestQualification || form.highestQualification.trim() === '') {
+      setError('Highest qualification is required.');
+      return false;
+    }
+    if (!form.university || form.university.trim() === '') {
+      setError('University/Institution is required.');
+      return false;
+    }
+    if (!form.graduationYear || form.graduationYear.trim() === '') {
+      setError('Graduation year is required.');
       return false;
     }
     return true;
@@ -71,39 +164,82 @@ const NewEmployeePage = () => {
         name: form.name,
         email: form.email,
         phone: form.phone,
-        dob: form.dob,
-        gender: form.gender,
-        bloodGroup: form.bloodGroup,
-        city: form.city,
+        dob: form.dob || null,
+        gender: form.gender || null,
+        bloodGroup: form.bloodGroup || null,
+        city: form.city || null,
         role: form.role,
         department: form.department,
-        employeeType: form.employeeType,
-        startDate: form.startDate,
-        managerId: form.managerId,
-        emergencyContactName: form.emergencyContactName,
-        emergencyContactRelation: form.emergencyContactRelation,
-        emergencyPhone: form.emergencyPhone,
-        familyMembers: form.familyMembers,
+        employeeType: form.employeeType || null,
+        startDate: form.startDate || null,
+        managerId: form.managerId || null,
+        emergencyContactName: form.emergencyContactName || null,
+        emergencyContactRelation: form.emergencyContactRelation || null,
+        emergencyPhone: form.emergencyPhone || null,
+        familyMembers: form.familyMembers || null,
         highestQualification: form.highestQualification,
         university: form.university,
         graduationYear: form.graduationYear,
-        architectureSkills: form.architectureSkills,
-        toolsSelection: form.toolsSelection,
+        architectureSkills: form.architectureSkills || [],
+        toolsSelection: form.toolsSelection || [],
         salary: Number(form.salary) || 0,
         basicPay: Number(form.basicPay) || 0,
         hra: Number(form.hra) || 0,
         allowances: Number(form.allowances) || 0,
-        taxId: form.taxId,
+        taxId: form.taxId || null,
         status: "Active",
-        photoUrl: form.photoUrl,
-        collegeDocs: form.collegeDocs
+        photoUrl: form.photoUrl || null,
+        collegeDocs: form.collegeDocs || null,
+        projects: form.projects || []
       };
 
-      await api.post('/employees/', payload);
+      let savedEmployeeId = employeeId;
+
+      if (isEditMode) {
+        await api.patch(`/employees/${id}`, payload);
+        alert('Employee updated successfully!');
+      } else {
+        const response = await api.post('/employees/', payload);
+        alert('Employee created successfully!');
+        // Get the actual employeeId from the response
+        if (response.data.data && response.data.data.employeeId) {
+          savedEmployeeId = response.data.data.employeeId;
+          setEmployeeId(savedEmployeeId);
+        }
+        console.log('Created employee with ID:', savedEmployeeId);
+      }
+
+      // Update project team members if a project was assigned
+      if (form.projects && form.projects.length > 0) {
+        try {
+          const projectId = form.projects[0];
+          console.log('Attempting to add employee to project:', projectId, 'Employee ID:', savedEmployeeId);
+
+          const projectRes = await api.get(`/projects/${projectId}`);
+          const project = projectRes.data.data;
+          const currentTeamMembers = project.teamMembers || [];
+          console.log('Current team members:', currentTeamMembers);
+
+          // Add employee to project team if not already there
+          if (!currentTeamMembers.includes(savedEmployeeId)) {
+            const updatedTeamMembers = [...currentTeamMembers, savedEmployeeId];
+            await api.patch(`/projects/${projectId}`, {
+              teamMembers: updatedTeamMembers
+            });
+            console.log(`Successfully added employee ${savedEmployeeId} to project ${projectId}`);
+          } else {
+            console.log('Employee already in project team');
+          }
+        } catch (err) {
+          console.error('Error updating project team:', err);
+          alert('Employee saved but failed to update project team. Please add manually.');
+        }
+      }
+
       navigate('/employees');
     } catch (err) {
-      console.error('Error creating employee:', err);
-      setError(err.response?.data?.detail || 'Failed to create employee. Please check required fields.');
+      console.error('Error saving employee:', err);
+      setError(err.response?.data?.detail || 'Failed to save employee. Please check required fields.');
       setIsSubmitting(false);
     }
   };
@@ -243,16 +379,16 @@ const NewEmployeePage = () => {
           <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2">Academic Information</h3>
           <div className="grid grid-cols-2 gap-5">
             <div className="col-span-2">
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Highest Qualification</label>
-              <input value={form.highestQualification} onChange={e => set('highestQualification', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="e.g., M.Arch" />
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Highest Qualification *</label>
+              <input value={form.highestQualification} onChange={e => set('highestQualification', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="e.g., M.Arch" required />
             </div>
              <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">University/Institution</label>
-              <input value={form.university} onChange={e => set('university', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="e.g., MIT" />
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">University/Institution *</label>
+              <input value={form.university} onChange={e => set('university', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"  placeholder="e.g., MIT" required />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Graduation Year</label>
-              <input type="number" value={form.graduationYear} onChange={e => set('graduationYear', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="2020" />
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Graduation Year *</label>
+              <input type="number" value={form.graduationYear} onChange={e => set('graduationYear', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="2020" required />
             </div>
           </div>
         </div>
@@ -425,10 +561,15 @@ const NewEmployeePage = () => {
           <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2 mt-6">Project Assignment (Optional)</h3>
            <div className="col-span-2">
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Assign to initial project</label>
-              <select className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+              <select
+                value={form.projects && form.projects.length > 0 ? form.projects[0] : ''}
+                onChange={(e) => set('projects', e.target.value ? [e.target.value] : [])}
+                className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+              >
                 <option value="">Select Project</option>
-                <option value="p1">Nile River Resort</option>
-                <option value="p2">Sunrise Apartments</option>
+                {projects.map(p => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
               </select>
             </div>
         </div>
@@ -494,8 +635,8 @@ const NewEmployeePage = () => {
             <Icon name="arrow_back" />
           </button>
           <div>
-            <h2 className="text-2xl font-black text-slate-900">Add New Employee</h2>
-            <p className="text-sm text-slate-500 mt-0.5">Fill in the details to register a new team member</p>
+            <h2 className="text-2xl font-black text-slate-900">{isEditMode ? 'Edit Employee' : 'Add New Employee'}</h2>
+            <p className="text-sm text-slate-500 mt-0.5">{isEditMode ? 'Update employee information' : 'Fill in the details to register a new team member'}</p>
           </div>
         </div>
 

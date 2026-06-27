@@ -75,7 +75,6 @@ const ClientsPage = () => {
     <div className="flex-1 overflow-y-auto p-8 bg-[#f8f6f6]">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-black text-slate-900">Clients</h2>
           <p className="text-sm text-slate-500 mt-0.5">{clients.length} registered clients</p>
         </div>
         <button onClick={() => navigate('/clients/new')}

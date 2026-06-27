@@ -21,15 +21,27 @@ const EmployeeProfilePage = () => {
   const [documents, setDocuments] = useState([]);
   const [uploadingDoc, setUploadingDoc] = useState(false);
   const [payslips, setPayslips] = useState([]);
+  const [projects, setProjects] = useState([]);
 
   useEffect(() => {
+    // Reset state when id changes
+    console.log('Fetching employee with ID:', id);
+    setEmp(null);
+    setEditForm({});
+    setDocuments([]);
+    setPayslips([]);
+    setProjects([]);
+    setError(null);
+    setIsEditing(false);
+
     const fetchEmployee = async () => {
       try {
         setLoading(true);
         const response = await api.get(`/employees/${id}`);
+        console.log('API Response:', response.data.data);
         setEmp(response.data.data);
         setEditForm(response.data.data);
-        
+
         // Load documents from backend or localStorage
         if (response.data.data.collegeDocs && response.data.data.collegeDocs.length > 0) {
           setDocuments(response.data.data.collegeDocs);
@@ -46,6 +58,37 @@ const EmployeeProfilePage = () => {
           setPayslips(payslipsRes.data.data.filter(p => p.employeeId === id) || []);
         } catch (err) {
           console.error('Error fetching payslips:', err);
+        }
+
+        // Fetch projects
+        try {
+          const projectsRes = await api.get('/projects/');
+          const allProjects = projectsRes.data.data || [];
+          const employeeData = response.data.data;
+
+          if (!employeeData) {
+            setProjects([]);
+            return;
+          }
+
+          // Filter projects where this employee is assigned (check teamMembers or lead field)
+          let employeeProjects = allProjects.filter(p =>
+            p.lead === employeeData.employeeId || (p.teamMembers && p.teamMembers.includes(employeeData.employeeId))
+          );
+
+          // Also check if employee has projects array with project IDs
+          if (employeeData.projects && employeeData.projects.length > 0) {
+            const projectsById = allProjects.filter(p => employeeData.projects.includes(p.id || p._id));
+            // Merge both lists, avoiding duplicates
+            const existingIds = employeeProjects.map(p => p.id || p._id);
+            const additionalProjects = projectsById.filter(p => !existingIds.includes(p.id || p._id));
+            employeeProjects = [...employeeProjects, ...additionalProjects];
+          }
+
+          setProjects(employeeProjects);
+          console.log('Employee projects:', employeeProjects);
+        } catch (err) {
+          console.error('Error fetching projects:', err);
         }
       } catch (err) {
         console.error("Error fetching employee:", err);
@@ -232,20 +275,6 @@ const EmployeeProfilePage = () => {
           <div className="text-right">
             <p className="text-xs text-slate-500 uppercase font-bold tracking-wide">Employee ID</p>
             <p className="text-lg font-black text-slate-900 mt-0.5">{emp.id}</p>
-            {!isEditing ? (
-              <button onClick={handleEdit} className="mt-2 px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 transition-colors">
-                Edit Profile
-              </button>
-            ) : (
-              <div className="mt-2 flex gap-2">
-                <button onClick={handleSave} className="px-4 py-2 bg-green-600 text-white text-sm font-bold rounded hover:bg-green-700 transition-colors">
-                  Save
-                </button>
-                <button onClick={handleCancel} className="px-4 py-2 bg-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-300 transition-colors">
-                  Cancel
-                </button>
-              </div>
-            )}
           </div>
         </div>
         {/* Tabs */}
@@ -430,20 +459,25 @@ const EmployeeProfilePage = () => {
          {activeTab === 'projects' && (
              <div className="bg-white rounded-xl border border-slate-200 p-6">
                 <h3 className="font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">Project Assignment History</h3>
-                <div className="relative border-l-2 border-slate-200 ml-3 mt-6 space-y-8">
-                    <div className="relative pl-6">
-                        <span className="absolute -left-1.5 top-1 w-3 h-3 rounded-full bg-primary ring-4 ring-white"></span>
-                        <p className="text-xs font-bold text-primary mb-1">Current</p>
-                        <h4 className="text-sm font-bold text-slate-800">Nile River Resort Phase 2</h4>
-                        <p className="text-xs text-slate-500 mt-1">Lead Architect • Assigned on Oct 2023</p>
-                    </div>
-                    <div className="relative pl-6">
-                        <span className="absolute -left-1.5 top-1 w-3 h-3 rounded-full bg-slate-300 ring-4 ring-white"></span>
-                        <p className="text-xs font-bold text-slate-500 mb-1">Completed</p>
-                        <h4 className="text-sm font-bold text-slate-800">Sunrise Apartments</h4>
-                        <p className="text-xs text-slate-500 mt-1">Senior Architect • Jan 2022 - Sep 2023</p>
-                    </div>
-                </div>
+                {projects.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Icon name="folder_open" className="text-5xl text-slate-300 mx-auto" />
+                    <p className="text-slate-500 text-sm mt-3">No projects assigned to this employee.</p>
+                  </div>
+                ) : (
+                  <div className="relative border-l-2 border-slate-200 ml-3 mt-6 space-y-8">
+                    {projects.map((project, index) => (
+                      <div key={project.id} className="relative pl-6">
+                        <span className={`absolute -left-1.5 top-1 w-3 h-3 rounded-full ring-4 ring-white ${index === 0 ? 'bg-primary' : 'bg-slate-300'}`}></span>
+                        <p className={`text-xs font-bold mb-1 ${index === 0 ? 'text-primary' : 'text-slate-500'}`}>{index === 0 ? 'Current' : 'Previous'}</p>
+                        <h4 className="text-sm font-bold text-slate-800">{project.name}</h4>
+                        <p className="text-xs text-slate-500 mt-1">
+                          {project.lead === emp.employeeId ? 'Lead Architect' : 'Team Member'} • {project.type || 'Project'}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
             </div>
         )}
 
