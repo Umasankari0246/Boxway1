@@ -155,40 +155,42 @@ const SettingsPage = () => {
     <div className="flex-1 overflow-y-auto bg-[#f8f6f6]">
       <div className="flex h-full">
         {/* Settings Sidebar */}
-        <div className="w-56 shrink-0 border-r border-slate-200 bg-white p-4">
-          <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 px-3">Settings</p>
-          <nav className="space-y-0.5">
+        <div className="w-64 shrink-0 border-r border-slate-200 bg-white p-6">
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 px-4">Settings</p>
+          <nav className="space-y-1">
             {sections.map(s => (
               <button key={s} onClick={() => setActiveSection(s)}
-                className={`w-full text-left flex items-center px-3 py-2 rounded text-sm font-medium transition-colors ${activeSection === s ? 'bg-primary text-white' : 'text-slate-600 hover:bg-slate-100'}`}>
+                className={`w-full text-left flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeSection === s ? 'bg-primary text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'}`}>
                 {s}
               </button>
             ))}
           </nav>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-8">
+        <div className="flex-1 overflow-y-auto p-8 lg:p-10">
           {activeSection === 'Company' && (
-            <div className="max-w-2xl">
-              <h2 className="text-xl font-black text-slate-900 mb-6">Company Profile</h2>
-              <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-5">
-                <div className="flex items-center gap-5 pb-5 border-b border-slate-100">
-                  <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black text-2xl">B</div>
+            <div className="max-w-3xl">
+              <h2 className="text-2xl font-black text-slate-900 mb-8">Company Profile</h2>
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 space-y-6">
+                <div className="flex items-center gap-6 pb-6 border-b border-slate-100">
+                  <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-black text-3xl">B</div>
                   <div>
-                    <p className="font-bold text-slate-900">Company Logo</p>
-                    <p className="text-xs text-slate-400 mt-0.5">Upload a PNG or SVG (recommended: 200x200px)</p>
-                    <button className="mt-2 px-3 py-1.5 bg-slate-100 text-slate-700 text-xs font-bold rounded hover:bg-slate-200 transition-colors">Upload Logo</button>
+                    <p className="font-bold text-slate-900 text-base">Company Logo</p>
+                    <p className="text-sm text-slate-500 mt-1">Upload a PNG or SVG (recommended: 200x200px)</p>
+                    <button className="mt-3 px-4 py-2 bg-slate-100 text-slate-700 text-sm font-bold rounded-lg hover:bg-slate-200 transition-colors">Upload Logo</button>
                   </div>
                 </div>
-                {SETTINGS_SECTIONS[0].items.map(item => (
-                  <div key={item.label}>
-                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{item.label}</label>
-                    <input type={item.type} defaultValue={item.value} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
-                  </div>
-                ))}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {SETTINGS_SECTIONS[0].items.map(item => (
+                    <div key={item.label}>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{item.label}</label>
+                      <input type={item.type} defaultValue={item.value} className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" />
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="mt-4 flex justify-end">
-                <button onClick={handleSave} className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all">
+              <div className="mt-6 flex justify-end">
+                <button onClick={handleSave} className="flex items-center gap-2 px-6 py-3 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 shadow-sm transition-all">
                   {saved ? <><Icon name="check" className="text-lg" /> Saved!</> : 'Save Changes'}
                 </button>
               </div>
@@ -196,18 +198,18 @@ const SettingsPage = () => {
           )}
 
           {activeSection === 'Notifications' && (
-            <div className="max-w-2xl">
-              <h2 className="text-xl font-black text-slate-900 mb-6">Notification Preferences</h2>
-              <div className="bg-white rounded-xl border border-slate-200 shadow-sm divide-y divide-slate-100">
+            <div className="max-w-3xl">
+              <h2 className="text-2xl font-black text-slate-900 mb-8">Notification Preferences</h2>
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm divide-y divide-slate-100">
                 {SETTINGS_SECTIONS[1].toggles.map((t, i) => (
-                  <div key={t.label} className="flex items-center justify-between p-5">
+                  <div key={t.label} className="flex items-center justify-between p-6 hover:bg-slate-50 transition-colors">
                     <div>
-                      <p className="font-semibold text-sm text-slate-900">{t.label}</p>
-                      <p className="text-xs text-slate-400 mt-0.5">{t.sub}</p>
+                      <p className="font-bold text-sm text-slate-900">{t.label}</p>
+                      <p className="text-sm text-slate-500 mt-1">{t.sub}</p>
                     </div>
                     <button onClick={() => setToggles(prev => ({ ...prev, [i]: !prev[i] }))}
-                      className={`relative w-10 h-6 rounded-full transition-colors ${toggles[i] ? 'bg-primary' : 'bg-slate-300'}`}>
-                      <span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${toggles[i] ? 'right-1' : 'left-1'}`} />
+                      className={`relative w-11 h-6 rounded-full transition-colors focus:outline-none ${toggles[i] ? 'bg-primary' : 'bg-slate-300'}`}>
+                      <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform ${toggles[i] ? 'translate-x-5 left-0.5' : 'translate-x-0 left-0.5'}`} style={{ transform: toggles[i] ? 'translateX(20px)' : 'translateX(0)' }} />
                     </button>
                   </div>
                 ))}
@@ -216,46 +218,48 @@ const SettingsPage = () => {
           )}
 
           {activeSection === 'Appearance' && (
-            <div className="max-w-2xl">
-              <h2 className="text-xl font-black text-slate-900 mb-6">Appearance & Localization</h2>
-              <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-5">
-                <div>
-                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Theme</label>
-                  <select value={appearance.theme} onChange={(e) => handleAppearanceChange('theme', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary">
-                    <option>Light</option>
-                    <option>Dark</option>
-                    <option>Auto</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Language</label>
-                  <select value={appearance.language} onChange={(e) => handleAppearanceChange('language', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary">
-                    <option>English</option>
-                    <option>Spanish</option>
-                    <option>French</option>
-                    <option>German</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Date Format</label>
-                  <select value={appearance.dateFormat} onChange={(e) => handleAppearanceChange('dateFormat', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary">
-                    <option>MM/DD/YYYY</option>
-                    <option>DD/MM/YYYY</option>
-                    <option>YYYY-MM-DD</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Currency</label>
-                  <select value={appearance.currency} onChange={(e) => handleAppearanceChange('currency', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary">
-                    <option>USD ($)</option>
-                    <option>EUR (€)</option>
-                    <option>GBP (£)</option>
-                    <option>INR (₹)</option>
-                  </select>
+            <div className="max-w-3xl">
+              <h2 className="text-2xl font-black text-slate-900 mb-8">Appearance & Localization</h2>
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Theme</label>
+                    <select value={appearance.theme} onChange={(e) => handleAppearanceChange('theme', e.target.value)} className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors">
+                      <option>Light</option>
+                      <option>Dark</option>
+                      <option>Auto</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Language</label>
+                    <select value={appearance.language} onChange={(e) => handleAppearanceChange('language', e.target.value)} className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors">
+                      <option>English</option>
+                      <option>Spanish</option>
+                      <option>French</option>
+                      <option>German</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Date Format</label>
+                    <select value={appearance.dateFormat} onChange={(e) => handleAppearanceChange('dateFormat', e.target.value)} className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors">
+                      <option>MM/DD/YYYY</option>
+                      <option>DD/MM/YYYY</option>
+                      <option>YYYY-MM-DD</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Currency</label>
+                    <select value={appearance.currency} onChange={(e) => handleAppearanceChange('currency', e.target.value)} className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors">
+                      <option>USD ($)</option>
+                      <option>EUR (€)</option>
+                      <option>GBP (£)</option>
+                      <option>INR (₹)</option>
+                    </select>
+                  </div>
                 </div>
               </div>
-              <div className="mt-4 flex justify-end">
-                <button onClick={handleAppearanceSave} className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all">
+              <div className="mt-6 flex justify-end">
+                <button onClick={handleAppearanceSave} className="flex items-center gap-2 px-6 py-3 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 shadow-sm transition-all">
                   {saved ? <><Icon name="check" className="text-lg" /> Saved!</> : 'Save Changes'}
                 </button>
               </div>
@@ -263,61 +267,61 @@ const SettingsPage = () => {
           )}
 
           {activeSection === 'Security' && (
-            <div className="max-w-2xl">
-              <h2 className="text-xl font-black text-slate-900 mb-6">Security Settings</h2>
-              <div className="space-y-4">
-                <div className="bg-white rounded-xl border border-slate-200 p-6">
-                  <h3 className="font-bold text-slate-900 mb-4">Change Password</h3>
-                  <div className="space-y-4">
+            <div className="max-w-3xl">
+              <h2 className="text-2xl font-black text-slate-900 mb-8">Security Settings</h2>
+              <div className="space-y-6">
+                <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
+                  <h3 className="font-black text-lg text-slate-900 mb-6">Change Password</h3>
+                  <div className="space-y-5">
                     {['Current Password', 'New Password', 'Confirm New Password'].map(f => (
                       <div key={f}>
-                        <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{f}</label>
-                        <input type="password" className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary" />
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{f}</label>
+                        <input type="password" className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors" />
                       </div>
                     ))}
                   </div>
-                  <button className="mt-4 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 transition-colors">Update Password</button>
+                  <button className="mt-6 px-6 py-3 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors shadow-sm">Update Password</button>
                 </div>
-                <div className="bg-white rounded-xl border border-slate-200 p-6">
-                  <h3 className="font-bold text-slate-900 mb-2">Two-Factor Authentication</h3>
-                  <p className="text-sm text-slate-500 mb-4">Add an extra layer of security to your account.</p>
-                  <button className="px-5 py-2.5 border border-slate-200 text-slate-700 text-sm font-semibold rounded hover:bg-slate-50">Enable 2FA</button>
+                <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
+                  <h3 className="font-black text-lg text-slate-900 mb-2">Two-Factor Authentication</h3>
+                  <p className="text-sm text-slate-500 mb-6">Add an extra layer of security to your account.</p>
+                  <button className="px-6 py-3 border border-slate-200 text-slate-700 text-sm font-bold rounded-lg hover:bg-slate-50 transition-colors">Enable 2FA</button>
                 </div>
               </div>
             </div>
           )}
 
           {activeSection === 'Users & Access' && (
-            <div className="max-w-4xl">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-black text-slate-900">Users & Access</h2>
-                <button onClick={() => setShowAddUserModal(true)} className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
+            <div className="max-w-5xl">
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-2xl font-black text-slate-900">Users & Access</h2>
+                <button onClick={() => setShowAddUserModal(true)} className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors shadow-sm">
                   <Icon name="add" className="text-lg" /> Add User
                 </button>
               </div>
-              <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                <table className="w-full">
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <table className="w-full text-left border-collapse">
                   <thead className="bg-slate-50 border-b border-slate-200">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Name</th>
-                      <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Email</th>
-                      <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Role</th>
-                      <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Joined</th>
-                      <th className="px-6 py-3 text-right text-xs font-bold text-slate-600 uppercase tracking-wider">Actions</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Name</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Email</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Role</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Joined</th>
+                      <th className="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {users.map(user => (
                       <tr key={user.id} className="hover:bg-slate-50 transition-colors">
-                        <td className="px-6 py-3 text-sm font-semibold text-slate-900">{user.name}</td>
-                        <td className="px-6 py-3 text-sm text-slate-600">{user.email}</td>
-                        <td className="px-6 py-3 text-sm"><span className="px-2.5 py-1 bg-primary/10 text-primary text-xs font-bold rounded">{user.role}</span></td>
-                        <td className="px-6 py-3 text-sm"><span className={`px-2.5 py-1 text-xs font-bold rounded ${user.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}`}>{user.status}</span></td>
-                        <td className="px-6 py-3 text-sm text-slate-600">{user.joinedDate}</td>
-                        <td className="px-6 py-3 text-right">
-                          <button onClick={() => handleEditUser(user.id)} className="text-primary font-semibold text-xs hover:underline mr-3 transition-colors">Edit</button>
-                          <button onClick={() => handleRemoveUser(user.id)} className="text-red-600 font-semibold text-xs hover:underline transition-colors">Remove</button>
+                        <td className="px-6 py-4 text-sm font-bold text-slate-900">{user.name}</td>
+                        <td className="px-6 py-4 text-sm text-slate-600">{user.email}</td>
+                        <td className="px-6 py-4 text-sm"><span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-lg">{user.role}</span></td>
+                        <td className="px-6 py-4 text-sm"><span className={`px-3 py-1 text-xs font-bold rounded-lg ${user.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}`}>{user.status}</span></td>
+                        <td className="px-6 py-4 text-sm text-slate-500">{user.joinedDate}</td>
+                        <td className="px-6 py-4 text-right">
+                          <button onClick={() => handleEditUser(user.id)} className="text-primary font-bold text-sm hover:underline mr-4 transition-colors">Edit</button>
+                          <button onClick={() => handleRemoveUser(user.id)} className="text-red-600 font-bold text-sm hover:underline transition-colors">Remove</button>
                         </td>
                       </tr>
                     ))}
@@ -328,23 +332,23 @@ const SettingsPage = () => {
               {/* Add User Modal */}
               {showAddUserModal && (
                 <div className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm flex items-center justify-center z-50">
-                  <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4">
-                    <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-lg font-black text-slate-900">Add New User</h3>
-                      <button onClick={() => setShowAddUserModal(false)} className="text-slate-400 hover:text-slate-600 text-2xl">×</button>
+                  <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
+                    <div className="flex items-center justify-between mb-8">
+                      <h3 className="text-xl font-black text-slate-900">Add New User</h3>
+                      <button onClick={() => setShowAddUserModal(false)} className="text-slate-400 hover:text-slate-600 text-3xl leading-none">&times;</button>
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-5">
                       <div>
-                        <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Full Name</label>
-                        <input type="text" value={newUserForm.name} onChange={(e) => setNewUserForm({...newUserForm, name: e.target.value})} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="John Doe" />
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Full Name</label>
+                        <input type="text" value={newUserForm.name} onChange={(e) => setNewUserForm({...newUserForm, name: e.target.value})} className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="John Doe" />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Email</label>
-                        <input type="email" value={newUserForm.email} onChange={(e) => setNewUserForm({...newUserForm, email: e.target.value})} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="john@example.com" />
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email</label>
+                        <input type="email" value={newUserForm.email} onChange={(e) => setNewUserForm({...newUserForm, email: e.target.value})} className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="john@example.com" />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Role</label>
-                        <select value={newUserForm.role} onChange={(e) => setNewUserForm({...newUserForm, role: e.target.value})} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary">
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Role</label>
+                        <select value={newUserForm.role} onChange={(e) => setNewUserForm({...newUserForm, role: e.target.value})} className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors">
                           <option>Admin</option>
                           <option>Manager</option>
                           <option>Employee</option>
@@ -352,9 +356,9 @@ const SettingsPage = () => {
                         </select>
                       </div>
                     </div>
-                    <div className="mt-6 flex gap-3 justify-end">
-                      <button onClick={() => setShowAddUserModal(false)} className="px-4 py-2.5 border border-slate-200 text-slate-700 font-bold text-sm rounded hover:bg-slate-50 transition-colors">Cancel</button>
-                      <button onClick={handleAddUser} className="px-4 py-2.5 bg-primary text-white font-bold text-sm rounded hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">Add User</button>
+                    <div className="mt-8 flex gap-3 justify-end">
+                      <button onClick={() => setShowAddUserModal(false)} className="px-5 py-2.5 border border-slate-200 text-slate-700 font-bold text-sm rounded-lg hover:bg-slate-50 transition-colors">Cancel</button>
+                      <button onClick={handleAddUser} className="px-5 py-2.5 bg-primary text-white font-bold text-sm rounded-lg hover:bg-primary/90 transition-colors shadow-sm">Add User</button>
                     </div>
                   </div>
                 </div>
@@ -364,21 +368,21 @@ const SettingsPage = () => {
 
           {activeSection === 'Integrations' && (
             <div className="max-w-4xl">
-              <h2 className="text-xl font-black text-slate-900 mb-6">App Integrations</h2>
-              <div className="grid grid-cols-1 gap-4">
+              <h2 className="text-2xl font-black text-slate-900 mb-8">App Integrations</h2>
+              <div className="grid grid-cols-1 gap-5">
                 {integrations.map(integration => (
-                  <div key={integration.name} className="bg-white rounded-xl border border-slate-200 p-5 flex items-center justify-between hover:shadow-md transition-shadow">
-                    <div className="flex items-center gap-4">
-                      <div className="text-3xl">{integration.icon}</div>
+                  <div key={integration.name} className="bg-white rounded-2xl border border-slate-200 p-6 flex items-center justify-between hover:shadow-sm transition-shadow">
+                    <div className="flex items-center gap-5">
+                      <div className="text-4xl">{integration.icon}</div>
                       <div>
-                        <h3 className="font-bold text-sm text-slate-900">{integration.name}</h3>
-                        <p className="text-xs text-slate-500 mt-0.5">{integration.description}</p>
-                        <p className="text-xs text-slate-400 mt-1">Last sync: {integration.lastSync}</p>
+                        <h3 className="font-bold text-base text-slate-900">{integration.name}</h3>
+                        <p className="text-sm text-slate-500 mt-1">{integration.description}</p>
+                        <p className="text-xs font-medium text-slate-400 mt-2">Last sync: {integration.lastSync}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className={`px-3 py-1.5 text-xs font-bold rounded ${integration.status === 'Connected' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}`}>{integration.status}</span>
-                      <button onClick={() => handleToggleIntegration(integration.name)} className={`px-4 py-2.5 text-xs font-bold rounded transition-colors ${integration.status === 'Connected' ? 'bg-slate-100 text-slate-700 hover:bg-slate-200' : 'bg-primary text-white hover:bg-primary/90'}`}>
+                    <div className="flex items-center gap-4">
+                      <span className={`px-3 py-1.5 text-xs font-bold rounded-lg ${integration.status === 'Connected' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}`}>{integration.status}</span>
+                      <button onClick={() => handleToggleIntegration(integration.name)} className={`px-5 py-2.5 text-sm font-bold rounded-lg transition-colors min-w-[120px] ${integration.status === 'Connected' ? 'border border-slate-200 text-slate-700 hover:bg-slate-50' : 'bg-primary text-white hover:bg-primary/90 shadow-sm'}`}>
                         {integration.status === 'Connected' ? 'Disconnect' : 'Connect'}
                       </button>
                     </div>
@@ -390,49 +394,54 @@ const SettingsPage = () => {
 
           {activeSection === 'Billing' && (
             <div className="max-w-4xl">
-              <h2 className="text-xl font-black text-slate-900 mb-6">Billing & Plan</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-                <div className="bg-white rounded-xl border border-slate-200 p-6">
-                  <p className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Current Plan</p>
-                  <h3 className="text-2xl font-black text-slate-900 mb-1">{billingInfo.plan}</h3>
-                  <p className="text-lg font-bold text-primary mb-4">{billingInfo.price}</p>
-                  <p className="text-sm text-slate-600 mb-4">Status: <span className="font-bold text-green-600">{billingInfo.status}</span></p>
-                  <p className="text-sm text-slate-500 mb-4">Next billing date: {billingInfo.nextBillingDate}</p>
-                  <button onClick={() => setShowPlanModal(true)} className="w-full px-4 py-2.5 border border-primary text-primary font-bold text-sm rounded hover:bg-primary/5 transition-colors">Change Plan</button>
+              <h2 className="text-2xl font-black text-slate-900 mb-8">Billing & Plan</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm flex flex-col h-full">
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Current Plan</p>
+                  <h3 className="text-3xl font-black text-slate-900 mb-1">{billingInfo.plan}</h3>
+                  <p className="text-xl font-bold text-primary mb-6">{billingInfo.price}</p>
+                  <div className="space-y-2 mb-8 flex-1">
+                    <p className="text-sm text-slate-600">Status: <span className="font-bold text-green-600">{billingInfo.status}</span></p>
+                    <p className="text-sm text-slate-600">Next billing date: <span className="font-semibold">{billingInfo.nextBillingDate}</span></p>
+                  </div>
+                  <button onClick={() => setShowPlanModal(true)} className="w-full px-5 py-3 border border-slate-200 text-slate-800 font-bold text-sm rounded-lg hover:bg-slate-50 transition-colors">Change Plan</button>
                 </div>
-                <div className="bg-white rounded-xl border border-slate-200 p-6">
-                  <p className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-4">Plan Features</p>
-                  <ul className="space-y-2">
+                <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm h-full">
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-5">Plan Features</p>
+                  <ul className="space-y-4">
                     {billingInfo.features.map(feature => (
-                      <li key={feature} className="flex items-center gap-2 text-sm text-slate-700">
-                        <Icon name="check" className="text-green-600 font-bold text-sm" /> {feature}
+                      <li key={feature} className="flex items-center gap-3 text-sm font-medium text-slate-700">
+                        <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                          <Icon name="check" className="text-green-600 font-bold text-[10px]" />
+                        </div>
+                        {feature}
                       </li>
                     ))}
                   </ul>
                 </div>
               </div>
-              <div className="bg-white rounded-xl border border-slate-200">
-                <div className="px-6 py-4 border-b border-slate-100 bg-slate-50">
-                  <h3 className="font-bold text-sm text-slate-900">Billing History</h3>
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div className="px-6 py-5 border-b border-slate-200 bg-slate-50">
+                  <h3 className="font-bold text-base text-slate-900">Billing History</h3>
                 </div>
-                <table className="w-full">
-                  <thead className="border-b border-slate-100">
+                <table className="w-full text-left border-collapse">
+                  <thead className="border-b border-slate-200">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Invoice</th>
-                      <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Date</th>
-                      <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Amount</th>
-                      <th className="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-3 text-right text-xs font-bold text-slate-600 uppercase tracking-wider">Action</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Invoice</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Amount</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {billingInfo.invoices.map(invoice => (
                       <tr key={invoice.id} className="hover:bg-slate-50 transition-colors">
-                        <td className="px-6 py-3 text-sm font-semibold text-slate-900">{invoice.id}</td>
-                        <td className="px-6 py-3 text-sm text-slate-600">{invoice.date}</td>
-                        <td className="px-6 py-3 text-sm font-semibold text-slate-900">{invoice.amount}</td>
-                        <td className="px-6 py-3 text-sm"><span className="px-2.5 py-1 bg-green-100 text-green-700 text-xs font-bold rounded">{invoice.status}</span></td>
-                        <td className="px-6 py-3 text-right"><button onClick={() => showToast(`Downloading invoice ${invoice.id}...`)} className="text-primary font-bold text-xs hover:underline transition-colors">Download</button></td>
+                        <td className="px-6 py-4 text-sm font-bold text-slate-900">{invoice.id}</td>
+                        <td className="px-6 py-4 text-sm text-slate-600">{invoice.date}</td>
+                        <td className="px-6 py-4 text-sm font-bold text-slate-900">{invoice.amount}</td>
+                        <td className="px-6 py-4 text-sm"><span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-lg">{invoice.status}</span></td>
+                        <td className="px-6 py-4 text-right"><button onClick={() => showToast(`Downloading invoice ${invoice.id}...`)} className="text-primary font-bold text-sm hover:underline transition-colors">Download</button></td>
                       </tr>
                     ))}
                   </tbody>
@@ -442,31 +451,34 @@ const SettingsPage = () => {
               {/* Plan Selection Modal */}
               {showPlanModal && (
                 <div className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm flex items-center justify-center z-50">
-                  <div className="bg-white rounded-xl shadow-2xl p-8 max-w-2xl w-full mx-4">
-                    <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-xl font-black text-slate-900">Select a Plan</h3>
-                      <button onClick={() => setShowPlanModal(false)} className="text-slate-400 hover:text-slate-600 text-2xl">×</button>
+                  <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-4xl w-full mx-4">
+                    <div className="flex items-center justify-between mb-8">
+                      <h3 className="text-2xl font-black text-slate-900">Select a Plan</h3>
+                      <button onClick={() => setShowPlanModal(false)} className="text-slate-400 hover:text-slate-600 text-3xl leading-none">&times;</button>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                       {availablePlans.map(plan => (
-                        <div key={plan.name} className={`border-2 rounded-xl p-5 cursor-pointer transition-all ${billingInfo.plan === plan.name ? 'border-primary bg-primary/5' : 'border-slate-200 hover:border-primary'}`}>
-                          <h4 className="font-bold text-slate-900 mb-1">{plan.name}</h4>
-                          <p className="text-lg font-black text-primary mb-3">{plan.price}</p>
-                          <ul className="space-y-1.5 mb-4">
+                        <div key={plan.name} className={`border-2 rounded-2xl p-6 cursor-pointer transition-all flex flex-col ${billingInfo.plan === plan.name ? 'border-primary bg-primary/5 shadow-sm' : 'border-slate-200 hover:border-slate-300'}`}>
+                          <h4 className="font-bold text-xl text-slate-900 mb-2">{plan.name}</h4>
+                          <p className="text-2xl font-black text-primary mb-6">{plan.price}</p>
+                          <ul className="space-y-3 mb-8 flex-1">
                             {plan.features.map(feature => (
-                              <li key={feature} className="text-xs text-slate-600 flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 bg-primary rounded-full"></span> {feature}
+                              <li key={feature} className="text-sm text-slate-700 flex items-start gap-3">
+                                <div className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center shrink-0 mt-0.5">
+                                  <Icon name="check" className="text-slate-500 font-bold text-[10px]" />
+                                </div>
+                                {feature}
                               </li>
                             ))}
                           </ul>
-                          <button onClick={() => handleSelectPlan(plan)} className={`w-full px-4 py-2 rounded font-bold text-sm transition-colors ${billingInfo.plan === plan.name ? 'bg-primary text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>
-                            {billingInfo.plan === plan.name ? 'Current Plan' : 'Select'}
+                          <button onClick={() => handleSelectPlan(plan)} className={`w-full px-5 py-3 rounded-lg font-bold text-sm transition-colors ${billingInfo.plan === plan.name ? 'bg-primary text-white shadow-sm' : 'border border-slate-200 text-slate-700 hover:bg-slate-50'}`}>
+                            {billingInfo.plan === plan.name ? 'Current Plan' : 'Select Plan'}
                           </button>
                         </div>
                       ))}
                     </div>
                     <div className="flex gap-3 justify-end">
-                      <button onClick={() => setShowPlanModal(false)} className="px-4 py-2.5 border border-slate-200 text-slate-700 font-bold text-sm rounded hover:bg-slate-50 transition-colors">Close</button>
+                      <button onClick={() => setShowPlanModal(false)} className="px-6 py-3 border border-slate-200 text-slate-700 font-bold text-sm rounded-lg hover:bg-slate-50 transition-colors">Close</button>
                     </div>
                   </div>
                 </div>
