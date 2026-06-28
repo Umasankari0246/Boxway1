@@ -1,7 +1,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInvoiceStore } from '../store/invoiceStore';
+import axios from 'axios';
 import Icon from "../components/ui/Icon.jsx"
+
+const api = axios.create({
+  baseURL: window.location.hostname === 'localhost'
+    ? 'http://localhost:8000/api'
+    : 'https://boxxway.onrender.com/api'
+});
 
 const ReviewInvoicePage = () => {
   const navigate = useNavigate();
@@ -19,11 +26,10 @@ const ReviewInvoicePage = () => {
   const handleBack = () => navigate('/invoices/new');
 
   const handleSaveDraft = () => {
-    // Save invoice as draft - for now just show alert
     alert('Invoice saved as draft!');
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     // Generate and save the invoice
     const subtotal = invoiceData.items.reduce((acc, item) => {
       const amount = item.qty * item.rate;
@@ -35,22 +41,39 @@ const ReviewInvoicePage = () => {
     const sgst = subtotal * 0.09;
     const total = subtotal + cgst + sgst;
 
+    const invoiceNumber = generateInvoiceNumber();
+
     const newInvoice = {
-      id: generateInvoiceNumber(),
-      client: invoiceData.clientName || 'Unknown Client',
-      project: invoiceData.projectLink || 'Unknown Project',
-      date: invoiceData.issueDate || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      id: invoiceNumber,
+      invoiceId: invoiceNumber,
+      clientId: invoiceData.clientId || '',
+      client: invoiceData.clientName || '',
+      projectId: invoiceData.projectId || '',
+      project: invoiceData.projectLink || '',
+      date: invoiceData.issueDate || '',
       amount: total,
-      status: 'Pending'
+      status: 'Pending',
+      dueDate: invoiceData.dueDate || '',
+      notes: invoiceData.notes || '',
+      paymentTerms: invoiceData.paymentTerms || '',
+      clientName: invoiceData.clientName || '',
+      billingAddress: invoiceData.billingAddress || '',
+      gstin: invoiceData.gstin || '',
+      contactPerson: invoiceData.contactPerson || '',
+      items: invoiceData.items || [],
+      attachments: invoiceData.attachments || [],
+      authorizedSignature: invoiceData.authorizedSignature || ''
     };
 
-    // Save to localStorage
-    const existingInvoices = JSON.parse(localStorage.getItem('invoices') || '[]');
-    localStorage.setItem('invoices', JSON.stringify([newInvoice, ...existingInvoices]));
-
-    alert('Invoice generated successfully!');
-    resetInvoice();
-    navigate('/invoices');
+    try {
+      await api.post('/invoices/', newInvoice);
+        alert('Invoice generated successfully!');
+        resetInvoice();
+        navigate('/invoices');
+    } catch (err) {
+      console.error('Error generating invoice:', err);
+      alert('Failed to generate invoice. Please try again.');
+    }
   };
 
   const subtotal = invoiceData.items.reduce((acc, item) => {
@@ -97,22 +120,22 @@ const ReviewInvoicePage = () => {
           <div>
             <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Bill To:</h4>
             <div className="text-slate-900">
-              <p className="font-bold text-lg">{invoiceData.clientName || 'Velocity Media Group'}</p>
+              <p className="font-bold text-lg">{invoiceData.clientName || ''}</p>
               <div className="text-sm text-slate-500 mt-1 space-y-0.5">
-                <p>{invoiceData.contactPerson || 'Sarah Jenkins'}</p>
-                <p>{invoiceData.billingAddress || '4500 Sunset Blvd'}</p>
-                <p>GSTIN: {invoiceData.gstin || '-'}</p>
+                  <p>{invoiceData.contactPerson || ''}</p>
+                  <p>{invoiceData.billingAddress || ''}</p>
+                  <p>GSTIN: {invoiceData.gstin || ''}</p>
               </div>
             </div>
           </div>
           <div className="flex flex-col justify-end items-end text-right">
             <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
               <span className="text-slate-400 font-medium">Issue Date:</span>
-              <span className="text-slate-900 font-semibold">{invoiceData.issueDate || 'Oct 24, 2023'}</span>
+              <span className="text-slate-900 font-semibold">{invoiceData.issueDate || ''}</span>
               <span className="text-slate-400 font-medium">Due Date:</span>
-              <span className="text-slate-900 font-semibold">{invoiceData.dueDate || 'Nov 07, 2023'}</span>
+              <span className="text-slate-900 font-semibold">{invoiceData.dueDate || ''}</span>
               <span className="text-slate-400 font-medium">Project ID:</span>
-              <span className="text-slate-900 font-semibold">{invoiceData.projectLink || 'PRJ-VMG-02'}</span>
+              <span className="text-slate-900 font-semibold">{invoiceData.projectLink || ''}</span>
             </div>
           </div>
         </div>
@@ -174,13 +197,13 @@ const ReviewInvoicePage = () => {
           <div className="grid grid-cols-2 gap-12">
             <div>
               <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 mb-4">Payment Terms</h4>
-              <p className="text-xs text-slate-500 leading-relaxed italic">Please make payments within 15 days of receiving this invoice. Bank transfer details: Boxway Studio LLC, Account ending in 4920, Routing 021000021.</p>
+              <p className="text-xs text-slate-500 leading-relaxed italic">{invoiceData.paymentTerms || ''}</p>
             </div>
             <div className="text-right">
               <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 mb-4">Declaration</h4>
-              <p className="text-xs text-slate-500 leading-relaxed italic">I hereby certify that the services described in this invoice have been performed and that all charges are true and correct.</p>
+              <p className="text-xs text-slate-500 leading-relaxed italic">{invoiceData.notes || ''}</p>
               <div className="mt-6 inline-block border-b border-slate-900 w-48 h-10"></div>
-              <p className="text-[10px] uppercase font-bold text-slate-400 mt-2">Authorized Signature</p>
+              <p className="text-[10px] uppercase font-bold text-slate-400 mt-2">{invoiceData.authorizedSignature || ''}</p>
             </div>
           </div>
         </div>

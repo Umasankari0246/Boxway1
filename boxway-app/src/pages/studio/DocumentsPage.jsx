@@ -7,6 +7,17 @@ const api = axios.create({
     ? 'http://localhost:8000/api'
     : 'https://boxxway.onrender.com/api'
 });
+
+const readFileAsDataUrl = (file) => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = () => reject(new Error('Failed to read file'));
+  reader.readAsDataURL(file);
+});
+
+const getEntityId = (entity) => entity?.id || entity?._id || entity?.projectId || entity?.clientId || '';
+const getProjectLabel = (project) => project?.name || project?.title || project?.projectName || 'Untitled Project';
+const getClientLabel = (client) => client?.name || client?.companyName || client?.clientName || 'Untitled Client';
 /* ── Folder/Type config matching client's drive structure ─────────────────── */
 const FOLDER_TYPES = [
   { key: 'Site',          label: 'Site',              icon: 'terrain',          color: 'bg-amber-50 text-amber-700',   exts: 'DWG · PDF' },
@@ -28,13 +39,35 @@ const CATEGORY_FILTERS = ['All', 'Site', 'Scheme/CAD', 'Email Out', 'Email In', 
 const LABEL = 'text-[9px] uppercase tracking-[0.15em] font-black text-zinc-400';
 
 /* ── Upload Modal ─────────────────────────────────────────────────────────── */
-const UploadModal = ({ onClose, onUpload }) => {
+const UploadModal = ({ onClose, onUpload, projects, clients }) => {
   const [form, setForm] = useState({
-    projectCode: 'BW24-01BFN-DGL', project: '', client: '', folderType: 'Site',
+    projectCode: '', projectId: '', project: '', clientId: '', client: '', folderType: 'Site',
     subFolder: '', version: '1.0', description: '', file: null,
   });
   const set = (f, v) => setForm(p => ({ ...p, [f]: v }));
   const ft = FOLDER_TYPES.find(f => f.key === form.folderType);
+
+  const handleProjectChange = (projectId) => {
+    const project = projects.find(item => getEntityId(item) === projectId);
+    const linkedClient = clients.find(item => getEntityId(item) === project?.clientId || getClientLabel(item) === project?.client);
+    setForm(prev => ({
+      ...prev,
+      projectId,
+      project: project ? getProjectLabel(project) : '',
+      projectCode: project?.projectId || project?.projectCode || projectId,
+      clientId: linkedClient ? getEntityId(linkedClient) : '',
+      client: linkedClient ? getClientLabel(linkedClient) : (project?.client || ''),
+    }));
+  };
+
+  const handleClientChange = (clientId) => {
+    const client = clients.find(item => getEntityId(item) === clientId);
+    setForm(prev => ({
+      ...prev,
+      clientId,
+      client: client ? getClientLabel(client) : '',
+    }));
+  };
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
@@ -76,16 +109,16 @@ const UploadModal = ({ onClose, onUpload }) => {
               </div>
               <div>
                 <label className={LABEL + ' mb-1.5 block'}>Project</label>
-                <select value={form.project} onChange={e => set('project', e.target.value)} className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary">
+                <select value={form.projectId} onChange={e => handleProjectChange(e.target.value)} className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary">
                   <option value="">Select project...</option>
-                  {['Meridian Highrise', 'Horizon Cultural Hub', 'Savoy Boutique Hotel', 'Greenfield Estate', 'City Core Retail'].map(p => <option key={p}>{p}</option>)}
+                  {projects.map(p => <option key={getEntityId(p)} value={getEntityId(p)}>{getProjectLabel(p)}</option>)}
                 </select>
               </div>
               <div>
                 <label className={LABEL + ' mb-1.5 block'}>Client</label>
-                <select value={form.client} onChange={e => set('client', e.target.value)} className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary">
+                <select value={form.clientId} onChange={e => handleClientChange(e.target.value)} className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary">
                   <option value="">Select client...</option>
-                  {['Meridian Properties', 'Horizon Developments', 'Savoy Hospitality', 'Greenfield Trust', 'City Core Ltd'].map(c => <option key={c}>{c}</option>)}
+                  {clients.map(c => <option key={getEntityId(c)} value={getEntityId(c)}>{getClientLabel(c)}</option>)}
                 </select>
               </div>
               <div>
@@ -180,11 +213,13 @@ const UploadModal = ({ onClose, onUpload }) => {
 };
 
 /* ── Edit Modal ─────────────────────────────────────────────────────────── */
-const EditModal = ({ doc, onClose, onUpdate }) => {
+const EditModal = ({ doc, onClose, onUpdate, projects, clients }) => {
   const [form, setForm] = useState({
     projectCode: doc.projectCode || '',
     project: doc.project || '',
+    projectId: doc.projectId || '',
     client: doc.client || '',
+    clientId: doc.clientId || '',
     folderType: doc.folderType || 'Site',
     version: doc.version || '1.0',
     description: doc.description || '',
@@ -192,9 +227,32 @@ const EditModal = ({ doc, onClose, onUpdate }) => {
   const set = (f, v) => setForm(p => ({ ...p, [f]: v }));
   const ft = FOLDER_TYPES.find(f => f.key === form.folderType);
 
+  const handleProjectChange = (projectId) => {
+    const project = projects.find(item => getEntityId(item) === projectId);
+    const linkedClient = clients.find(item => getEntityId(item) === project?.clientId || getClientLabel(item) === project?.client);
+    setForm(prev => ({
+      ...prev,
+      projectId,
+      project: project ? getProjectLabel(project) : '',
+      projectCode: project?.projectId || project?.projectCode || projectId,
+      clientId: linkedClient ? getEntityId(linkedClient) : '',
+      client: linkedClient ? getClientLabel(linkedClient) : (project?.client || ''),
+    }));
+  };
+
+  const handleClientChange = (clientId) => {
+    const client = clients.find(item => getEntityId(item) === clientId);
+    setForm(prev => ({
+      ...prev,
+      clientId,
+      client: client ? getClientLabel(client) : '',
+    }));
+  };
+
   const handleUpdate = () => {
     onUpdate({
       id: doc.id,
+      ...doc,
       ...form,
     });
   };
@@ -224,16 +282,16 @@ const EditModal = ({ doc, onClose, onUpdate }) => {
               </div>
               <div>
                 <label className={LABEL + ' mb-1.5 block'}>Project</label>
-                <select value={form.project} onChange={e => set('project', e.target.value)} className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary">
+                <select value={form.projectId} onChange={e => handleProjectChange(e.target.value)} className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary">
                   <option value="">Select project...</option>
-                  {['Meridian Highrise', 'Horizon Cultural Hub', 'Savoy Boutique Hotel', 'Greenfield Estate', 'City Core Retail'].map(p => <option key={p}>{p}</option>)}
+                  {projects.map(p => <option key={getEntityId(p)} value={getEntityId(p)}>{getProjectLabel(p)}</option>)}
                 </select>
               </div>
               <div>
                 <label className={LABEL + ' mb-1.5 block'}>Client</label>
-                <select value={form.client} onChange={e => set('client', e.target.value)} className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary">
+                <select value={form.clientId} onChange={e => handleClientChange(e.target.value)} className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary">
                   <option value="">Select client...</option>
-                  {['Meridian Properties', 'Horizon Developments', 'Savoy Hospitality', 'Greenfield Trust', 'City Core Ltd'].map(c => <option key={c}>{c}</option>)}
+                  {clients.map(c => <option key={getEntityId(c)} value={getEntityId(c)}>{getClientLabel(c)}</option>)}
                 </select>
               </div>
             </div>
@@ -295,25 +353,17 @@ const DocDrawer = ({ doc, onClose }) => {
     setNewText('');
   };
 
-  const handleOpenInBrowser = () => {
-    // Create a dummy content and open in new tab
-    const content = `Document: ${doc.name}\nType: ${doc.type}\nSize: ${doc.size}\nProject: ${doc.project}\nClient: ${doc.client}\nVersion: ${doc.version}\nUploaded by: ${doc.uploadedBy}\nDate: ${doc.uploadDate}`;
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    window.open(url, '_blank');
-  };
-
   const handleDrawerDownload = () => {
-    const content = `Document: ${doc.name}\nType: ${doc.type}\nSize: ${doc.size}\nProject: ${doc.project}\nClient: ${doc.client}\nVersion: ${doc.version}\nUploaded by: ${doc.uploadedBy}\nDate: ${doc.uploadDate}`;
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
+    if (!doc.fileUrl) {
+      alert('No uploaded file is available for this document yet.');
+      return;
+    }
     const a = document.createElement('a');
-    a.href = url;
-    a.download = doc.name;
+    a.href = doc.fileUrl;
+    a.download = doc.fileName || doc.name || 'document';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
   };
 
   const handleDrawerEdit = () => {
@@ -345,9 +395,6 @@ const DocDrawer = ({ doc, onClose }) => {
         <div className={`mx-6 mt-5 flex flex-col items-center justify-center h-44 ${ft.color} border border-current/10 relative overflow-hidden`}>
           <Icon name={ft.icon} className="text-[56px] opacity-20" />
           <p className="text-[10px] font-black uppercase tracking-widest mt-2 opacity-50">{doc.type} Preview</p>
-          <button onClick={handleOpenInBrowser} className="absolute bottom-3 right-3 text-[9px] font-black uppercase tracking-widest px-3 py-1.5 bg-white border border-current/20 hover:bg-zinc-50 transition-colors flex items-center gap-1">
-            <Icon name="open_in_new" className="text-[13px]" />Open in Browser
-          </button>
         </div>
 
         {/* Metadata */}
@@ -435,18 +482,27 @@ const DocumentsPage = () => {
   const [folderFilter, setFolderFilter] = useState('All');
   const [projectFilter, setProjectFilter] = useState('All');
   const [sortBy, setSortBy] = useState('date');
+  const [currentPage, setCurrentPage] = useState(1);
   const [showUpload, setShowUpload] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingDoc, setEditingDoc] = useState(null);
+  const [projects, setProjects] = useState([]);
+  const [clients, setClients] = useState([]);
 
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
-        const response = await api.get('/documents/');
-        setDocuments(response.data.data);
+        const [documentsRes, projectsRes, clientsRes] = await Promise.all([
+          api.get('/documents/'),
+          api.get('/projects/'),
+          api.get('/clients/'),
+        ]);
+        setDocuments(documentsRes.data.data || []);
+        setProjects(projectsRes.data.data || []);
+        setClients(clientsRes.data.data || []);
       } catch (err) {
         console.error("Error fetching documents:", err);
       } finally {
@@ -456,11 +512,23 @@ const DocumentsPage = () => {
     fetchDocuments();
   }, []);
 
-  const projects = ['All', ...Array.from(new Set(documents.map(d => d.projectCode)))];
+  const projectOptions = ['All', ...projects.map(project => getProjectLabel(project))];
+
+  const itemsPerPage = 5;
+
+  const resolveProjectLabel = (doc) => {
+    const project = projects.find(item => getEntityId(item) === doc.projectId || getProjectLabel(item) === doc.project || item.projectId === doc.projectCode);
+    return project ? getProjectLabel(project) : (doc.project || doc.projectCode || '—');
+  };
+
+  const resolveClientLabel = (doc) => {
+    const client = clients.find(item => getEntityId(item) === doc.clientId || getClientLabel(item) === doc.client);
+    return client ? getClientLabel(client) : (doc.client || '—');
+  };
 
   const filtered = documents.filter(d =>
     (folderFilter === 'All' || d.folderType === folderFilter) &&
-    (projectFilter === 'All' || d.projectCode === projectFilter) &&
+    (projectFilter === 'All' || resolveProjectLabel(d) === projectFilter || d.projectId === projectFilter || d.projectCode === projectFilter) &&
     (d.name.toLowerCase().includes(search.toLowerCase()) || (d.client || '').toLowerCase().includes(search.toLowerCase()))
   ).sort((a, b) => {
     if (sortBy === 'date') return new Date(b.uploadDate) - new Date(a.uploadDate);
@@ -474,57 +542,113 @@ const DocumentsPage = () => {
     return 0;
   });
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, folderFilter, projectFilter, sortBy]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const startIndex = (safeCurrentPage - 1) * itemsPerPage;
+  const paginatedDocuments = filtered.slice(startIndex, startIndex + itemsPerPage);
+
   const ft = (key) => FOLDER_TYPES.find(f => f.key === key);
 
   const handleUpload = async (form) => {
     const fileExt = form.file.name.split('.').pop().toUpperCase();
     const fileSize = (form.file.size / (1024 * 1024)).toFixed(1) + ' MB';
+    const fileUrl = await readFileAsDataUrl(form.file);
+    const project = projects.find(item => getEntityId(item) === form.projectId);
+    const client = clients.find(item => getEntityId(item) === form.clientId);
+    // Optimistic UI: insert temporary entry immediately
+    const tempId = `temp-${Date.now()}`;
+    const tempDoc = {
+      id: tempId,
+      documentId: tempId,
+      name: form.file.name,
+      type: fileExt,
+      folderType: form.folderType,
+      size: fileSize,
+      uploadedBy: 'Alex Carter',
+      uploadDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      projectId: form.projectId || '',
+      project: form.project || getProjectLabel(project),
+      projectCode: form.projectCode || project?.projectId || project?.projectCode || form.projectId,
+      clientId: form.clientId || '',
+      client: form.client || getClientLabel(client),
+      version: form.version,
+      description: form.description,
+      comments: [],
+      fileUrl,
+      fileName: form.file.name,
+      createdAt: new Date().toISOString(),
+    };
+
+    setDocuments(prev => [tempDoc, ...prev]);
+    setShowUpload(false);
+
     try {
-      const newDoc = {
-        name: form.file.name,
-        type: fileExt,
-        folderType: form.folderType,
-        size: fileSize,
-        uploadedBy: 'Alex Carter',
-        uploadDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-        project: form.project || 'Unknown Project',
-        projectCode: form.projectCode,
-        client: form.client,
-        version: form.version,
-        comments: []
-      };
+      const newDoc = { ...tempDoc };
+      // Remove temporary id before sending
+      delete newDoc.id;
+      delete newDoc.documentId;
       const response = await api.post('/documents/', newDoc);
-      setDocuments([response.data.data, ...documents]);
-      setShowUpload(false);
+      const saved = response.data.data;
+      setDocuments(prev => prev.map(d => d.id === tempId ? saved : d));
     } catch (err) {
       console.error("Error uploading document:", err);
+      // rollback
+      setDocuments(prev => prev.filter(d => d.id !== tempId));
       alert("Failed to upload document");
     }
   };
 
   const handleDelete = async () => {
+    // Optimistic delete: remove locally first
+    const idToDelete = deletingId;
+    const deletedDoc = documents.find(d => d.id === idToDelete);
+    setDocuments(prev => prev.filter(d => d.id !== idToDelete));
+    setDeletingId(null);
     try {
-      await api.delete(`/documents/${deletingId}`);
-      setDocuments(documents.filter(d => d.id !== deletingId));
-      setDeletingId(null);
+      await api.delete(`/documents/${idToDelete}`);
     } catch (err) {
       console.error("Error deleting document:", err);
+      // revert
+      if (deletedDoc) setDocuments(prev => [deletedDoc, ...prev]);
       alert("Failed to delete document");
     }
   };
 
+  const handleRefresh = async () => {
+    setLoading(true);
+    setCurrentPage(1);
+    try {
+      const [documentsRes, projectsRes, clientsRes] = await Promise.all([
+        api.get('/documents/'),
+        api.get('/projects/'),
+        api.get('/clients/'),
+      ]);
+      setDocuments(documentsRes.data.data || []);
+      setProjects(projectsRes.data.data || []);
+      setClients(clientsRes.data.data || []);
+    } catch (err) {
+      console.error('Error refreshing documents:', err);
+      alert('Failed to refresh data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDownload = (doc) => {
-    // Create a dummy file for download since we don't have actual file data
-    const content = `Document: ${doc.name}\nType: ${doc.type}\nSize: ${doc.size}\nProject: ${doc.project}\nClient: ${doc.client}\nVersion: ${doc.version}\nUploaded by: ${doc.uploadedBy}\nDate: ${doc.uploadDate}`;
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
+    if (!doc.fileUrl) {
+      alert('No uploaded file is available for this document yet.');
+      return;
+    }
     const a = document.createElement('a');
-    a.href = url;
-    a.download = doc.name;
+    a.href = doc.fileUrl;
+    a.download = doc.fileName || doc.name || 'document';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
   };
 
   const handleEdit = (doc) => {
@@ -533,8 +657,9 @@ const DocumentsPage = () => {
 
   const handleUpdateDocument = async (updatedDoc) => {
     try {
-      await api.patch(`/documents/${updatedDoc.id}`, updatedDoc);
-      setDocuments(documents.map(d => d.id === updatedDoc.id ? { ...d, ...updatedDoc } : d));
+      const response = await api.patch(`/documents/${updatedDoc.id}`, updatedDoc);
+      const savedDoc = response.data.data || updatedDoc;
+      setDocuments(prev => prev.map(d => d.id === updatedDoc.id ? { ...d, ...savedDoc } : d));
       setEditingDoc(null);
     } catch (err) {
       console.error("Error updating document:", err);
@@ -583,7 +708,7 @@ const DocumentsPage = () => {
           </div>
           {/* Project filter */}
           <select value={projectFilter} onChange={e => setProjectFilter(e.target.value)} className="border border-zinc-200 text-[10px] font-black uppercase py-2 px-6 focus:ring-0 focus:border-primary bg-white">
-            {projects.map(p => <option key={p} value={p}>{p === 'All' ? 'All Projects' : p}</option>)}
+            {projectOptions.map(p => <option key={p} value={p}>{p === 'All' ? 'All Projects' : p}</option>)}
           </select>
           {/* Sort */}
           <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="border border-zinc-200 text-[10px] font-black uppercase py-2 px-6 focus:ring-0 focus:border-primary bg-white">
@@ -593,9 +718,14 @@ const DocumentsPage = () => {
             <option value="type">Sort: Type</option>
           </select>
           {/* Upload CTA */}
-          <button onClick={() => setShowUpload(true)} className="ml-auto flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors shadow-sm shadow-primary/20">
-            <Icon name="upload" className="text-[16px]" />Upload File
-          </button>
+          <div className="ml-auto flex items-center gap-2">
+            <button onClick={handleRefresh} disabled={loading} className="flex items-center gap-1.5 px-3 py-2 bg-white border border-zinc-200 text-zinc-700 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors">
+              <Icon name="refresh" className="text-[16px]" />Refresh
+            </button>
+            <button onClick={() => setShowUpload(true)} className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors shadow-sm shadow-primary/20">
+              <Icon name="upload" className="text-[16px]" />Upload File
+            </button>
+          </div>
         </div>
       </div>
 
@@ -619,7 +749,7 @@ const DocumentsPage = () => {
                   </td>
                 </tr>
               )}
-              {filtered.map(doc => {
+              {paginatedDocuments.map(doc => {
                 const folderInfo = ft(doc.folderType);
                 const iconName = FILE_TYPE_ICON[doc.type] || 'description';
                 const iconColor = FILE_TYPE_COLOR[doc.type] || 'text-zinc-400';
@@ -643,7 +773,7 @@ const DocumentsPage = () => {
                     <td className="px-5 py-3.5">
                       <span className="text-[10px] font-mono font-black text-zinc-700">{doc.projectCode || '—'}</span>
                     </td>
-                    <td className="px-5 py-3.5 text-xs text-zinc-600">{doc.client || '—'}</td>
+                    <td className="px-5 py-3.5 text-xs text-zinc-600">{resolveClientLabel(doc)}</td>
                     <td className="px-5 py-3.5">
                       <span className="text-[10px] font-mono bg-zinc-100 text-zinc-600 px-2 py-0.5">v{doc.version}</span>
                     </td>
@@ -662,16 +792,34 @@ const DocumentsPage = () => {
               })}
             </tbody>
           </table>
-          <div className="px-5 py-3 border-t border-zinc-50 text-[9px] font-black uppercase tracking-widest text-zinc-400 flex justify-between">
-            <span>Showing {filtered.length} of {documents.length} documents</span>
-            <span>{documents.reduce((a, d) => a, 0)} total files</span>
+          <div className="px-5 py-3 border-t border-zinc-50 text-[9px] font-black uppercase tracking-widest text-zinc-400 flex flex-wrap gap-3 items-center justify-between">
+            <span>
+              Showing {filtered.length === 0 ? 0 : startIndex + 1} to {Math.min(startIndex + itemsPerPage, filtered.length)} of {filtered.length} documents
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage(page => Math.max(1, page - 1))}
+                disabled={safeCurrentPage === 1}
+                className="px-3 py-1.5 border border-zinc-200 text-zinc-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-50"
+              >
+                Previous
+              </button>
+              <span className="text-zinc-500">Page {safeCurrentPage} of {totalPages}</span>
+              <button
+                onClick={() => setCurrentPage(page => Math.min(totalPages, page + 1))}
+                disabled={safeCurrentPage === totalPages}
+                className="px-3 py-1.5 border border-zinc-200 text-zinc-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-50"
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* ─── Modals ─── */}
-      {showUpload && <UploadModal onClose={() => setShowUpload(false)} onUpload={handleUpload} />}
-      {editingDoc && <EditModal doc={editingDoc} onClose={() => setEditingDoc(null)} onUpdate={handleUpdateDocument} />}
+      {showUpload && <UploadModal onClose={() => setShowUpload(false)} onUpload={handleUpload} projects={projects} clients={clients} />}
+      {editingDoc && <EditModal doc={editingDoc} onClose={() => setEditingDoc(null)} onUpdate={handleUpdateDocument} projects={projects} clients={clients} />}
       {selectedDoc && <DocDrawer doc={selectedDoc} onClose={() => setSelectedDoc(null)} />}
 
       {deletingId && (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Icon from "../components/ui/Icon.jsx"
 
@@ -10,6 +10,7 @@ const api = axios.create({
 });
 
 const InvoicesPage = () => {
+  const navigate = useNavigate();
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -17,7 +18,7 @@ const InvoicesPage = () => {
   const [deletingId, setDeletingId] = useState(null);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchInvoices = async () => {
@@ -44,9 +45,12 @@ const InvoicesPage = () => {
 
   const handleDelete = async () => {
     try {
-      await api.delete(`/invoices/${deletingId}`);
-      const updated = invoices.filter(inv => inv.id !== deletingId);
+      const idToDelete = deletingId;
+      const updated = invoices.filter(inv => inv.id !== idToDelete);
       setInvoices(updated);
+      const nextTotalPages = Math.max(1, Math.ceil(updated.length / itemsPerPage));
+      setCurrentPage(page => Math.min(page, nextTotalPages));
+      await api.delete(`/invoices/${idToDelete}`);
       setDeletingId(null);
     } catch (err) {
       console.error("Error deleting invoice:", err);
@@ -65,8 +69,9 @@ const InvoicesPage = () => {
     }
   };
 
-  const paginated = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const paginated = filtered.slice((safeCurrentPage - 1) * itemsPerPage, safeCurrentPage * itemsPerPage);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -199,7 +204,7 @@ const InvoicesPage = () => {
                 <td className="px-6 py-4 text-right">
                   <div className="flex justify-end gap-2">
                     <button onClick={() => setSelectedInvoice(inv)} className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-black transition-colors"><Icon name="visibility" className="text-[18px]" /></button>
-                    <Link to={`/invoices/new`} className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-primary transition-colors"><Icon name="edit" className="text-[18px]" /></Link>
+                    <button onClick={() => navigate('/invoices/new')} className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-primary transition-colors"><Icon name="edit" className="text-[18px]" /></button>
                     <button onClick={() => setDeletingId(inv.id)} className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-red-600 transition-colors"><Icon name="delete" className="text-[18px]" /></button>
                   </div>
                 </td>
@@ -213,8 +218,8 @@ const InvoicesPage = () => {
           <div className="text-[10px] font-black uppercase text-zinc-400">Showing {paginated.length} of {filtered.length} results</div>
           <div className="flex items-center gap-1">
             <button
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(Math.max(1, safeCurrentPage - 1))}
+              disabled={safeCurrentPage === 1}
               className="h-8 px-2 text-[10px] font-black uppercase border border-zinc-100 hover:bg-zinc-50 disabled:opacity-50"
             >
               Prev
@@ -223,14 +228,14 @@ const InvoicesPage = () => {
               <button
                 key={i + 1}
                 onClick={() => setCurrentPage(i + 1)}
-                className={`h-8 w-8 ${currentPage === i + 1 ? 'bg-black text-white' : 'border border-zinc-100'} text-[10px] font-black hover:bg-zinc-50`}
+                className={`h-8 w-8 ${safeCurrentPage === i + 1 ? 'bg-black text-white' : 'border border-zinc-100'} text-[10px] font-black hover:bg-zinc-50`}
               >
                 {i + 1}
               </button>
             ))}
             <button
-              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(Math.min(totalPages, safeCurrentPage + 1))}
+              disabled={safeCurrentPage === totalPages}
               className="h-8 px-2 text-[10px] font-black uppercase border border-zinc-100 hover:bg-zinc-50 disabled:opacity-50"
             >
               Next

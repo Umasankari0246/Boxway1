@@ -24,6 +24,8 @@ const ClientsPage = () => {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openMenuId, setOpenMenuId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage] = useState(5);
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -39,19 +41,20 @@ const ClientsPage = () => {
     fetchClients();
   }, []);
 
-  const toggleMenu = (id) => setOpenMenuId((current) => (current === id ? null : id));
-
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this client?')) return;
     try {
       await api.delete(`/clients/${id}`);
       setClients(clients.filter(c => c.id !== id));
       setOpenMenuId(null);
+      setCurrentPage(1);
     } catch (err) {
       console.error("Error deleting client:", err);
       alert("Failed to delete client");
     }
   };
+
+  const toggleMenu = (id) => setOpenMenuId((current) => (current === id ? null : id));
 
   const handleStatusChange = async (id, newStatus) => {
     try {
@@ -64,11 +67,31 @@ const ClientsPage = () => {
     }
   };
 
+  const handleRefresh = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get('/clients/');
+      setClients(res.data.data || []);
+    } catch (err) {
+      console.error('Error refreshing clients:', err);
+      alert('Failed to refresh clients');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const statuses = ['All', 'Active', 'Inactive'];
   const filtered = clients.filter(c =>
     (filter === 'All' || c.status === filter) &&
     (c.name.toLowerCase().includes(search.toLowerCase()) ||
      c.contactPerson.toLowerCase().includes(search.toLowerCase()))
+  ).reverse(); // Sort by recently added first
+
+  // Pagination
+  const totalPages = Math.ceil(filtered.length / rowsPerPage);
+  const paginatedClients = filtered.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
   );
 
   return (
@@ -77,11 +100,16 @@ const ClientsPage = () => {
         <div>
           <p className="text-sm text-slate-500 mt-0.5">{clients.length} registered clients</p>
         </div>
-        <button onClick={() => navigate('/clients/new')}
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-bold rounded shadow-lg shadow-primary/20 hover:bg-primary/90 transition-colors">
-          <Plus className="h-4 w-4" />
-          New Client
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={handleRefresh} disabled={loading} className="px-3 py-2 bg-white border border-slate-200 text-sm font-bold rounded hover:bg-slate-50">
+            <Icon name="refresh" className="text-[16px]" />
+          </button>
+          <button onClick={() => navigate('/clients/new')}
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-bold rounded shadow-lg shadow-primary/20 hover:bg-primary/90 transition-colors">
+            <Plus className="h-4 w-4" />
+            New Client
+          </button>
+        </div>
       </div>
 
       {/* KPIs */}
@@ -134,7 +162,7 @@ const ClientsPage = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {filtered.map(c => (
+            {paginatedClients.map(c => (
               <tr key={c.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => navigate(`/clients/${c.id}`)}>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
@@ -211,6 +239,44 @@ const ClientsPage = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {filtered.length > 0 && (
+        <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between">
+          <p className="text-xs text-slate-500">
+            Showing {(currentPage - 1) * rowsPerPage + 1} to {Math.min(currentPage * rowsPerPage, filtered.length)} of {filtered.length} clients
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 text-xs font-bold rounded border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 py-1 text-xs font-bold rounded border ${
+                  currentPage === page
+                    ? 'border-primary bg-primary text-white'
+                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 text-xs font-bold rounded border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

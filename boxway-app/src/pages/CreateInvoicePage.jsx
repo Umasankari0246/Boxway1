@@ -1,16 +1,51 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInvoiceStore } from '../store/invoiceStore';
 import axios from 'axios';
 import Icon from "../components/ui/Icon.jsx"
 
-window.location.hostname === 'localhost' ? 'http://localhost:8000' : 'https://boxxway.onrender.com'
+const api = axios.create({
+  baseURL: window.location.hostname === 'localhost'
+    ? 'http://localhost:8000/api'
+    : 'https://boxxway.onrender.com/api'
+});
+
+const readFileAsDataUrl = (file) => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = () => reject(new Error('Failed to read file'));
+  reader.readAsDataURL(file);
+});
 
 const CreateInvoicePage = () => {
   const navigate = useNavigate();
   const { invoiceData, updateField, updateItem, addItem, removeItem, resetInvoice } = useInvoiceStore();
   const [showAddItemModal, setShowAddItemModal] = useState(false);
+  const [showClientPicker, setShowClientPicker] = useState(false);
+  const [clientSearch, setClientSearch] = useState('');
+  const [clients, setClients] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [loadingRefs, setLoadingRefs] = useState(true);
   const [newItem, setNewItem] = useState({ description: '', hsn: '', qty: 1, rate: 0, disc: 0 });
+
+  useEffect(() => {
+    const fetchRefs = async () => {
+      try {
+        const [clientsRes, projectsRes] = await Promise.all([
+          api.get('/clients/'),
+          api.get('/projects/'),
+        ]);
+        setClients(clientsRes.data.data || []);
+        setProjects(projectsRes.data.data || []);
+      } catch (err) {
+        console.error('Error fetching invoice references:', err);
+      } finally {
+        setLoadingRefs(false);
+      }
+    };
+
+    fetchRefs();
+  }, []);
 
   // Generate dynamic invoice number
   const generateInvoiceNumber = () => {
@@ -25,8 +60,39 @@ const CreateInvoicePage = () => {
     navigate('/invoices/review');
   };
 
+  const handleBack = () => {
+    navigate('/invoices');
+  };
+
+  const handleProjectChange = (projectId) => {
+    const project = projects.find(item => (item.id || item._id || item.projectId) === projectId);
+    updateField('projectId', projectId);
+    updateField('projectLink', project ? project.name : '');
+    updateField('project', project ? project.name : '');
+    if (project?.client) {
+      const linkedClient = clients.find(client => (client.id || client._id || client.clientId) === project.client || client.name === project.client);
+      if (linkedClient) {
+        updateField('clientId', linkedClient.id || linkedClient._id || linkedClient.clientId || '');
+        updateField('clientName', linkedClient.name || '');
+        updateField('billingAddress', linkedClient.address || '');
+        updateField('gstin', linkedClient.gstin || '');
+        updateField('contactPerson', linkedClient.contactPerson || '');
+      }
+    }
+  };
+
+  const handleClientPick = (client) => {
+    updateField('clientId', client.id || client._id || client.clientId || '');
+    updateField('clientName', client.name || '');
+    updateField('billingAddress', client.address || '');
+    updateField('gstin', client.gstin || '');
+    updateField('contactPerson', client.contactPerson || '');
+    setShowClientPicker(false);
+  };
+
   const handleSaveDraft = async () => {
     try {
+      const attachmentPayload = invoiceData.attachments || [];
       const subtotal = invoiceData.items.reduce((acc, item) => {
         const amount = item.qty * item.rate;
         const discountAmount = amount * (item.disc / 100);
@@ -38,17 +104,28 @@ const CreateInvoicePage = () => {
 
       const invoicePayload = {
         invoiceId: generateInvoiceNumber(),
-        client: invoiceData.client || 'Unknown Client',
-        project: invoiceData.project || 'Unknown Project',
+        clientId: invoiceData.clientId || '',
+        client: invoiceData.clientName || '',
+        projectId: invoiceData.projectId || '',
+        project: invoiceData.projectLink || '',
         date: invoiceData.issueDate || new Date().toISOString().split('T')[0],
         amount: total,
         status: 'Draft',
         dueDate: invoiceData.dueDate,
         notes: invoiceData.notes,
+        paymentTerms: invoiceData.paymentTerms,
+        clientName: invoiceData.clientName || '',
+        billingAddress: invoiceData.billingAddress || '',
+        gstin: invoiceData.gstin || '',
+        contactPerson: invoiceData.contactPerson || '',
+        items: invoiceData.items || [],
+        attachments: attachmentPayload,
+        authorizedSignature: invoiceData.authorizedSignature || '',
       };
 
       await api.post('/invoices/', invoicePayload);
       alert('Invoice saved as draft!');
+      resetInvoice();
       navigate('/invoices');
     } catch (err) {
       console.error('Error saving invoice:', err);
@@ -63,21 +140,33 @@ const CreateInvoicePage = () => {
     }
   };
 
-  const handleFileUpload = (e) => {
+  const handleFileUpload = async (e) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      alert(`Uploaded ${files.length} file(s)`);
+      const attachments = [...(invoiceData.attachments || [])];
+      for (const file of Array.from(files)) {
+        const fileUrl = await readFileAsDataUrl(file);
+        attachments.push({
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          fileUrl,
+        });
+      }
+      updateField('attachments', attachments);
     }
   };
 
   const handleAddItemModal = () => {
     if (newItem.description && newItem.rate > 0) {
-      addItem();
-      updateItem(invoiceData.items[invoiceData.items.length - 1].id, 'description', newItem.description);
-      updateItem(invoiceData.items[invoiceData.items.length - 1].id, 'hsn', newItem.hsn);
-      updateItem(invoiceData.items[invoiceData.items.length - 1].id, 'qty', newItem.qty);
-      updateItem(invoiceData.items[invoiceData.items.length - 1].id, 'rate', newItem.rate);
-      updateItem(invoiceData.items[invoiceData.items.length - 1].id, 'disc', newItem.disc);
+      addItem({
+        id: Date.now(),
+        description: newItem.description,
+        hsn: newItem.hsn,
+        qty: newItem.qty,
+        rate: newItem.rate,
+        disc: newItem.disc,
+      });
       setNewItem({ description: '', hsn: '', qty: 1, rate: 0, disc: 0 });
       setShowAddItemModal(false);
     } else {
@@ -132,11 +221,14 @@ const CreateInvoicePage = () => {
             <select 
               className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary"
               value={invoiceData.projectLink}
-              onChange={(e) => updateField('projectLink', e.target.value)}
+              onChange={(e) => handleProjectChange(e.target.value)}
             >
-              <option>The Urban Loft - Interior Design</option>
-              <option>Skye Residency - Facade</option>
-              <option>Harbor Hotel Renovation</option>
+              <option value="">Select project</option>
+              {projects.map(project => (
+                <option key={project.id || project._id || project.projectId} value={project.id || project._id || project.projectId}>
+                  {project.name}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -168,7 +260,7 @@ const CreateInvoicePage = () => {
           <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
             <div className="flex justify-between items-start mb-4">
               <h3 className="text-xs font-bold text-primary uppercase tracking-widest">Bill To: Client</h3>
-              <button className="text-[10px] text-primary hover:underline font-bold">SEARCH CLIENT</button>
+              <button type="button" onClick={() => setShowClientPicker((current) => !current)} className="text-[10px] text-primary hover:underline font-bold">SEARCH CLIENT</button>
             </div>
             <div className="space-y-4">
               <input 
@@ -197,6 +289,44 @@ const CreateInvoicePage = () => {
                   onChange={(e) => updateField('contactPerson', e.target.value)}
                 />
               </div>
+              {showClientPicker && (
+                <div className="mt-4 border border-slate-100 rounded-lg max-h-64 overflow-y-auto">
+                  <div className="p-3 border-b border-slate-100 bg-slate-50">
+                    <input
+                      className="w-full text-sm border-slate-200 rounded"
+                      placeholder="Search available clients"
+                      value={clientSearch}
+                      onChange={(e) => setClientSearch(e.target.value)}
+                    />
+                  </div>
+                  <div className="divide-y divide-slate-100">
+                    {clients
+                      .filter(client => client.name.toLowerCase().includes(clientSearch.toLowerCase()) || client.contactPerson.toLowerCase().includes(clientSearch.toLowerCase()))
+                      .map(client => (
+                        <button
+                          key={client.id || client._id || client.clientId}
+                          type="button"
+                          onClick={() => handleClientPick(client)}
+                          className="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors"
+                        >
+                          <p className="text-sm font-semibold text-slate-900">{client.name}</p>
+                          <p className="text-xs text-slate-500">{client.contactPerson} · {client.city || 'No city'}</p>
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm md:col-span-2">
+              <label className="block text-xs font-bold text-slate-400 uppercase mb-3">Authorized Signature</label>
+              <input
+                className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary"
+                type="text"
+                placeholder="Type authorized signatory name"
+                value={invoiceData.authorizedSignature}
+                onChange={(e) => updateField('authorizedSignature', e.target.value)}
+              />
             </div>
           </div>
         </div>
@@ -328,6 +458,10 @@ const CreateInvoicePage = () => {
       {/* Sticky Footer Action Bar */}
       <footer className="h-20 bg-white border-t border-slate-200 fixed bottom-0 left-60 right-0 z-20 px-8 flex items-center justify-between shadow-[0_-4px_10px_rgba(0,0,0,0.03)]">
         <div className="flex items-center gap-4">
+          <button onClick={handleBack} className="flex items-center gap-2 text-slate-500 hover:text-slate-700 transition-colors text-sm font-medium">
+            <Icon name="arrow_back" className="text-lg" />
+            Back
+          </button>
           <button onClick={handleDiscard} className="flex items-center gap-2 text-slate-500 hover:text-slate-700 transition-colors text-sm font-medium">
             <Icon name="delete" className="text-lg" />
             Discard
@@ -411,6 +545,12 @@ const CreateInvoicePage = () => {
               <button onClick={handleAddItemModal} className="flex-1 py-2.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:opacity-90">Add Item</button>
             </div>
           </div>
+        </div>
+      )}
+
+      {loadingRefs && (
+        <div className="fixed inset-0 z-40 bg-white/60 flex items-center justify-center">
+          <p className="text-sm text-slate-500 font-medium">Loading available projects and clients...</p>
         </div>
       )}
     </div>

@@ -2,18 +2,19 @@ import { create } from 'zustand';
 
 export const useInvoiceStore = create((set) => ({
   invoiceData: {
-    issueDate: '2023-10-24',
-    dueDate: '2023-11-07',
-    projectLink: 'The Urban Loft - Interior Design',
-    clientName: 'Modern Living Co.',
-    billingAddress: '12th Floor, Corporate Heights, BKC, Mumbai 400051',
-    gstin: '27BBBBB1234B1Z2',
-    contactPerson: 'Mr. Rahul Khanna',
-    items: [
-      { id: 1, description: 'Phase 1: Conceptual Design & Layouts', hsn: '9983', qty: 1, rate: 45000, disc: 0 },
-      { id: 2, description: 'On-site Consultation Fee (2 Visits)', hsn: '9983', qty: 2, rate: 5000, disc: 10 }
-    ],
-    paymentTerms: 'Consultation Template',
+    issueDate: '',
+    dueDate: '',
+    projectLink: '',
+    projectId: '',
+    clientId: '',
+    clientName: '',
+    billingAddress: '',
+    gstin: '',
+    contactPerson: '',
+    items: [],
+    paymentTerms: '',
+    attachments: [],
+    authorizedSignature: '',
     notes: ''
   },
   updateField: (field, value) => set((state) => ({
@@ -27,13 +28,10 @@ export const useInvoiceStore = create((set) => ({
       )
     }
   })),
-  addItem: () => set((state) => ({
+  addItem: (item = { id: Date.now(), description: '', hsn: '', qty: 1, rate: 0, disc: 0 }) => set((state) => ({
     invoiceData: {
       ...state.invoiceData,
-      items: [
-        ...state.invoiceData.items, 
-        { id: Date.now(), description: '', hsn: '', qty: 1, rate: 0, disc: 0 }
-      ]
+      items: [...state.invoiceData.items, item]
     }
   })),
   removeItem: (id) => set((state) => ({

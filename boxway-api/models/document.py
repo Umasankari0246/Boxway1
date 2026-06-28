@@ -22,11 +22,14 @@ class DocumentSchema(BaseModel):
     uploadDate: str = Field(...)
     project: Optional[str] = None
     projectCode: Optional[str] = None
+    projectId: Optional[str] = None
     client: Optional[str] = None
+    clientId: Optional[str] = None
     version: Optional[str] = "1.0"
     description: Optional[str] = None
     comments: Optional[List[dict]] = []
     fileUrl: Optional[str] = None
+    fileName: Optional[str] = None
     createdAt: Optional[str] = None
     updatedAt: Optional[str] = None
 
@@ -39,11 +42,14 @@ class UpdateDocumentSchema(BaseModel):
     uploadDate: Optional[str]
     project: Optional[str]
     projectCode: Optional[str]
+    projectId: Optional[str]
     client: Optional[str]
+    clientId: Optional[str]
     version: Optional[str]
     description: Optional[str]
     comments: Optional[List[dict]]
     fileUrl: Optional[str]
+    fileName: Optional[str]
 
 def document_helper(document) -> dict:
     return {
@@ -57,11 +63,14 @@ def document_helper(document) -> dict:
         "uploadDate": document.get("uploadDate"),
         "project": document.get("project"),
         "projectCode": document.get("projectCode"),
+        "projectId": document.get("projectId"),
         "client": document.get("client"),
+        "clientId": document.get("clientId"),
         "version": document.get("version", "1.0"),
         "description": document.get("description"),
         "comments": document.get("comments", []),
         "fileUrl": document.get("fileUrl"),
+        "fileName": document.get("fileName"),
         "createdAt": document.get("createdAt"),
         "updatedAt": document.get("updatedAt")
     }

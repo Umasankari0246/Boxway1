@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { Menu } from 'lucide-react';
 import Icon from '../ui/Icon.jsx';
 
 const api = axios.create({
@@ -29,7 +30,7 @@ const ROUTE_TITLES = {
   '/settings': 'Settings',
 };
 
-const TopBar = () => {
+const TopBar = ({ onToggleSidebar, isSidebarCollapsed, isMobileSidebarOpen }) => {
   const location = useLocation();
 
   const getPageTitle = (pathname) => {
@@ -118,8 +119,17 @@ const TopBar = () => {
   }, []);
 
   return (
-    <header className="h-14 flex-shrink-0 flex items-center justify-between px-8 bg-white border-b border-zinc-100">
-      <div className="flex items-center gap-4">
+    <header className="h-14 flex-shrink-0 flex items-center justify-between px-4 md:px-8 bg-white border-b border-zinc-100 relative z-20">
+      <div className="flex items-center gap-3 md:gap-4 min-w-0">
+        {/* Toggle button: desktop collapses the sidebar, mobile opens/closes it. */}
+        <button
+          type="button"
+          onClick={onToggleSidebar}
+          className={`p-2 border border-zinc-200 text-zinc-700 hover:bg-zinc-50 transition-colors ${isSidebarCollapsed ? 'bg-zinc-50' : 'bg-white'}`}
+          aria-label={isMobileSidebarOpen ? 'Close sidebar' : 'Toggle sidebar'}
+        >
+          <Menu className="h-5 w-5" />
+        </button>
         <h2 className="text-base font-black uppercase tracking-tight">{title}</h2>
       </div>
       
