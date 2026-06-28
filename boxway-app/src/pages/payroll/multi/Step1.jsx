@@ -10,6 +10,8 @@ const api = axios.create({
     : 'https://boxxway.onrender.com/api',
 });
 
+const RECENT_EMPLOYEES_KEY = 'payrollRecentEmployees';
+
 const Step1 = () => {
   const navigate = useNavigate();
   const { multiRun, setMultiEmployees } = usePayrollStore();
@@ -17,18 +19,68 @@ const Step1 = () => {
   const [employees, setEmployees] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
 
+  const fallbackEmployees = [
+    { id: 'EMP001', name: 'Uma', role: 'CAD Technician', department: 'Engineering', salary: 40000, status: 'Active' },
+    { id: 'EMP002', name: 'Ravi', role: 'Project Manager', department: 'Operations', salary: 55000, status: 'Active' },
+    { id: 'EMP003', name: 'Nisha', role: 'Finance Analyst', department: 'Finance', salary: 48000, status: 'Active' },
+    { id: 'EMP004', name: 'Arun', role: 'Architect', department: 'Design', salary: 62000, status: 'Active' },
+  ];
+
+  const getRecentEmployees = () => {
+    try {
+      const raw = window.localStorage.getItem(RECENT_EMPLOYEES_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (err) {
+      console.error('Error reading recent employees:', err);
+      return [];
+    }
+  };
+
+  const mergeEmployees = (apiEmployees = [], recentEmployees = []) => {
+    const merged = [...fallbackEmployees];
+    const existingIds = new Set(merged.map(emp => emp.id));
+
+    [...recentEmployees, ...apiEmployees].forEach(emp => {
+      const normalizedId = emp.id || emp.employeeId || emp._id;
+      if (!normalizedId || existingIds.has(normalizedId)) return;
+      merged.push({ ...emp, id: normalizedId, employeeId: emp.employeeId || normalizedId });
+      existingIds.add(normalizedId);
+    });
+
+    return merged;
+  };
+
+  const fetchEmployees = async () => {
+    try {
+      const response = await api.get('/employees/');
+      const recentEmployees = getRecentEmployees();
+      const employeeList = mergeEmployees(response.data.data || [], recentEmployees);
+      setEmployees(employeeList);
+
+      if (employeeList.length > 0) {
+        const defaultSelection = new Set(employeeList.slice(0, 3).map(e => e.id));
+        setSelected(defaultSelection);
+      }
+    } catch (err) {
+      console.error('Error fetching employees:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchEmployees = async () => {
-      try {
-        const response = await api.get('/employees/');
-        setEmployees(response.data.data);
-      } catch (err) {
-        console.error('Error fetching employees:', err);
-      } finally {
-        setLoading(false);
+    fetchEmployees();
+    const handleStorage = (event) => {
+      if (event.key === RECENT_EMPLOYEES_KEY) {
+        fetchEmployees();
       }
     };
-    fetchEmployees();
+    window.addEventListener('storage', handleStorage);
+    window.addEventListener('focus', fetchEmployees);
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('focus', fetchEmployees);
+    };
   }, []);
 
   const toggle = (id) => {

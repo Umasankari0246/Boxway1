@@ -1,7 +1,12 @@
 import React from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { usePayrollStore } from '../../../store/payrollStore';
 import Icon from "../../../components/ui/Icon.jsx"
+
+const api = axios.create({
+  baseURL: 'http://localhost:8000/api'
+});
 
 const STEPS = ['Select Employees', 'Setup Payroll', 'Review & Confirm'];
 
@@ -12,9 +17,47 @@ const Step3 = () => {
 
   if (!emps || emps.length === 0) { navigate('/payroll/run/multi/step1'); return null; }
 
-  const handleSubmit = () => {
-    confirmMultiRun();
-    setTimeout(() => { resetMultiRun(); navigate('/payroll'); }, 500);
+  const handleSubmit = async () => {
+    try {
+      const payrollRunPayload = {
+        period: cfg.payPeriod || 'Current Cycle',
+        employees: emps.length,
+        adHoc: 0,
+        grossAmount: Number(cfg.totalGross || 0),
+        netAmount: Number(cfg.totalNet || 0),
+        status: 'Pending Approval'
+      };
+
+      const payrollResponse = await api.post('/payroll-runs/', payrollRunPayload);
+      const payrollRunId = payrollResponse.data.data.id;
+
+      for (const employee of emps) {
+        const base = Math.round(employee.salary / 12);
+        const bonus = Math.round(base * ((cfg.bonusPercent || 0) / 100));
+        const gross = base + bonus;
+        const deductions = Math.round(gross * ((cfg.deductionRate || 17) / 100));
+        const tax = Math.round(gross * ((cfg.taxRate || 20) / 100));
+        const net = gross - deductions - tax;
+
+        await api.post('/payslips/', {
+          employeeId: employee.id,
+          employeeName: employee.name,
+          period: cfg.payPeriod || 'Current Cycle',
+          grossSalary: gross,
+          deductions: deductions + tax,
+          net,
+          status: 'Issued',
+          issuedDate: new Date().toISOString().split('T')[0],
+          notes: `Payroll run ${payrollRunId}`
+        });
+      }
+
+      confirmMultiRun();
+      setTimeout(() => { resetMultiRun(); navigate('/payroll'); }, 500);
+    } catch (err) {
+      console.error('Error processing payroll:', err);
+      alert('Failed to process payroll. Please try again.');
+    }
   };
 
   return (

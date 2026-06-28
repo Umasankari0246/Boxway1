@@ -8,6 +8,8 @@ const api = axios.create({
   baseURL: 'http://localhost:8000/api'
 });
 
+const RECENT_EMPLOYEES_KEY = 'payrollRecentEmployees';
+
 const Step1 = () => {
   const navigate = useNavigate();
   const { singleRun, setSingleEmployee } = usePayrollStore();
@@ -15,20 +17,73 @@ const Step1 = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const fallbackEmployees = [
+    { id: 'EMP001', name: 'Uma', role: 'CAD Technician', department: 'Engineering', salary: 40000 },
+    { id: 'EMP002', name: 'Ravi', role: 'Project Manager', department: 'Operations', salary: 55000 },
+    { id: 'EMP003', name: 'Nisha', role: 'Finance Analyst', department: 'Finance', salary: 48000 },
+    { id: 'EMP004', name: 'Arun', role: 'Architect', department: 'Design', salary: 62000 },
+  ];
+
+  const getRecentEmployees = () => {
+    try {
+      const raw = window.localStorage.getItem(RECENT_EMPLOYEES_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (err) {
+      console.error('Error reading recent employees:', err);
+      return [];
+    }
+  };
+
+  const mergeEmployees = (apiEmployees = [], recentEmployees = []) => {
+    const merged = [...fallbackEmployees];
+    const existingIds = new Set(merged.map(emp => emp.id));
+
+    [...recentEmployees, ...apiEmployees].forEach(emp => {
+      const normalizedId = emp.id || emp.employeeId || emp._id;
+      if (!normalizedId || existingIds.has(normalizedId)) return;
+      merged.push({ ...emp, id: normalizedId, employeeId: emp.employeeId || normalizedId });
+      existingIds.add(normalizedId);
+    });
+
+    return merged;
+  };
+
   const STEPS = ['Select Employee', 'Setup Salary', 'Review & Confirm'];
 
+  const fetchEmployees = async () => {
+    try {
+      const response = await api.get('/employees/');
+      const recentEmployees = getRecentEmployees();
+      const employeeList = mergeEmployees(response.data.data || [], recentEmployees);
+      setEmployees(employeeList);
+
+      if (!selected && employeeList.length > 0) {
+        const preferred = employeeList.slice(0, 3);
+        setSelected(preferred[0]?.id || null);
+        if (preferred[0]) {
+          setSingleEmployee(preferred[0]);
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching employees:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchEmployees = async () => {
-      try {
-        const response = await api.get('/employees/');
-        setEmployees(response.data.data);
-      } catch (err) {
-        console.error("Error fetching employees:", err);
-      } finally {
-        setLoading(false);
+    fetchEmployees();
+    const handleStorage = (event) => {
+      if (event.key === RECENT_EMPLOYEES_KEY) {
+        fetchEmployees();
       }
     };
-    fetchEmployees();
+    window.addEventListener('storage', handleStorage);
+    window.addEventListener('focus', fetchEmployees);
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('focus', fetchEmployees);
+    };
   }, []);
 
   const emp = employees.find(e => e.id === selected);

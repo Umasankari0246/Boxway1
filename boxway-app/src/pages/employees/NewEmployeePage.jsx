@@ -10,6 +10,7 @@ const api = axios.create({
 });
 
 const STEPS = ['Basic Info', 'Academic & Tools', 'Documents', 'Payroll (Opt)', 'Review & Submit'];
+const RECENT_EMPLOYEES_KEY = 'payrollRecentEmployees';
 
 const NewEmployeePage = () => {
   const navigate = useNavigate();
@@ -154,6 +155,28 @@ const NewEmployeePage = () => {
   const toolsList = ['AutoCAD', 'Revit', 'SketchUp', 'Rhino', 'Enscape', 'Lumion', 'V-Ray', '3ds Max'];
   const skillsList = ['Conceptual Design', '3D Modeling', 'Drafting', 'Urban Planning', 'Interior Design', 'Landscape Architecture'];
 
+  const persistRecentEmployee = (employee) => {
+    try {
+      const raw = window.localStorage.getItem(RECENT_EMPLOYEES_KEY);
+      const existing = raw ? JSON.parse(raw) : [];
+      const employeeIdValue = employee?.employeeId || employee?.id || employee?._id || employee?.employeeId || employeeId;
+      const normalizedEmployee = {
+        ...employee,
+        id: employeeIdValue,
+        employeeId: employeeIdValue,
+        name: employee?.name || form.name,
+        role: employee?.role || form.role,
+        department: employee?.department || form.department,
+        salary: Number(employee?.salary ?? form.salary ?? 0),
+        status: employee?.status || 'Active',
+      };
+      const next = [normalizedEmployee, ...existing.filter(item => item.id !== normalizedEmployee.id)].slice(0, 20);
+      window.localStorage.setItem(RECENT_EMPLOYEES_KEY, JSON.stringify(next));
+    } catch (err) {
+      console.error('Failed to persist recent employee:', err);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!validateForm()) return;
     try {
@@ -201,9 +224,10 @@ const NewEmployeePage = () => {
       } else {
         const response = await api.post('/employees/', payload);
         alert('Employee created successfully!');
-        // Get the actual employeeId from the response
-        if (response.data.data && response.data.data.employeeId) {
-          savedEmployeeId = response.data.data.employeeId;
+        const createdEmployee = response?.data?.data || { ...payload, id: payload.employeeId };
+        persistRecentEmployee(createdEmployee);
+        if (createdEmployee.employeeId) {
+          savedEmployeeId = createdEmployee.employeeId;
           setEmployeeId(savedEmployeeId);
         }
         console.log('Created employee with ID:', savedEmployeeId);

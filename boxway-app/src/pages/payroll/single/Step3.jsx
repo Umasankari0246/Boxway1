@@ -1,6 +1,6 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { usePayrollStore } from '../../../store/payrollStore';
 import Icon from "../../../components/ui/Icon.jsx"
 
@@ -18,34 +18,29 @@ const Step3 = () => {
 
   const handleSubmit = async () => {
     try {
-      // Create payroll run
       const payrollRunPayload = {
-        period: new Date().toLocaleString('default', { month: 'long', year: 'numeric' }),
+        period: s.payPeriod || 'Current Cycle',
         employees: 1,
         adHoc: 0,
-        grossAmount: s.gross,
-        netAmount: s.net,
-        status: 'Pending Approval',
-        processedDate: null,
-        approvedBy: null,
+        grossAmount: Number(s.baseSalary || 0) + Number(s.bonus || 0),
+        netAmount: Number(s.net || 0),
+        status: 'Pending Approval'
       };
+
       const payrollResponse = await api.post('/payroll-runs/', payrollRunPayload);
       const payrollRunId = payrollResponse.data.data.id;
 
-      // Create payslip
-      const payslipPayload = {
+      await api.post('/payslips/', {
         employeeId: emp.id,
         employeeName: emp.name,
-        payrollRunId: payrollRunId,
-        period: new Date().toLocaleString('default', { month: 'long', year: 'numeric' }),
-        grossSalary: s.gross,
-        deductions: s.deductions,
-        net: s.net,
-        status: 'Pending',
-        issuedDate: null,
-        notes: s.notes || null,
-      };
-      await api.post('/payslips/', payslipPayload);
+        period: s.payPeriod || 'Current Cycle',
+        grossSalary: Number(s.baseSalary || 0) + Number(s.bonus || 0),
+        deductions: Number(s.deductions || 0) + Number(s.taxAmount || 0),
+        net: Number(s.net || 0),
+        status: 'Issued',
+        issuedDate: new Date().toISOString().split('T')[0],
+        notes: `Payroll run ${payrollRunId}`
+      });
 
       confirmSingleRun();
       setTimeout(() => { resetSingleRun(); navigate('/payroll'); }, 500);
