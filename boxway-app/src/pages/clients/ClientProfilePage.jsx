@@ -19,65 +19,47 @@ const ClientProfilePage = () => {
   const [invoices, setInvoices] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
 
+  const fetchData = async () => {
+    try {
+      const [clientRes, projectsRes, invoicesRes] = await Promise.all([
+        api.get(`/clients/${id}`),
+        api.get('/projects/'),
+        api.get('/invoices/'),
+      ]);
+      setClient(clientRes.data.data);
+      
+      // Filter projects - match by client ID, clientId, _id, or client name (for backward compatibility)
+      const filteredProjects = projectsRes.data.data.filter(p => {
+        return p.client === id || 
+               p.client === clientRes.data.data.clientId || 
+               p.client === clientRes.data.data.id ||
+               p.client === clientRes.data.data.name;
+      });
+      setProjects(filteredProjects);
+      
+      // Filter invoices - match by client ID, clientId, _id, or client name (for backward compatibility)
+      const filteredInvoices = invoicesRes.data.data.filter(i => {
+        return i.client === id || 
+               i.client === clientRes.data.data.clientId || 
+               i.client === clientRes.data.data.id ||
+               i.client === clientRes.data.data.name;
+      });
+      setInvoices(filteredInvoices);
+    } catch (err) {
+      console.error('Error fetching data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [clientRes, projectsRes, invoicesRes] = await Promise.all([
-          api.get(`/clients/${id}`),
-          api.get('/projects/'),
-          api.get('/invoices/'),
-        ]);
-        setClient(clientRes.data.data);
-        
-        console.log('=== CLIENT DATA ===');
-        console.log('Client ID from URL:', id);
-        console.log('Client data:', clientRes.data.data);
-        console.log('Client clientId:', clientRes.data.data.clientId);
-        console.log('Client name:', clientRes.data.data.name);
-        
-        console.log('=== ALL PROJECTS ===');
-        console.log('Total projects:', projectsRes.data.data.length);
-        console.log('Projects:', projectsRes.data.data);
-        
-        // Filter projects - match by client ID, clientId, _id, or client name (for backward compatibility)
-        const filteredProjects = projectsRes.data.data.filter(p => {
-          const matches = p.client === id || 
-                          p.client === clientRes.data.data.clientId || 
-                          p.client === clientRes.data.data.id ||
-                          p.client === clientRes.data.data.name;
-          console.log(`Project "${p.name}" - client field: "${p.client}" - matches: ${matches}`);
-          return matches;
-        });
-        console.log('=== FILTERED PROJECTS ===');
-        console.log('Count:', filteredProjects.length);
-        console.log('Filtered projects:', filteredProjects);
-        setProjects(filteredProjects);
-        
-        console.log('=== ALL INVOICES ===');
-        console.log('Total invoices:', invoicesRes.data.data.length);
-        console.log('Invoices:', invoicesRes.data.data);
-        
-        // Filter invoices - match by client ID, clientId, _id, or client name (for backward compatibility)
-        const filteredInvoices = invoicesRes.data.data.filter(i => {
-          const matches = i.client === id || 
-                          i.client === clientRes.data.data.clientId || 
-                          i.client === clientRes.data.data.id ||
-                          i.client === clientRes.data.data.name;
-          console.log(`Invoice "${i.id}" - client field: "${i.client}" - matches: ${matches}`);
-          return matches;
-        });
-        console.log('=== FILTERED INVOICES ===');
-        console.log('Count:', filteredInvoices.length);
-        console.log('Filtered invoices:', filteredInvoices);
-        setInvoices(filteredInvoices);
-      } catch (err) {
-        console.error('Error fetching data:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
   }, [id]);
+
+  const handleRefresh = async () => {
+    setLoading(true);
+    await fetchData();
+  };
 
   if (loading) {
     return <div className="flex-1 flex items-center justify-center bg-[#f8f6f6]"><p className="text-slate-500">Loading...</p></div>;
@@ -110,6 +92,13 @@ const ClientProfilePage = () => {
             </div>
           </div>
           <div className="text-right">
+            <button 
+              onClick={handleRefresh}
+              disabled={loading}
+              className="mb-2 p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded disabled:opacity-50"
+            >
+              <Icon name="refresh" className="text-[18px]" />
+            </button>
             <p className="text-xs text-slate-500 uppercase font-bold">Total Value</p>
             <p className="text-2xl font-black text-primary">${client.totalValue.toLocaleString()}</p>
           </div>

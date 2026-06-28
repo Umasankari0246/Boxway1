@@ -98,7 +98,7 @@ const ClientsPage = () => {
     <div className="flex-1 overflow-y-auto p-8 bg-[#f8f6f6]">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <p className="text-sm text-slate-500 mt-0.5">{clients.length} registered clients</p>
+          <h6>Add clients </h6>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={handleRefresh} disabled={loading} className="px-3 py-2 bg-white border border-slate-200 text-sm font-bold rounded hover:bg-slate-50">

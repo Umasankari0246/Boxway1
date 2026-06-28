@@ -17,6 +17,8 @@ const InvoicesPage = () => {
   const [statusFilter, setStatusFilter] = useState('All Statuses');
   const [deletingId, setDeletingId] = useState(null);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [showEdit, setShowEdit] = useState(false);
+  const [editForm, setEditForm] = useState({ client: '', project: '', amount: '', date: '', status: '', notes: '' });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -41,7 +43,12 @@ const InvoicesPage = () => {
       inv.project.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = statusFilter === 'All Statuses' || inv.status === statusFilter;
     return matchesSearch && matchesStatus;
-  }).sort((a, b) => new Date(b.date) - new Date(a.date));
+  }).sort((a, b) => {
+    // Sort by createdAt first, fallback to date if createdAt is not available
+    const dateA = a.createdAt || a.date;
+    const dateB = b.createdAt || b.date;
+    return new Date(dateB) - new Date(dateA);
+  });
 
   const handleDelete = async () => {
     try {
@@ -50,7 +57,7 @@ const InvoicesPage = () => {
       setInvoices(updated);
       const nextTotalPages = Math.max(1, Math.ceil(updated.length / itemsPerPage));
       setCurrentPage(page => Math.min(page, nextTotalPages));
-      await api.delete(`/invoices/${idToDelete}`);
+      await api.delete(`/invoices/${encodeURIComponent(idToDelete)}`);
       setDeletingId(null);
     } catch (err) {
       console.error("Error deleting invoice:", err);
@@ -60,12 +67,63 @@ const InvoicesPage = () => {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      await api.patch(`/invoices/${id}`, { status: newStatus });
-      const updated = invoices.map(inv => inv.id === id ? { ...inv, status: newStatus } : inv);
-      setInvoices(updated);
+      await api.patch(`/invoices/${encodeURIComponent(id)}`, { status: newStatus });
+      setInvoices(prevInvoices => 
+        prevInvoices.map(inv => inv.id === id ? { ...inv, status: newStatus } : inv)
+      );
     } catch (err) {
       console.error("Error updating status:", err);
       alert("Failed to update status");
+    }
+  };
+
+  const openEditModal = (invoice) => {
+    setSelectedInvoice(invoice);
+    setEditForm({
+      client: invoice.client,
+      project: invoice.project,
+      amount: invoice.amount,
+      date: invoice.date,
+      status: invoice.status,
+      notes: invoice.notes || ''
+    });
+    setShowEdit(true);
+  };
+
+  const handleEditInvoice = async () => {
+    if (selectedInvoice) {
+      try {
+        const updatedInvoice = {
+          client: editForm.client,
+          project: editForm.project,
+          amount: Number(editForm.amount),
+          date: editForm.date,
+          status: editForm.status,
+          notes: editForm.notes
+        };
+        const response = await api.patch(`/invoices/${encodeURIComponent(selectedInvoice.id)}`, updatedInvoice);
+        setInvoices(prevInvoices => 
+          prevInvoices.map(inv => inv.id === selectedInvoice.id ? response.data.data : inv)
+        );
+        setShowEdit(false);
+        setSelectedInvoice(null);
+      } catch (err) {
+        console.error("Error updating invoice:", err);
+        alert("Failed to update invoice");
+      }
+    }
+  };
+
+  const handleRefresh = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get('/invoices/');
+      setInvoices(response.data.data);
+    } catch (err) {
+      console.error("Error fetching invoices:", err);
+      alert("Failed to refresh invoices");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,12 +155,21 @@ const InvoicesPage = () => {
           <h1 className="text-2xl font-black tracking-tight">Financial Ledger</h1>
           <p className="text-[10px] text-zinc-500 uppercase font-bold mt-0.5">Track and manage client billing and incoming revenue</p>
         </div>
-        <Link 
-          to="/invoices/new"
-          className="bg-primary text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors"
-        >
-          New Invoice
-        </Link>
+        <div className="flex gap-2">
+          <button 
+            onClick={handleRefresh}
+            disabled={loading}
+            className="bg-white border border-zinc-200 text-zinc-700 px-4 py-2 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors disabled:opacity-50"
+          >
+            <Icon name="refresh" className="text-[16px]" />
+          </button>
+          <Link 
+            to="/invoices/new"
+            className="bg-primary text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors"
+          >
+            New Invoice
+          </Link>
+        </div>
       </div>
 
       {/* KPI Cards */}
@@ -204,7 +271,7 @@ const InvoicesPage = () => {
                 <td className="px-6 py-4 text-right">
                   <div className="flex justify-end gap-2">
                     <button onClick={() => setSelectedInvoice(inv)} className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-black transition-colors"><Icon name="visibility" className="text-[18px]" /></button>
-                    <button onClick={() => navigate('/invoices/new')} className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-primary transition-colors"><Icon name="edit" className="text-[18px]" /></button>
+                    <button onClick={() => openEditModal(inv)} className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-primary transition-colors"><Icon name="edit" className="text-[18px]" /></button>
                     <button onClick={() => setDeletingId(inv.id)} className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-red-600 transition-colors"><Icon name="delete" className="text-[18px]" /></button>
                   </div>
                 </td>
@@ -243,6 +310,85 @@ const InvoicesPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Invoice Modal */}
+      {showEdit && selectedInvoice && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" onClick={() => setShowEdit(false)}>
+          <div className="bg-white p-8 w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-black uppercase tracking-tight">Edit Invoice</h3>
+              <button onClick={() => setShowEdit(false)} className="p-1.5 hover:bg-zinc-100 transition-colors">
+                <Icon name="close" className="text-[20px]" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">Client</label>
+                <input
+                  className="w-full text-sm border-zinc-200 rounded focus:ring-primary focus:border-primary"
+                  type="text"
+                  value={editForm.client}
+                  onChange={(e) => setEditForm({ ...editForm, client: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">Project</label>
+                <input
+                  className="w-full text-sm border-zinc-200 rounded focus:ring-primary focus:border-primary"
+                  type="text"
+                  value={editForm.project}
+                  onChange={(e) => setEditForm({ ...editForm, project: e.target.value })}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">Amount</label>
+                  <input
+                    className="w-full text-sm border-zinc-200 rounded focus:ring-primary focus:border-primary"
+                    type="number"
+                    value={editForm.amount}
+                    onChange={(e) => setEditForm({ ...editForm, amount: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">Date</label>
+                  <input
+                    className="w-full text-sm border-zinc-200 rounded focus:ring-primary focus:border-primary"
+                    type="date"
+                    value={editForm.date}
+                    onChange={(e) => setEditForm({ ...editForm, date: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">Status</label>
+                <select
+                  className="w-full text-sm border-zinc-200 rounded focus:ring-primary focus:border-primary"
+                  value={editForm.status}
+                  onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
+                >
+                  <option value="Paid">Paid</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Overdue">Overdue</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">Notes</label>
+                <textarea
+                  className="w-full text-sm border-zinc-200 rounded focus:ring-primary focus:border-primary"
+                  rows="3"
+                  value={editForm.notes}
+                  onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setShowEdit(false)} className="flex-1 py-2.5 border border-zinc-200 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50">Cancel</button>
+              <button onClick={handleEditInvoice} className="flex-1 py-2.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-primary/90">Update Invoice</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       {deletingId && (

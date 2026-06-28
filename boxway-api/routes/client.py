@@ -28,8 +28,37 @@ async def add_client(client: ClientSchema = Body(...)):
 @router.get("/", response_description="Clients retrieved")
 async def get_clients():
     clients = []
+    project_collection = db.get_collection("projects")
     for client in client_collection.find():
-        clients.append(client_helper(client))
+        client_data = client_helper(client)
+        # Calculate total projects and value from actual projects
+        client_id = client_data.get("id") or client_data.get("clientId")
+        client_name = client_data.get("name")
+        
+        # Count projects linked to this client
+        project_count = project_collection.count_documents({
+            "$or": [
+                {"client": client_id},
+                {"client": client_data.get("clientId")},
+                {"client": str(client.get("_id"))},
+                {"client": client_name}
+            ]
+        })
+        
+        # Calculate total value from projects
+        projects = list(project_collection.find({
+            "$or": [
+                {"client": client_id},
+                {"client": client_data.get("clientId")},
+                {"client": str(client.get("_id"))},
+                {"client": client_name}
+            ]
+        }))
+        total_value = sum(p.get("budget", 0) for p in projects)
+        
+        client_data["totalProjects"] = project_count
+        client_data["totalValue"] = total_value
+        clients.append(client_data)
     return {"message": "Success", "data": clients}
 
 @router.get("/{id}", response_description="Client data retrieved")

@@ -197,13 +197,39 @@ const ReviewInvoicePage = () => {
           <div className="grid grid-cols-2 gap-12">
             <div>
               <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 mb-4">Payment Terms</h4>
-              <p className="text-xs text-slate-500 leading-relaxed italic">{invoiceData.paymentTerms || ''}</p>
+              <textarea
+                className="w-full text-xs text-slate-500 leading-relaxed italic border-none p-0 resize-none focus:outline-none focus:ring-0"
+                rows="4"
+                value={invoiceData.paymentTerms || ''}
+                onChange={(e) => {
+                  // Since this is a preview page, we need to update the store
+                  const { updateField } = useInvoiceStore.getState();
+                  updateField('paymentTerms', e.target.value);
+                }}
+              />
             </div>
             <div className="text-right">
               <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 mb-4">Declaration</h4>
-              <p className="text-xs text-slate-500 leading-relaxed italic">{invoiceData.notes || ''}</p>
+              <textarea
+                className="w-full text-xs text-slate-500 leading-relaxed italic border-none p-0 resize-none focus:outline-none focus:ring-0 text-right"
+                rows="4"
+                value={invoiceData.notes || ''}
+                onChange={(e) => {
+                  const { updateField } = useInvoiceStore.getState();
+                  updateField('notes', e.target.value);
+                }}
+              />
               <div className="mt-6 inline-block border-b border-slate-900 w-48 h-10"></div>
-              <p className="text-[10px] uppercase font-bold text-slate-400 mt-2">{invoiceData.authorizedSignature || ''}</p>
+              <input
+                type="text"
+                className="text-[10px] uppercase font-bold text-slate-400 mt-2 border-none p-0 text-right focus:outline-none focus:ring-0 w-full"
+                value={invoiceData.authorizedSignature || ''}
+                onChange={(e) => {
+                  const { updateField } = useInvoiceStore.getState();
+                  updateField('authorizedSignature', e.target.value);
+                }}
+                placeholder="Authorized Signature"
+              />
             </div>
           </div>
         </div>

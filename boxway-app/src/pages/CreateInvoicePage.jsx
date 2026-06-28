@@ -317,18 +317,19 @@ const CreateInvoicePage = () => {
                 </div>
               )}
             </div>
-
-            <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm md:col-span-2">
-              <label className="block text-xs font-bold text-slate-400 uppercase mb-3">Authorized Signature</label>
-              <input
-                className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary"
-                type="text"
-                placeholder="Type authorized signatory name"
-                value={invoiceData.authorizedSignature}
-                onChange={(e) => updateField('authorizedSignature', e.target.value)}
-              />
-            </div>
           </div>
+        </div>
+
+        {/* Authorized Signature Card */}
+        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+          <label className="block text-xs font-bold text-slate-400 uppercase mb-3">Authorized Signature</label>
+          <input
+            className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary"
+            type="text"
+            placeholder="Type authorized signatory name"
+            value={invoiceData.authorizedSignature}
+            onChange={(e) => updateField('authorizedSignature', e.target.value)}
+          />
         </div>
 
         {/* Line Items Card */}
@@ -411,12 +412,43 @@ const CreateInvoicePage = () => {
                 value={invoiceData.notes} onChange={(e) => updateField('notes', e.target.value)}
               />
               <div className="border-2 border-dashed border-slate-100 rounded-lg p-6 text-center group cursor-pointer hover:border-primary/50 transition-colors">
-                <input type="file" multiple onChange={handleFileUpload} className="hidden" id="file-upload" />
+                <input 
+                  type="file" 
+                  multiple 
+                  onChange={handleFileUpload} 
+                  className="hidden" 
+                  id="file-upload" 
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                />
                 <label htmlFor="file-upload" className="cursor-pointer">
                   <Icon name="cloud_upload" className="text-slate-300 group-hover:text-primary mb-2" />
                   <p className="text-[10px] text-slate-400 font-medium">Click to upload receipts or supporting documents</p>
                 </label>
               </div>
+              {/* Display uploaded files */}
+              {invoiceData.attachments && invoiceData.attachments.length > 0 && (
+                <div className="mt-4 space-y-2">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">Uploaded Files</p>
+                  {invoiceData.attachments.map((attachment, index) => (
+                    <div key={index} className="flex items-center justify-between bg-slate-50 rounded px-3 py-2">
+                      <div className="flex items-center gap-2">
+                        <Icon name="attach_file" className="text-slate-400 text-[14px]" />
+                        <span className="text-xs text-slate-700 truncate max-w-[200px]">{attachment.name}</span>
+                        <span className="text-[10px] text-slate-400">({(attachment.size / 1024).toFixed(1)} KB)</span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          const updatedAttachments = invoiceData.attachments.filter((_, i) => i !== index);
+                          updateField('attachments', updatedAttachments);
+                        }}
+                        className="text-slate-400 hover:text-red-500"
+                      >
+                        <Icon name="close" className="text-[14px]" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           

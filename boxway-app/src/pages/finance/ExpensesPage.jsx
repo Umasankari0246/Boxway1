@@ -21,27 +21,62 @@ const ExpensesPage = () => {
   const [showView, setShowView] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
-  const [statusDropdownId, setStatusDropdownId] = useState(null);
   const [form, setForm] = useState({ title: '', category: '', amount: '', date: '', project: '', notes: '' });
+  const [projects, setProjects] = useState([]);
+  const [showEdit, setShowEdit] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
-    const fetchExpenses = async () => {
+    const fetchData = async () => {
       try {
-        const response = await api.get('/expenses/');
-        setExpenses(response.data.data);
+        const [expensesRes, projectsRes] = await Promise.all([
+          api.get('/expenses/'),
+          api.get('/projects/')
+        ]);
+        setExpenses(expensesRes.data.data);
+        setProjects(projectsRes.data.data || []);
       } catch (err) {
-        console.error("Error fetching expenses:", err);
+        console.error("Error fetching data:", err);
       } finally {
         setLoading(false);
       }
     };
-    fetchExpenses();
+    fetchData();
   }, []);
+
+  const handleRefresh = async () => {
+    setLoading(true);
+    try {
+      const [expensesRes, projectsRes] = await Promise.all([
+        api.get('/expenses/'),
+        api.get('/projects/')
+      ]);
+      setExpenses(expensesRes.data.data);
+      setProjects(projectsRes.data.data || []);
+    } catch (err) {
+      console.error("Error refreshing data:", err);
+      alert("Failed to refresh data");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const categories = ['All', 'Software', 'Travel', 'Office', 'Entertainment'];
   const filtered = expenses.filter(e =>
     (filter === 'All' || e.category === filter) &&
     e.title.toLowerCase().includes(search.toLowerCase())
+  ).sort((a, b) => {
+    // Sort by createdAt first, fallback to date if createdAt is not available
+    const dateA = a.createdAt || a.date;
+    const dateB = b.createdAt || b.date;
+    return new Date(dateB) - new Date(dateA);
+  });
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
+  const paginatedExpenses = filtered.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   );
 
   const totalApproved = expenses.filter(e => e.status === 'Approved').reduce((s, e) => s + e.amount, 0);
@@ -76,12 +111,12 @@ const ExpensesPage = () => {
       try {
         const newExpense = {
           title: form.title,
-          category: form.category || 'Other',
+          category: form.category || '-',
           amount: Number(form.amount),
-          date: form.date || new Date().toISOString().split('T')[0],
-          project: form.project || '',
-          notes: form.notes || '',
-          submittedBy: 'Current User',
+          date: form.date || '-',
+          project: form.project || '-',
+          notes: form.notes || '-',
+          submittedBy: '-',
           status: 'Pending'
         };
         const response = await api.post('/expenses/', newExpense);
@@ -95,30 +130,68 @@ const ExpensesPage = () => {
     }
   };
 
+  const handleEditExpense = async () => {
+    if (form.title && form.amount && selectedExpense) {
+      try {
+        const updatedExpense = {
+          title: form.title,
+          category: form.category || '-',
+          amount: Number(form.amount),
+          date: form.date || '-',
+          project: form.project || '-',
+          notes: form.notes || '-',
+          submittedBy: selectedExpense.submittedBy || '-',
+          status: selectedExpense.status
+        };
+        const response = await api.patch(`/expenses/${selectedExpense.id}`, updatedExpense);
+        setExpenses(expenses.map(e => e.id === selectedExpense.id ? response.data.data : e));
+        setForm({ title: '', category: '', amount: '', date: '', project: '', notes: '' });
+        setShowEdit(false);
+        setSelectedExpense(null);
+      } catch (err) {
+        console.error("Error updating expense:", err);
+        alert("Failed to update expense");
+      }
+    }
+  };
+
+  const openEditModal = (expense) => {
+    setSelectedExpense(expense);
+    setForm({
+      title: expense.title,
+      category: expense.category,
+      amount: expense.amount,
+      date: expense.date,
+      project: expense.project || '',
+      notes: expense.notes || ''
+    });
+    setShowEdit(true);
+  };
+
   return (
     <div className="flex-1 overflow-y-auto p-8 bg-[#f8f6f6]">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-2xl font-black text-slate-900">Expenses</h2>
-          <p className="text-sm text-slate-500">{expenses.length} expense records</p>
+      <div className="flex items-center gap-4 mb-6">
+        <div className="grid grid-cols-4 gap-4 flex-1">
+          {[
+            { label: 'Total Expenses', val: '$' + expenses.reduce((s, e) => s + e.amount, 0).toLocaleString() },
+            { label: 'Approved', val: '$' + totalApproved.toLocaleString(), color: 'text-green-600' },
+            { label: 'Pending', val: '$' + totalPending.toLocaleString(), color: 'text-yellow-600' },
+            { label: 'This Month', val: expenses.length + ' items' },
+          ].map(k => (
+            <div key={k.label} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">{k.label}</p>
+              <p className={`text-2xl font-black ${k.color || 'text-slate-900'}`}>{k.val}</p>
+            </div>
+          ))}
         </div>
-        <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-bold rounded shadow-lg shadow-primary/20 hover:bg-primary/90">
-          <Icon name="add" className="text-lg" /> Log Expense
-        </button>
-      </div>
-
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        {[
-          { label: 'Total Expenses', val: '$' + expenses.reduce((s, e) => s + e.amount, 0).toLocaleString() },
-          { label: 'Approved', val: '$' + totalApproved.toLocaleString(), color: 'text-green-600' },
-          { label: 'Pending', val: '$' + totalPending.toLocaleString(), color: 'text-yellow-600' },
-          { label: 'This Month', val: expenses.length + ' items' },
-        ].map(k => (
-          <div key={k.label} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">{k.label}</p>
-            <p className={`text-2xl font-black ${k.color || 'text-slate-900'}`}>{k.val}</p>
-          </div>
-        ))}
+        <div className="flex gap-2">
+          <button onClick={handleRefresh} disabled={loading} className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-50 disabled:opacity-50">
+            <Icon name="refresh" className="text-lg" />
+          </button>
+          <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-bold rounded shadow-lg shadow-primary/20 hover:bg-primary/90">
+            <Icon name="add" className="text-lg" /> Log Expense
+          </button>
+        </div>
       </div>
 
       <div className="flex items-center gap-4 mb-4">
@@ -136,48 +209,38 @@ const ExpensesPage = () => {
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
         <table className="w-full text-left">
           <thead className="bg-slate-50 border-b border-slate-200">
-            <tr>{['Title', 'Category', 'Submitted By', 'Project', 'Amount', 'Date', 'Status', 'Actions'].map(col => (
+            <tr>{['Title', 'Category', 'Project', 'Amount', 'Date', 'Status', 'Actions'].map(col => (
               <th key={col} className="px-6 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">{col}</th>
             ))}</tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {filtered.map(e => (
+            {paginatedExpenses.map(e => (
               <tr key={e.id}>
                 <td className="px-6 py-4">
                   <p className="text-sm font-semibold text-slate-900">{e.title}</p>
                   {e.notes && <p className="text-xs text-slate-400 truncate max-w-[200px]">{e.notes}</p>}
                 </td>
                 <td className="px-6 py-4"><span className="px-2 py-0.5 bg-slate-100 text-slate-700 text-[10px] font-bold rounded uppercase">{e.category}</span></td>
-                <td className="px-6 py-4 text-sm text-slate-600">{e.submittedBy}</td>
                 <td className="px-6 py-4 text-sm text-slate-500">{e.project || '—'}</td>
                 <td className="px-6 py-4 text-sm font-bold text-slate-900">${e.amount.toLocaleString()}</td>
                 <td className="px-6 py-4 text-sm text-slate-500">{e.date}</td>
                 <td className="px-6 py-4">
-                  <div className="relative">
-                    <button
-                      onClick={() => setStatusDropdownId(statusDropdownId === e.id ? null : e.id)}
-                      className={`px-4 py-1 text-[10px] font-bold uppercase border border-slate-300 rounded cursor-pointer min-w-[120px] bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary relative z-10 ${statusColors[e.status]}`}
-                    >
-                      {e.status}
-                    </button>
-                    {statusDropdownId === e.id && (
-                      <div className="absolute top-full left-0 mt-1 bg-white border border-slate-200 rounded shadow-lg z-50 min-w-[120px]">
-                        {['Approved', 'Pending', 'Rejected'].map(status => (
-                          <button
-                            key={status}
-                            onClick={() => { handleStatusChange(e.id, status); setStatusDropdownId(null); }}
-                            className="w-full px-4 py-2 text-left text-[10px] font-bold uppercase hover:bg-slate-50"
-                          >
-                            {status}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  <select
+                    value={e.status}
+                    onChange={(e) => handleStatusChange(e.id, e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className={`px-4 py-1 text-[10px] font-bold uppercase border-0 cursor-pointer min-w-[100px] ${statusColors[e.status]}`}
+                  >
+                    <option value="Approved">Approved</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Rejected">Rejected</option>
+                  </select>
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex gap-1">
                     <button onClick={() => { setSelectedExpense(e); setShowView(true); }} className="p-1 text-slate-400 hover:text-primary transition-colors"><Icon name="visibility" className="text-lg" /></button>
+                    <button onClick={() => openEditModal(e)} className="p-1 text-slate-400 hover:text-blue-500 transition-colors"><Icon name="edit" className="text-lg" /></button>
                     <button onClick={() => setDeletingId(e.id)} className="p-1 text-slate-400 hover:text-red-500 transition-colors"><Icon name="delete" className="text-lg" /></button>
                   </div>
                 </td>
@@ -186,6 +249,44 @@ const ExpensesPage = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {filtered.length > 0 && (
+        <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between">
+          <p className="text-xs text-slate-500">
+            Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filtered.length)} of {filtered.length} expenses
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 text-xs font-bold rounded border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 py-1 text-xs font-bold rounded border ${
+                  currentPage === page
+                    ? 'border-primary bg-primary text-white'
+                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 text-xs font-bold rounded border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Create Modal */}
       {showCreate && (
@@ -207,13 +308,55 @@ const ExpensesPage = () => {
               <div><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Date</label>
                 <input type="date" value={form.date} onChange={e => set('date', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary" /></div>
               <div><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Project (optional)</label>
-                <input value={form.project} onChange={e => set('project', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary" /></div>
+                <select value={form.project} onChange={e => set('project', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary">
+                  <option value="">Select project</option>
+                  {projects.map(project => (
+                    <option key={project.id || project.projectId} value={project.name}>{project.name}</option>
+                  ))}
+                </select></div>
               <div className="col-span-2"><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Notes</label>
                 <textarea rows={3} value={form.notes} onChange={e => set('notes', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary resize-none" /></div>
             </div>
             <div className="flex justify-end gap-3 mt-6">
               <button onClick={() => setShowCreate(false)} className="px-4 py-2 border border-slate-200 text-slate-700 text-sm font-semibold rounded hover:bg-slate-50">Cancel</button>
               <button onClick={handleAddExpense} className="px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20">Submit Expense</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {showEdit && selectedExpense && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowEdit(false)}>
+          <div className="bg-white rounded-xl p-8 w-full max-w-lg shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-black text-slate-900">Edit Expense</h3>
+              <button onClick={() => setShowEdit(false)} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded"><Icon name="close" /></button>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="col-span-2"><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Expense Title *</label>
+                <input value={form.title} onChange={e => set('title', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary" /></div>
+              <div><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Category</label>
+                <select value={form.category} onChange={e => set('category', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary">
+                  <option value="">Select</option>
+                  {['Software', 'Travel', 'Office', 'Entertainment', 'Other'].map(c => <option key={c}>{c}</option>)}</select></div>
+              <div><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Amount ($)</label>
+                <input type="number" value={form.amount} onChange={e => set('amount', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary" placeholder="0.00" /></div>
+              <div><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Date</label>
+                <input type="date" value={form.date} onChange={e => set('date', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary" /></div>
+              <div><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Project (optional)</label>
+                <select value={form.project} onChange={e => set('project', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary">
+                  <option value="">Select project</option>
+                  {projects.map(project => (
+                    <option key={project.id || project.projectId} value={project.name}>{project.name}</option>
+                  ))}
+                </select></div>
+              <div className="col-span-2"><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Notes</label>
+                <textarea rows={3} value={form.notes} onChange={e => set('notes', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary resize-none" /></div>
+            </div>
+            <div className="flex justify-end gap-3 mt-6">
+              <button onClick={() => setShowEdit(false)} className="px-4 py-2 border border-slate-200 text-slate-700 text-sm font-semibold rounded hover:bg-slate-50">Cancel</button>
+              <button onClick={handleEditExpense} className="px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20">Update Expense</button>
             </div>
           </div>
         </div>
@@ -249,10 +392,6 @@ const ExpensesPage = () => {
                   <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Status</p>
                   <span className={`px-2.5 py-0.5 text-[10px] font-bold rounded uppercase ${statusColors[selectedExpense.status]}`}>{selectedExpense.status}</span>
                 </div>
-              </div>
-              <div>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Submitted By</p>
-                <p className="text-sm text-slate-700">{selectedExpense.submittedBy}</p>
               </div>
               {selectedExpense.project && (
                 <div>

@@ -42,8 +42,8 @@ export const useInvoiceStore = create((set) => ({
   })),
   resetInvoice: () => set({
     invoiceData: {
-      issueDate: '', dueDate: '', projectLink: '', clientName: '', billingAddress: '',
-      gstin: '', contactPerson: '', items: [], paymentTerms: '', notes: ''
+      issueDate: '', dueDate: '', projectLink: '', projectId: '', clientId: '', clientName: '', billingAddress: '',
+      gstin: '', contactPerson: '', items: [], paymentTerms: '', notes: '', authorizedSignature: ''
     }
   })
 }));
