@@ -24,6 +24,10 @@ from routes.auth import router as AuthRouter
 
 from routes.analytics import router as AnalyticsRouter
 
+from routes.settings import router as SettingsRouter
+
+from routes.insights import router as InsightsRouter
+
 
 
 app = FastAPI()
@@ -67,6 +71,10 @@ app.include_router(DocumentRouter, tags=["Document"], prefix="/api/documents")
 app.include_router(AuthRouter, tags=["Auth"], prefix="/api/auth")
 
 app.include_router(AnalyticsRouter, tags=["Analytics"], prefix="/api/analytics")
+
+app.include_router(SettingsRouter, tags=["Settings"], prefix="/api/settings")
+
+app.include_router(InsightsRouter, tags=["Insights"], prefix="/api/insights")
 
 
 
