@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Search, Plus, RefreshCw, DollarSign, CheckCircle, Clock, ChevronRight, Trash2, Edit3, Eye, X } from 'lucide-react';
 import axios from 'axios';
-import Icon from "../../components/ui/Icon.jsx"
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -169,124 +169,192 @@ const ExpensesPage = () => {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-8 bg-[#f8f6f6]">
-      <div className="flex items-center gap-4 mb-6">
-        <div className="grid grid-cols-4 gap-4 flex-1">
-          {[
-            { label: 'Total Expenses', val: '$' + expenses.reduce((s, e) => s + e.amount, 0).toLocaleString() },
-            { label: 'Approved', val: '$' + totalApproved.toLocaleString(), color: 'text-green-600' },
-            { label: 'Pending', val: '$' + totalPending.toLocaleString(), color: 'text-yellow-600' },
-            { label: 'This Month', val: expenses.length + ' items' },
-          ].map(k => (
-            <div key={k.label} className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">{k.label}</p>
-              <p className={`text-2xl font-black ${k.color || 'text-slate-900'}`}>{k.val}</p>
-            </div>
-          ))}
-        </div>
-        <div className="flex gap-2">
-          <button onClick={handleRefresh} disabled={loading} className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-50 disabled:opacity-50">
-            <Icon name="refresh" className="text-lg" />
-          </button>
-          <button onClick={() => setShowCreate(true)} className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-bold rounded shadow-lg shadow-primary/20 hover:bg-primary/90">
-            <Icon name="add" className="text-lg" /> Log Expense
-          </button>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-4 mb-4">
-        <div className="relative flex-1 max-w-sm">
-          <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg" />
-          <input value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded bg-white text-sm focus:outline-none focus:border-primary" placeholder="Search expenses..." />
-        </div>
-        <div className="flex gap-2">
-          {categories.map(c => (
-            <button key={c} onClick={() => setFilter(c)} className={`px-3 py-1.5 text-xs font-bold rounded transition-colors ${filter === c ? 'bg-primary text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}`}>{c}</button>
-          ))}
-        </div>
-      </div>
-
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
-        <table className="w-full text-left">
-          <thead className="bg-slate-50 border-b border-slate-200">
-            <tr>{['Title', 'Category', 'Project', 'Amount', 'Date', 'Status', 'Actions'].map(col => (
-              <th key={col} className="px-6 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">{col}</th>
-            ))}</tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {paginatedExpenses.map(e => (
-              <tr key={e.id}>
-                <td className="px-6 py-4">
-                  <p className="text-sm font-semibold text-slate-900">{e.title}</p>
-                  {e.notes && <p className="text-xs text-slate-400 truncate max-w-[200px]">{e.notes}</p>}
-                </td>
-                <td className="px-6 py-4"><span className="px-2 py-0.5 bg-slate-100 text-slate-700 text-[10px] font-bold rounded uppercase">{e.category}</span></td>
-                <td className="px-6 py-4 text-sm text-slate-500">{e.project || '—'}</td>
-                <td className="px-6 py-4 text-sm font-bold text-slate-900">${e.amount.toLocaleString()}</td>
-                <td className="px-6 py-4 text-sm text-slate-500">{e.date}</td>
-                <td className="px-6 py-4">
-                  <select
-                    value={e.status}
-                    onChange={(e) => handleStatusChange(e.id, e.target.value)}
-                    onClick={(e) => e.stopPropagation()}
-                    onMouseDown={(e) => e.stopPropagation()}
-                    className={`px-4 py-1 text-[10px] font-bold uppercase border-0 cursor-pointer min-w-[100px] ${statusColors[e.status]}`}
-                  >
-                    <option value="Approved">Approved</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Rejected">Rejected</option>
-                  </select>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex gap-1">
-                    <button onClick={() => { setSelectedExpense(e); setShowView(true); }} className="p-1 text-slate-400 hover:text-primary transition-colors"><Icon name="visibility" className="text-lg" /></button>
-                    <button onClick={() => openEditModal(e)} className="p-1 text-slate-400 hover:text-blue-500 transition-colors"><Icon name="edit" className="text-lg" /></button>
-                    <button onClick={() => setDeletingId(e.id)} className="p-1 text-slate-400 hover:text-red-500 transition-colors"><Icon name="delete" className="text-lg" /></button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Pagination */}
-      {filtered.length > 0 && (
-        <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between">
-          <p className="text-xs text-slate-500">
-            Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filtered.length)} of {filtered.length} expenses
-          </p>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-              className="px-3 py-1 text-xs font-bold rounded border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Previous
+    <div className="flex flex-col h-full bg-[#f8f6f6]">
+      {/* Header Container */}
+      <div className="bg-white border-b border-slate-200 px-8 py-6">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-2xl font-black tracking-tight text-slate-900">Expenses</h1>
+            <p className="text-sm text-slate-500 mt-1">Track and manage business expenses and reimbursements</p>
+          </div>
+          <div className="flex gap-3">
+            <button onClick={handleRefresh} disabled={loading} className="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-50 transition-colors flex items-center gap-2 disabled:opacity-50">
+              <RefreshCw className="h-4 w-4" /> Refresh
             </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={`px-3 py-1 text-xs font-bold rounded border ${
-                  currentPage === page
-                    ? 'border-primary bg-primary text-white'
-                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                {page}
-              </button>
-            ))}
-            <button
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-              className="px-3 py-1 text-xs font-bold rounded border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Next
+            <button onClick={() => setShowCreate(true)} className="px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2">
+              <Plus className="h-4 w-4" /> Log Expense
             </button>
           </div>
         </div>
-      )}
+
+        {/* Filters */}
+        <div className="flex gap-4">
+          <div className="flex-1 max-w-md relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
+            <input 
+              type="text" 
+              placeholder="Search expenses by title..." 
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white transition-colors"
+            />
+          </div>
+          <select 
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="min-w-[150px] px-4 py-2 bg-white border border-slate-200 rounded text-sm text-slate-600 focus:outline-none focus:border-primary"
+          >
+            <option value="All">All Categories</option>
+            <option value="Software">Software</option>
+            <option value="Travel">Travel</option>
+            <option value="Office">Office</option>
+            <option value="Entertainment">Entertainment</option>
+          </select>
+        </div>
+      </div>
+
+      {/* KPI Cards */}
+      <div className="px-8 py-6 bg-[#f8f6f6]">
+        <div className="grid grid-cols-4 gap-4">
+          <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
+            <div>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Total Expenses</p>
+              <h3 className="text-2xl font-black">${expenses.reduce((s, e) => s + e.amount, 0).toLocaleString()}</h3>
+            </div>
+            <div className="text-primary"><DollarSign className="text-[28px]" /></div>
+          </div>
+          <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between border-l-2 border-l-green-500">
+            <div>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Approved</p>
+              <h3 className="text-2xl font-black">${totalApproved.toLocaleString()}</h3>
+            </div>
+            <div className="text-green-600"><CheckCircle className="text-[28px]" /></div>
+          </div>
+          <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
+            <div>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Pending</p>
+              <h3 className="text-2xl font-black text-yellow-600">${totalPending.toLocaleString()}</h3>
+            </div>
+            <div className="text-yellow-600"><Clock className="text-[28px]" /></div>
+          </div>
+          <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
+            <div>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">This Month</p>
+              <h3 className="text-2xl font-black">{expenses.length} items</h3>
+            </div>
+            <div className="text-black"><DollarSign className="text-[28px]" /></div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-8 pb-8">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          {/* List Header */}
+          <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_120px] gap-4 px-8 py-4 bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider items-center">
+            <div>Title</div>
+            <div>Category</div>
+            <div>Project</div>
+            <div>Amount</div>
+            <div>Status</div>
+            <div className="text-right">Actions</div>
+          </div>
+
+          {/* List Body */}
+          <div className="divide-y divide-slate-100">
+            {loading ? (
+              <div className="px-8 py-12 text-center text-slate-500 text-sm flex flex-col items-center">
+                 <RefreshCw className="animate-spin h-8 w-8 mb-2" />
+                 Loading expenses...
+              </div>
+            ) : expenses.length === 0 ? (
+              <div className="px-8 py-12 text-center text-slate-500 text-sm">
+                 <DollarSign className="h-10 w-10 mb-2 text-slate-300" />
+                 <p>No expenses found.</p>
+              </div>
+            ) : (
+              paginatedExpenses.map((e, index) => (
+                <div
+                  key={`${e.id}-${index}`}
+                  className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_120px] gap-4 px-8 py-4 items-center hover:bg-slate-50 transition-colors group"
+                >
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">{e.title}</p>
+                    {e.notes && <p className="text-xs text-slate-400 truncate max-w-[200px]">{e.notes}</p>}
+                  </div>
+                  <div><span className="px-2 py-0.5 bg-slate-100 text-slate-700 text-[10px] font-bold rounded uppercase">{e.category}</span></div>
+                  <div className="text-sm text-slate-500">{e.project || '—'}</div>
+                  <div className="text-sm font-bold text-slate-900">${e.amount.toLocaleString()}</div>
+                  <div>
+                    <select
+                      value={e.status}
+                      onChange={(e) => handleStatusChange(e.id, e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      className={`px-4 py-1 text-[10px] font-bold uppercase border-0 cursor-pointer min-w-[100px] ${statusColors[e.status]}`}
+                    >
+                      <option value="Approved">Approved</option>
+                      <option value="Pending">Pending</option>
+                      <option value="Rejected">Rejected</option>
+                    </select>
+                  </div>
+                  <div className="flex justify-end gap-1 items-center">
+                    <button onClick={() => { setSelectedExpense(e); setShowView(true); }} className="text-slate-400 hover:text-black p-1.5 rounded hover:bg-slate-50 transition-colors" title="View">
+                      <Eye className="h-4 w-4" />
+                    </button>
+                    <button onClick={() => openEditModal(e)} className="text-slate-400 hover:text-primary p-1.5 rounded hover:bg-primary/10 transition-colors" title="Edit">
+                      <Edit3 className="h-4 w-4" />
+                    </button>
+                    <button onClick={() => setDeletingId(e.id)} className="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition-colors" title="Delete">
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                    <button onClick={() => { setSelectedExpense(e); setShowView(true); }} className="text-slate-400 hover:text-primary p-1.5 rounded hover:bg-primary/10 transition-colors" title="View Details">
+                      <ChevronRight className="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Pagination */}
+          {filtered.length > 0 && (
+            <div className="px-8 py-4 border-t border-slate-200 flex items-center justify-between">
+              <p className="text-xs text-slate-500">
+                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filtered.length)} of {filtered.length} expenses
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1.5 text-xs font-medium rounded border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`px-3 py-1.5 text-xs font-medium rounded border ${
+                      currentPage === page
+                        ? 'bg-primary text-white border-primary'
+                        : 'border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1.5 text-xs font-medium rounded border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Create Modal */}
       {showCreate && (
@@ -294,7 +362,7 @@ const ExpensesPage = () => {
           <div className="bg-white rounded-xl p-8 w-full max-w-lg shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-black text-slate-900">Log Expense</h3>
-              <button onClick={() => setShowCreate(false)} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded"><Icon name="close" /></button>
+              <button onClick={() => setShowCreate(false)} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded"><X className="text-lg" /></button>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2"><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Expense Title *</label>
@@ -331,7 +399,7 @@ const ExpensesPage = () => {
           <div className="bg-white rounded-xl p-8 w-full max-w-lg shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-black text-slate-900">Edit Expense</h3>
-              <button onClick={() => setShowEdit(false)} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded"><Icon name="close" /></button>
+              <button onClick={() => setShowEdit(false)} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded"><X className="text-lg" /></button>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2"><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Expense Title *</label>

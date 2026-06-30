@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Search, Plus, RefreshCw, DollarSign, Clock, AlertCircle, CheckCircle, ChevronRight, Trash2, Edit3, Download, X } from 'lucide-react';
 import axios from 'axios';
-import Icon from "../components/ui/Icon.jsx"
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -148,166 +148,188 @@ const InvoicesPage = () => {
 
 
   return (
-    <div className="flex-1 p-6 overflow-y-auto no-scrollbar space-y-6">
-      {/* Top Actions */}
-      <div className="flex justify-between items-end">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight">Financial Ledger</h1>
-          <p className="text-[10px] text-zinc-500 uppercase font-bold mt-0.5">Track and manage client billing and incoming revenue</p>
+    <div className="flex flex-col h-full bg-[#f8f6f6]">
+      {/* Header Container */}
+      <div className="bg-white border-b border-slate-200 px-8 py-6">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <p className="text-sm text-slate-500 mt-1">Track and manage client billing and incoming revenue</p>
+          </div>
+          <div className="flex gap-3">
+            <button onClick={handleRefresh} disabled={loading} className="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-50 transition-colors flex items-center gap-2 disabled:opacity-50">
+              <RefreshCw className="h-4 w-4" /> Refresh
+            </button>
+            <Link to="/invoices/new" className="px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2">
+              <Plus className="h-4 w-4" /> New Invoice
+            </Link>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <button 
-            onClick={handleRefresh}
-            disabled={loading}
-            className="bg-white border border-zinc-200 text-zinc-700 px-4 py-2 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors disabled:opacity-50"
-          >
-            <Icon name="refresh" className="text-[16px]" />
-          </button>
-          <Link 
-            to="/invoices/new"
-            className="bg-primary text-white px-4 py-2 text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors"
-          >
-            New Invoice
-          </Link>
-        </div>
-      </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
-          <div>
-            <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Total Billed</p>
-            <h3 className="text-2xl font-black">${totalBilled.toLocaleString()}</h3>
+        {/* Filters */}
+        <div className="flex gap-4">
+          <div className="flex-1 max-w-md relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
+            <input 
+              type="text" 
+              placeholder="Search invoices by ID, client or project..." 
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white transition-colors"
+            />
           </div>
-          <div className="text-primary"><Icon name="payments" className="text-[28px]" /></div>
-        </div>
-        <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between border-l-2 border-l-primary">
-          <div>
-            <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Pending</p>
-            <h3 className="text-2xl font-black">${pending.toLocaleString()}</h3>
-          </div>
-          <div className="text-black"><Icon name="schedule" className="text-[28px]" /></div>
-        </div>
-        <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
-          <div>
-            <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Overdue</p>
-            <h3 className="text-2xl font-black text-primary">${overdue.toLocaleString()}</h3>
-          </div>
-          <div className="text-primary"><Icon name="warning" className="text-[28px]" /></div>
-        </div>
-        <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
-          <div>
-            <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Paid this Month</p>
-            <h3 className="text-2xl font-black">${paidThisMonth.toLocaleString()}</h3>
-          </div>
-          <div className="text-black"><Icon name="check_circle" className="text-[28px]" /></div>
-        </div>
-      </div>
-
-      {/* Filter & Search Bar */}
-      <div className="bg-white border border-zinc-100 shadow-sm p-3 flex flex-col md:flex-row gap-4 items-center">
-        <div className="relative flex-1 w-full">
-          <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-[20px]" />
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-zinc-50 border-none text-[12px] font-medium placeholder:text-zinc-400 focus:ring-1 focus:ring-primary"
-            placeholder="Search by ID, client or project..."
-            type="text"
-          />
-        </div>
-        <div className="flex items-center gap-2 w-full md:w-auto">
-          <select
+          <select 
             value={statusFilter}
-            onChange={e => setStatusFilter(e.target.value)}
-            className="bg-white border border-zinc-200 text-[11px] font-bold uppercase py-2 px-10 focus:ring-0 focus:border-primary min-w-[180px]"
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="min-w-[150px] px-4 py-2 bg-white border border-slate-200 rounded text-sm text-slate-600 focus:outline-none focus:border-primary"
           >
-            <option>All Statuses</option>
-            <option>Paid</option>
-            <option>Pending</option>
-            <option>Overdue</option>
+            <option value="All Statuses">All Statuses</option>
+            <option value="Paid">Paid</option>
+            <option value="Pending">Pending</option>
+            <option value="Overdue">Overdue</option>
           </select>
         </div>
       </div>
 
-      {/* Table Container */}
-      <div className="bg-white border border-zinc-100 shadow-sm overflow-hidden">
-        <table className="w-full text-left">
-          <thead>
-            <tr className="border-b border-zinc-100 bg-zinc-50/50">
-              <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-400">Invoice ID</th>
-              <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-400">Client</th>
-              <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-400">Issue Date</th>
-              <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-400 text-right">Amount</th>
-              <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-400 text-center">Status</th>
-              <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-zinc-400 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-zinc-100">
-            {paginated.map(inv => (
-              <tr key={inv.id} className="hover:bg-zinc-50/50 transition-colors">
-                <td className="px-6 py-4 text-xs font-black">{inv.id}</td>
-                <td className="px-6 py-4">
+      {/* KPI Cards */}
+      <div className="px-8 py-6 bg-[#f8f6f6]">
+        <div className="grid grid-cols-4 gap-4">
+          <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
+            <div>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Total Billed</p>
+              <h3 className="text-2xl font-black">${totalBilled.toLocaleString()}</h3>
+            </div>
+            <div className="text-primary"><DollarSign className="text-[28px]" /></div>
+          </div>
+          <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between border-l-2 border-l-primary">
+            <div>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Pending</p>
+              <h3 className="text-2xl font-black">${pending.toLocaleString()}</h3>
+            </div>
+            <div className="text-black"><Clock className="text-[28px]" /></div>
+          </div>
+          <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
+            <div>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Overdue</p>
+              <h3 className="text-2xl font-black text-primary">${overdue.toLocaleString()}</h3>
+            </div>
+            <div className="text-primary"><AlertCircle className="text-[28px]" /></div>
+          </div>
+          <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
+            <div>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Paid this Month</p>
+              <h3 className="text-2xl font-black">${paidThisMonth.toLocaleString()}</h3>
+            </div>
+            <div className="text-black"><CheckCircle className="text-[28px]" /></div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-8 pb-8">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          {/* List Header */}
+          <div className="grid grid-cols-[1.5fr_2fr_1fr_1fr_1fr_120px] gap-4 px-8 py-4 bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider items-center">
+            <div>Invoice ID</div>
+            <div>Client</div>
+            <div>Issue Date</div>
+            <div>Amount</div>
+            <div>Status</div>
+            <div className="text-right">Actions</div>
+          </div>
+
+          {/* List Body */}
+          <div className="divide-y divide-slate-100">
+            {loading ? (
+              <div className="px-8 py-12 text-center text-slate-500 text-sm flex flex-col items-center">
+                 <RefreshCw className="animate-spin h-8 w-8 mb-2" />
+                 Loading invoices...
+              </div>
+            ) : invoices.length === 0 ? (
+              <div className="px-8 py-12 text-center text-slate-500 text-sm">
+                 <DollarSign className="h-10 w-10 mb-2 text-slate-300" />
+                 <p>No invoices found.</p>
+              </div>
+            ) : (
+              paginated.map((inv, index) => (
+                <div
+                  key={`${inv.id}-${index}`}
+                  className="grid grid-cols-[1.5fr_2fr_1fr_1fr_1fr_120px] gap-4 px-8 py-4 items-center hover:bg-slate-50 transition-colors group"
+                >
+                  <div className="text-xs font-black">{inv.id}</div>
                   <div>
                     <p className="text-xs font-black">{inv.client}</p>
                     <p className="text-[10px] text-zinc-500 uppercase">{inv.project}</p>
                   </div>
-                </td>
-                <td className="px-6 py-4 text-[11px] font-medium uppercase text-zinc-600">{inv.date}</td>
-                <td className="px-6 py-4 text-[11px] font-black text-right">${inv.amount.toLocaleString()}</td>
-                <td className="px-6 py-4 text-center">
-                  <select
-                    value={inv.status}
-                    onChange={(e) => handleStatusChange(inv.id, e.target.value)}
-                    onClick={(e) => e.stopPropagation()}
-                    onMouseDown={(e) => e.stopPropagation()}
-                    className={`px-4 py-0.5 text-[9px] font-black uppercase border-0 cursor-pointer min-w-[100px] ${getStatusColor(inv.status)}`}
-                  >
-                    <option value="Paid">Paid</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Overdue">Overdue</option>
-                  </select>
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <div className="flex justify-end gap-2">
-                    <button onClick={() => setSelectedInvoice(inv)} className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-black transition-colors"><Icon name="visibility" className="text-[18px]" /></button>
-                    <button onClick={() => openEditModal(inv)} className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-primary transition-colors"><Icon name="edit" className="text-[18px]" /></button>
-                    <button onClick={() => setDeletingId(inv.id)} className="w-7 h-7 flex items-center justify-center text-zinc-400 hover:text-red-600 transition-colors"><Icon name="delete" className="text-[18px]" /></button>
+                  <div className="text-[11px] font-medium uppercase text-zinc-600">{inv.date}</div>
+                  <div className="text-[11px] font-black text-right">${inv.amount.toLocaleString()}</div>
+                  <div>
+                    <select
+                      value={inv.status}
+                      onChange={(e) => handleStatusChange(inv.id, e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      className={`px-4 py-0.5 text-[9px] font-black uppercase border-0 cursor-pointer min-w-[100px] ${getStatusColor(inv.status)}`}
+                    >
+                      <option value="Paid">Paid</option>
+                      <option value="Pending">Pending</option>
+                      <option value="Overdue">Overdue</option>
+                    </select>
                   </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {/* Pagination */}
-        <div className="px-6 py-3 border-t border-zinc-100 flex items-center justify-between">
-          <div className="text-[10px] font-black uppercase text-zinc-400">Showing {paginated.length} of {filtered.length} results</div>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setCurrentPage(Math.max(1, safeCurrentPage - 1))}
-              disabled={safeCurrentPage === 1}
-              className="h-8 px-2 text-[10px] font-black uppercase border border-zinc-100 hover:bg-zinc-50 disabled:opacity-50"
-            >
-              Prev
-            </button>
-            {Array.from({ length: Math.min(3, totalPages) }, (_, i) => (
-              <button
-                key={i + 1}
-                onClick={() => setCurrentPage(i + 1)}
-                className={`h-8 w-8 ${safeCurrentPage === i + 1 ? 'bg-black text-white' : 'border border-zinc-100'} text-[10px] font-black hover:bg-zinc-50`}
-              >
-                {i + 1}
-              </button>
-            ))}
-            <button
-              onClick={() => setCurrentPage(Math.min(totalPages, safeCurrentPage + 1))}
-              disabled={safeCurrentPage === totalPages}
-              className="h-8 px-2 text-[10px] font-black uppercase border border-zinc-100 hover:bg-zinc-50 disabled:opacity-50"
-            >
-              Next
-            </button>
+                  <div className="flex justify-end gap-1 items-center">
+                    <button onClick={() => setSelectedInvoice(inv)} className="text-slate-400 hover:text-black p-1.5 rounded hover:bg-slate-50 transition-colors" title="View">
+                      <Download className="h-4 w-4" />
+                    </button>
+                    <button onClick={() => openEditModal(inv)} className="text-slate-400 hover:text-primary p-1.5 rounded hover:bg-primary/10 transition-colors" title="Edit">
+                      <Edit3 className="h-4 w-4" />
+                    </button>
+                    <button onClick={() => setDeletingId(inv.id)} className="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition-colors" title="Delete">
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                    <button onClick={() => navigate(`/invoices/${inv.id}`)} className="text-slate-400 hover:text-primary p-1.5 rounded hover:bg-primary/10 transition-colors" title="View Details">
+                      <ChevronRight className="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
+
+          {/* Pagination */}
+          {filtered.length > 0 && (
+            <div className="px-8 py-4 border-t border-slate-200 flex items-center justify-between">
+              <p className="text-xs text-slate-500">
+                Showing {(safeCurrentPage - 1) * itemsPerPage + 1} to {Math.min(safeCurrentPage * itemsPerPage, filtered.length)} of {filtered.length} invoices
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCurrentPage(Math.max(1, safeCurrentPage - 1))}
+                  disabled={safeCurrentPage === 1}
+                  className="px-3 py-1.5 text-xs font-medium rounded border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`px-3 py-1.5 text-xs font-medium rounded border ${
+                      safeCurrentPage === page
+                        ? 'bg-primary text-white border-primary'
+                        : 'border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setCurrentPage(Math.min(totalPages, safeCurrentPage + 1))}
+                  disabled={safeCurrentPage === totalPages}
+                  className="px-3 py-1.5 text-xs font-medium rounded border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -318,7 +340,7 @@ const InvoicesPage = () => {
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-black uppercase tracking-tight">Edit Invoice</h3>
               <button onClick={() => setShowEdit(false)} className="p-1.5 hover:bg-zinc-100 transition-colors">
-                <Icon name="close" className="text-[20px]" />
+                <X className="text-[20px]" />
               </button>
             </div>
             <div className="space-y-4">
