@@ -14,24 +14,27 @@ const AnalyticsPage = () => {
   const [invoices, setInvoices] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [clients, setClients] = useState([]);
+  const [proposals, setProposals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState('3M');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [projectsRes, employeesRes, invoicesRes, expensesRes, clientsRes] = await Promise.all([
+        const [projectsRes, employeesRes, invoicesRes, expensesRes, clientsRes, proposalsRes] = await Promise.all([
           api.get('/projects/'),
           api.get('/employees/'),
           api.get('/invoices/'),
           api.get('/expenses/'),
           api.get('/clients/'),
+          api.get('/proposals/'),
         ]);
         setProjects(projectsRes.data.data);
         setEmployees(employeesRes.data.data);
         setInvoices(invoicesRes.data.data);
         setExpenses(expensesRes.data.data);
         setClients(clientsRes.data.data);
+        setProposals(proposalsRes.data.data);
       } catch (err) {
         console.error("Error fetching analytics data:", err);
       } finally {
@@ -67,39 +70,54 @@ const AnalyticsPage = () => {
   const calculateAnalytics = () => {
     const months = getMonths(period);
 
-    // Revenue vs Expenses by month
+    // Revenue vs Expenses by month - show multiple months but only current month has data
+    const now = new Date();
+    const currentMonth = new Date(0, now.getMonth()).toLocaleString('default', { month: 'short' });
+    const currentYear = now.getFullYear();
+    
+    // Calculate current month revenue and expenses for KPIs
+    const currentMonthProjects = projects.filter(p => {
+      if (!p.startDate) return false;
+      const projDate = new Date(p.startDate);
+      const projMonth = new Date(0, projDate.getMonth()).toLocaleString('default', { month: 'short' });
+      const projYear = projDate.getFullYear();
+      return projMonth === currentMonth && projYear === currentYear && (p.status === 'In Progress' || p.status === 'Completed');
+    });
+    const currentMonthRevenue = currentMonthProjects.reduce((sum, p) => sum + (p.budget || 0), 0);
+
+    const currentMonthExpenses = expenses.filter(exp => {
+      if (!exp.date) return false;
+      const expDate = new Date(exp.date);
+      const expMonth = new Date(0, expDate.getMonth()).toLocaleString('default', { month: 'short' });
+      const expYear = expDate.getFullYear();
+      return expMonth === currentMonth && expYear === currentYear && exp.status === 'Approved';
+    });
+    const currentMonthExp = currentMonthExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
+    
     const revenueByMonth = months.map(month => {
-      // Filter invoices by month
-      const monthInvoices = invoices.filter(inv => {
-        if (!inv.date) return false;
-        const invDate = new Date(inv.date);
-        const invMonth = new Date(0, invDate.getMonth()).toLocaleString('default', { month: 'short' });
-        return invMonth === month && inv.status === 'Paid';
-      });
-      const monthRevenue = monthInvoices.reduce((sum, inv) => sum + (inv.amount || 0), 0);
-
-      // Filter expenses by month
-      const monthExpenses = expenses.filter(exp => {
-        if (!exp.date) return false;
-        const expDate = new Date(exp.date);
-        const expMonth = new Date(0, expDate.getMonth()).toLocaleString('default', { month: 'short' });
-        return expMonth === month && exp.status === 'Approved';
-      });
-      const monthExp = monthExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
-
-      return {
-        month,
-        revenue: Math.round(monthRevenue),
-        expenses: Math.round(monthExp)
-      };
+      // Only populate data for current month
+      if (month === currentMonth) {
+        return {
+          month,
+          revenue: Math.round(currentMonthRevenue),
+          expenses: Math.round(currentMonthExp)
+        };
+      } else {
+        // Other months show 0
+        return {
+          month,
+          revenue: 0,
+          expenses: 0
+        };
+      }
     });
 
     // KPIs
-    const periodInvoices = invoices.filter(inv => inv.status === 'Paid');
-    const totalRevenue = periodInvoices.reduce((sum, inv) => sum + (inv.amount || 0), 0);
+    const totalProjectBudget = projects.reduce((sum, p) => sum + (p.budget || 0), 0);
+    const totalRevenue = totalProjectBudget;
     const activeProjects = projects.filter(p => p.status === 'In Progress' || p.status === 'Planning').length;
-    const pendingInvoices = invoices.filter(i => i.status === 'Pending' || i.status === 'Draft').reduce((sum, inv) => sum + (inv.amount || 0), 0);
-    const avgProjectValue = projects.length > 0 ? totalRevenue / Math.max(projects.length, 1) : 0;
+    const avgProjectValue = projects.length > 0 ? totalProjectBudget / projects.length : 0;
+    const totalExpenses = expenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
 
     // Projects by status
     const statusCounts = {};
@@ -110,7 +128,7 @@ const AnalyticsPage = () => {
     const projectsByStatus = Object.entries(statusCounts).map(([status, count]) => ({
       status,
       count,
-      color: status === 'In Progress' ? '#3b82f6' : status === 'Completed' ? '#10b981' : status === 'On Hold' ? '#f59e0b' : '#6b7280'
+      color: status === 'In Progress' ? '#b91c1c' : status === 'Completed' ? '#4b5563' : status === 'On Hold' ? '#6b7280' : '#9ca3af'
     })).sort((a, b) => b.count - a.count);
 
     // Employees by status
@@ -122,7 +140,7 @@ const AnalyticsPage = () => {
     const employeesByStatus = Object.entries(employeeStatusCounts).map(([status, count]) => ({
       status,
       count,
-      color: status === 'Active' ? '#0f172a' : status === 'On Leave' ? '#475569' : status === 'Inactive' ? '#94a3b8' : '#64748b'
+      color: status === 'Active' ? '#b91c1c' : status === 'On Leave' ? '#4b5563' : status === 'Inactive' ? '#6b7280' : '#9ca3af'
     })).sort((a, b) => b.count - a.count);
 
     // Clients by status
@@ -134,39 +152,37 @@ const AnalyticsPage = () => {
     const clientsByStatus = Object.entries(clientStatusCounts).map(([status, count]) => ({
       status,
       count,
-      color: status === 'Active' ? '#0f172a' : status === 'Inactive' ? '#94a3b8' : '#64748b'
+      color: status === 'Active' ? '#b91c1c' : status === 'Inactive' ? '#4b5563' : '#6b7280'
     })).sort((a, b) => b.count - a.count);
 
-    // Proposal win/loss rate based on project status
-    const completedProjects = projects.filter(p => p.status === 'Completed').length;
-    const cancelledProjects = projects.filter(p => p.status === 'Cancelled' || p.status === 'Rejected').length;
-    const totalProposals = completedProjects + cancelledProjects;
+    // Proposal win/loss rate based on proposals collection
+    const wonProposals = proposals.filter(p => p.status === 'Won').length;
+    const lostProposals = proposals.filter(p => p.status === 'Lost').length;
+    const totalProposalsCount = wonProposals + lostProposals;
     
     let proposalStats = [];
-    if (totalProposals > 0) {
-      const wonRate = Math.round((completedProjects / totalProposals) * 100);
+    if (totalProposalsCount > 0) {
+      const wonRate = Math.round((wonProposals / totalProposalsCount) * 100);
       const lostRate = 100 - wonRate;
       proposalStats = [
-        { label: 'Won', value: wonRate, color: '#0f172a' },
-        { label: 'Lost', value: lostRate, color: '#94a3b8' }
+        { label: 'Won', value: wonRate, color: '#b91c1c' },
+        { label: 'Lost', value: lostRate, color: '#4b5563' }
       ];
     } else {
       // Fallback if no proposal data
       proposalStats = [
-        { label: 'Won', value: 0, color: '#0f172a' },
-        { label: 'Lost', value: 0, color: '#94a3b8' }
+        { label: 'Won', value: 0, color: '#b91c1c' },
+        { label: 'Lost', value: 0, color: '#4b5563' }
       ];
     }
 
-    // Top clients by revenue (from real invoices)
+    // Top clients by revenue (from project budgets)
     const clientRevenue = {};
-    invoices.forEach(inv => {
-      if (!clientRevenue[inv.client]) {
-        clientRevenue[inv.client] = 0;
+    projects.forEach(p => {
+      if (!clientRevenue[p.client]) {
+        clientRevenue[p.client] = 0;
       }
-      if (inv.status === 'Paid') {
-        clientRevenue[inv.client] += (inv.amount || 0);
-      }
+      clientRevenue[p.client] += (p.budget || 0);
     });
     const topClients = Object.entries(clientRevenue)
       .map(([name, value]) => ({ name, value: Math.round(value) }))
@@ -179,7 +195,7 @@ const AnalyticsPage = () => {
         totalRevenue,
         activeProjects,
         avgProjectValue,
-        outstandingInvoices: pendingInvoices
+        totalExpenses
       },
       projectsByStatus,
       employeesByStatus,
@@ -194,18 +210,20 @@ const AnalyticsPage = () => {
   const handleRefresh = async () => {
     setLoading(true);
     try {
-      const [projectsRes, employeesRes, invoicesRes, expensesRes, clientsRes] = await Promise.all([
+      const [projectsRes, employeesRes, invoicesRes, expensesRes, clientsRes, proposalsRes] = await Promise.all([
         api.get('/projects/'),
         api.get('/employees/'),
         api.get('/invoices/'),
         api.get('/expenses/'),
         api.get('/clients/'),
+        api.get('/proposals/'),
       ]);
       setProjects(projectsRes.data.data);
       setEmployees(employeesRes.data.data);
       setInvoices(invoicesRes.data.data);
       setExpenses(expensesRes.data.data);
       setClients(clientsRes.data.data);
+      setProposals(proposalsRes.data.data);
     } catch (err) {
       console.error("Error refreshing analytics data:", err);
       alert("Failed to refresh analytics");
@@ -243,8 +261,8 @@ const AnalyticsPage = () => {
         {data.map(d => (
         <div key={d[keyX]} className="flex-1 flex flex-col items-center gap-1">
           <div className="w-full flex gap-0.5 items-end" style={{ height: '120px' }}>
-            <div className="flex-1 bg-primary rounded-t transition-all" style={{ height: `${(d[keyA] / maxVal) * 100}%` }} title={`${labelA}: $${d[keyA].toLocaleString()}`} />
-            <div className="flex-1 bg-zinc-200 rounded-t transition-all" style={{ height: `${(d[keyB] / maxVal) * 100}%` }} title={`${labelB}: $${d[keyB].toLocaleString()}`} />
+            <div className="flex-1 bg-red-700 rounded-t transition-all" style={{ height: `${(d[keyA] / maxVal) * 100}%` }} title={`${labelA}: $${d[keyA].toLocaleString()}`} />
+            <div className="flex-1 bg-gray-600 rounded-t transition-all" style={{ height: `${(d[keyB] / maxVal) * 100}%` }} title={`${labelB}: $${d[keyB].toLocaleString()}`} />
           </div>
           <span className="text-[10px] text-zinc-400 font-medium">{d[keyX]}</span>
         </div>
@@ -352,8 +370,8 @@ const AnalyticsPage = () => {
           </div>
           <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
             <div>
-              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Outstanding</p>
-              <h3 className="text-2xl font-black text-amber-600">${(analytics.kpis.outstandingInvoices / 1000).toFixed(0)}K</h3>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Total Expenses</p>
+              <h3 className="text-2xl font-black">${(analytics.kpis.totalExpenses / 1000).toFixed(0)}K</h3>
             </div>
             <div className="text-amber-600"><Receipt className="text-[28px]" /></div>
           </div>
@@ -367,8 +385,8 @@ const AnalyticsPage = () => {
             <div className="flex justify-between items-center mb-5">
               <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Revenue vs Expenses</h3>
               <div className="flex items-center gap-4 text-[10px]">
-                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-primary" />Revenue</span>
-                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-zinc-200" />Expenses</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-red-700" />Revenue</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-gray-600" />Expenses</span>
               </div>
             </div>
             <BarChart data={analytics.revenueByMonth} keyX="month" keyA="revenue" keyB="expenses" labelA="Revenue" labelB="Expenses" />
@@ -420,25 +438,31 @@ const AnalyticsPage = () => {
           </div>
 
           {/* Proposal Win/Loss Rate - Bar Chart */}
-          <div className="col-span-1 lg:col-span-6 bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-            <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider mb-3">Proposal Win/Loss Rate</h3>
-            <div className="space-y-3">
-              {analytics.proposalStats.map(item => (
-                <div key={item.label}>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-slate-600 font-semibold">{item.label}</span>
-                    <span className="font-black" style={{ color: item.color }}>{item.value}%</span>
+          <div className="col-span-1 lg:col-span-6 bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+            <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider mb-4">Proposal Win/Loss Rate</h3>
+            <div className="space-y-4">
+              {analytics.proposalStats.map((item, i) => {
+                const max = 100;
+                return (
+                  <div key={item.label} className="flex items-center gap-3">
+                    <span className="text-[10px] font-black w-4 text-slate-400">{i + 1}</span>
+                    <div className="flex-1">
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="font-semibold text-slate-700">{item.label}</span>
+                        <span className="font-black text-xs text-slate-900">{item.value}%</span>
+                      </div>
+                      <div className="h-1.5 bg-slate-100 rounded-full">
+                        <div className="h-1.5 bg-slate-900 rounded-full" style={{ width: `${(item.value / max) * 100}%` }} />
+                      </div>
+                    </div>
                   </div>
-                  <div className="h-6 bg-slate-100 rounded-full">
-                    <div className="h-6 rounded-full transition-all" style={{ width: `${item.value}%`, backgroundColor: item.color }} />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
           {/* Employee Status - Pie Chart */}
-          <div className="col-span-1 lg:col-span-4 bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+          <div className="col-span-1 lg:col-span-6 bg-white rounded-xl border border-slate-200 shadow-sm p-6">
             <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider mb-4">Employees by Status</h3>
             <div className="flex flex-col items-center gap-4">
               <PieChart data={analytics.employeesByStatus} />
@@ -455,7 +479,7 @@ const AnalyticsPage = () => {
           </div>
 
           {/* Client Status - Pie Chart */}
-          <div className="col-span-1 lg:col-span-4 bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+          <div className="col-span-1 lg:col-span-6 bg-white rounded-xl border border-slate-200 shadow-sm p-6">
             <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider mb-4">Clients by Status</h3>
             <div className="flex flex-col items-center gap-4">
               <PieChart data={analytics.clientsByStatus} />
