@@ -17,13 +17,6 @@ const Step1 = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fallbackEmployees = [
-    { id: 'EMP001', name: 'Uma', role: 'CAD Technician', department: 'Engineering', salary: 40000 },
-    { id: 'EMP002', name: 'Ravi', role: 'Project Manager', department: 'Operations', salary: 55000 },
-    { id: 'EMP003', name: 'Nisha', role: 'Finance Analyst', department: 'Finance', salary: 48000 },
-    { id: 'EMP004', name: 'Arun', role: 'Architect', department: 'Design', salary: 62000 },
-  ];
-
   const getRecentEmployees = () => {
     try {
       const raw = window.localStorage.getItem(RECENT_EMPLOYEES_KEY);
@@ -35,8 +28,8 @@ const Step1 = () => {
   };
 
   const mergeEmployees = (apiEmployees = [], recentEmployees = []) => {
-    const merged = [...fallbackEmployees];
-    const existingIds = new Set(merged.map(emp => emp.id));
+    const merged = [];
+    const existingIds = new Set();
 
     [...recentEmployees, ...apiEmployees].forEach(emp => {
       const normalizedId = emp.id || emp.employeeId || emp._id;

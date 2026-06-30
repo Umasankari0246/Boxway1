@@ -128,15 +128,6 @@ const AnalyticsPage = () => {
       .sort((a, b) => b.value - a.value)
       .slice(0, 5);
 
-    // Fallback if no real clients
-    const finalTopClients = topClients.length > 0 ? topClients : [
-      { name: 'Villa Developers', value: 120000 },
-      { name: 'Modern Spaces Inc', value: 95000 },
-      { name: 'Urban Living Group', value: 80000 },
-      { name: 'Green Earth Properties', value: 65000 },
-      { name: 'Luxury Homes Ltd', value: 55000 }
-    ];
-
     return {
       revenueByMonth,
       kpis: {
@@ -149,7 +140,7 @@ const AnalyticsPage = () => {
         revenueGrowth: 18
       },
       projectsByStatus,
-      topClients: finalTopClients
+      topClients
     };
   };
 
