@@ -287,9 +287,9 @@ const ExpensesPage = () => {
                   <div>
                     <select
                       value={e.status}
-                      onChange={(e) => handleStatusChange(e.id, e.target.value)}
-                      onClick={(e) => e.stopPropagation()}
-                      onMouseDown={(e) => e.stopPropagation()}
+                      onChange={(event) => handleStatusChange(e.id, event.target.value)}
+                      onClick={(event) => event.stopPropagation()}
+                      onMouseDown={(event) => event.stopPropagation()}
                       className={`px-4 py-1 text-[10px] font-bold uppercase border-0 cursor-pointer min-w-[100px] ${statusColors[e.status]}`}
                     >
                       <option value="Approved">Approved</option>

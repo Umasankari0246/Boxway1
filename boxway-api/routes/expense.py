@@ -23,8 +23,17 @@ async def add_expense(expense: ExpenseSchema = Body(...)):
 
 @router.get("/", response_description="Retrieve all expenses")
 async def get_expenses():
+    total_expenses = expense_collection.count_documents({})
+    print("GET /api/expenses/ called")
+    print(f"Expenses collection: {expense_collection.name}")
+    print(f"Expenses count: {total_expenses}")
     expenses = expense_collection.find()
-    return {"message": "Success", "data": [expense_helper(exp) for exp in expenses]}
+    expense_list = [expense_helper(exp) for exp in expenses]
+    print(f"Expenses returned: {len(expense_list)}")
+    if expense_list:
+        for index, expense in enumerate(expense_list):
+            print(f"Expense {index}: {{'id': {expense.get('id')}, 'amount': {expense.get('amount')}, 'date': {expense.get('date')}, 'status': {expense.get('status')}}}")
+    return {"message": "Success", "data": expense_list}
 
 @router.get("/{id}", response_description="Retrieve a single expense")
 async def get_expense(id: str):

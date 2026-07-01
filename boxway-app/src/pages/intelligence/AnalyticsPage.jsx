@@ -8,6 +8,13 @@ const api = axios.create({
     : 'https://boxxway.onrender.com/api',
 });
 
+const REVENUE_PROJECT_STATUSES = new Set(['Planning', 'In Progress', 'Completed']);
+
+const toNumber = (value) => {
+  const numericValue = Number(value);
+  return Number.isFinite(numericValue) ? numericValue : 0;
+};
+
 const AnalyticsPage = () => {
   const [projects, setProjects] = useState([]);
   const [employees, setEmployees] = useState([]);
@@ -29,6 +36,8 @@ const AnalyticsPage = () => {
           api.get('/clients/'),
           api.get('/proposals/'),
         ]);
+        console.log('Analytics API Response - Projects:', projectsRes.data.data);
+        console.log('Analytics API Response - Expenses:', expensesRes.data.data);
         setProjects(projectsRes.data.data);
         setEmployees(employeesRes.data.data);
         setInvoices(invoicesRes.data.data);
@@ -68,49 +77,52 @@ const AnalyticsPage = () => {
 
   // Calculate analytics from real data based on period
   const calculateAnalytics = () => {
-    const months = getMonths(period);
-
-    // Revenue vs Expenses by month - show multiple months but only current month has data
     const now = new Date();
-    const currentMonth = new Date(0, now.getMonth()).toLocaleString('default', { month: 'short' });
-    const currentYear = now.getFullYear();
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     
-    // Calculate current month revenue and expenses for KPIs
-    const currentMonthProjects = projects.filter(p => {
-      if (!p.startDate) return false;
-      const projDate = new Date(p.startDate);
-      const projMonth = new Date(0, projDate.getMonth()).toLocaleString('default', { month: 'short' });
-      const projYear = projDate.getFullYear();
-      return projMonth === currentMonth && projYear === currentYear && (p.status === 'In Progress' || p.status === 'Completed');
-    });
-    const currentMonthRevenue = currentMonthProjects.reduce((sum, p) => sum + (p.budget || 0), 0);
+    console.log('Analytics - Current Month:', new Date(0, now.getMonth()).toLocaleString('default', { month: 'short' }), 'Year:', now.getFullYear());
+    console.log('Analytics - Projects with startDate:', projects.filter(p => p.startDate).map(p => ({ name: p.name, startDate: p.startDate, status: p.status, budget: p.budget })));
+    console.log('Analytics - Expenses with date:', expenses.filter(exp => exp.date).map(exp => ({ title: exp.title, date: exp.date, status: exp.status, amount: exp.amount })));
 
-    const currentMonthExpenses = expenses.filter(exp => {
-      if (!exp.date) return false;
-      const expDate = new Date(exp.date);
-      const expMonth = new Date(0, expDate.getMonth()).toLocaleString('default', { month: 'short' });
-      const expYear = expDate.getFullYear();
-      return expMonth === currentMonth && expYear === currentYear && exp.status === 'Approved';
-    });
-    const currentMonthExp = currentMonthExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
+    // Calculate revenue and expenses for the last 3 months, matching the dashboard chart.
+    const revenueByMonth = [];
+    const currentMonthIndex = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    for (let i = 2; i >= 0; i--) {
+      const monthIndex = (currentMonthIndex - i + 12) % 12;
+      const year = currentMonthIndex - i >= 0 ? currentYear : currentYear - 1;
+      const monthName = monthNames[monthIndex];
+
+      const monthRevenue = projects.filter(p => {
+        const projectDate = p.startDate && p.startDate.trim() !== '' ? p.startDate : p.createdAt;
+        if (!projectDate) {
+          return false;
+        }
+        const projDate = new Date(projectDate);
+        return projDate.getMonth() === monthIndex && projDate.getFullYear() === year && REVENUE_PROJECT_STATUSES.has(p.status);
+      }).reduce((sum, p) => sum + toNumber(p.budget), 0);
+
+      const monthExpenses = expenses.filter(exp => {
+        const expenseDateValue = exp.date && exp.date.trim() !== '' && exp.date !== '-' ? exp.date : exp.createdAt;
+        if (!expenseDateValue || exp.status !== 'Approved') {
+          return false;
+        }
+        const expDate = new Date(expenseDateValue);
+        if (Number.isNaN(expDate.getTime())) {
+          return false;
+        }
+        return expDate.getMonth() === monthIndex && expDate.getFullYear() === year;
+      }).reduce((sum, exp) => sum + toNumber(exp.amount), 0);
+
+      revenueByMonth.push({
+        month: monthName,
+        revenue: Math.round(monthRevenue),
+        expenses: Math.round(monthExpenses)
+      });
+    }
     
-    const revenueByMonth = months.map(month => {
-      // Only populate data for current month
-      if (month === currentMonth) {
-        return {
-          month,
-          revenue: Math.round(currentMonthRevenue),
-          expenses: Math.round(currentMonthExp)
-        };
-      } else {
-        // Other months show 0
-        return {
-          month,
-          revenue: 0,
-          expenses: 0
-        };
-      }
-    });
+    console.log('Analytics - Final revenueByMonth data:', revenueByMonth);
 
     // KPIs
     const totalProjectBudget = projects.reduce((sum, p) => sum + (p.budget || 0), 0);
@@ -206,6 +218,8 @@ const AnalyticsPage = () => {
   };
 
   const analytics = calculateAnalytics();
+  const revenueMaxValue = Math.max(...analytics.revenueByMonth.map(d => d.revenue), 1) || 1;
+  const expenseMaxValue = Math.max(...analytics.revenueByMonth.map(d => d.expenses), 1) || 1;
 
   const handleRefresh = async () => {
     setLoading(true);
@@ -385,11 +399,50 @@ const AnalyticsPage = () => {
             <div className="flex justify-between items-center mb-5">
               <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Revenue vs Expenses</h3>
               <div className="flex items-center gap-4 text-[10px]">
-                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-red-700" />Revenue</span>
-                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-gray-600" />Expenses</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-primary" />Revenue</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-slate-800" />Expenses</span>
               </div>
             </div>
-            <BarChart data={analytics.revenueByMonth} keyX="month" keyA="revenue" keyB="expenses" labelA="Revenue" labelB="Expenses" />
+            <div className="h-52 relative overflow-hidden rounded-3xl border border-zinc-100 bg-zinc-50 p-4">
+              <div className="absolute inset-x-4 top-4 h-px bg-zinc-200" />
+              <div className="absolute inset-x-4 top-16 h-px bg-zinc-200" />
+              <div className="absolute inset-x-4 top-28 h-px bg-zinc-200" />
+              <div className="absolute inset-x-4 top-40 h-px bg-zinc-200" />
+              <div className="absolute inset-x-4 bottom-14 h-px bg-zinc-200" />
+              <div className="relative h-full flex items-end gap-3 pt-2 pb-2">
+                {loading ? (
+                  <div className="w-full flex items-center justify-center text-zinc-400 text-[10px]">Loading financial data...</div>
+                ) : (
+                  analytics.revenueByMonth.map((item) => {
+                    const revenueHeightPercent = Math.max((item.revenue / revenueMaxValue) * 100, 2);
+                    const expenseHeightPercent = Math.max((item.expenses / expenseMaxValue) * 100, 2);
+                    return (
+                      <div key={item.month} className="flex-1 h-full flex flex-col items-center gap-2 min-w-0">
+                        <div className="flex h-full w-full gap-2 items-end justify-center px-1">
+                          <div className="flex h-full w-6 shrink-0 items-end justify-center">
+                            <div
+                              className="w-6 bg-primary rounded-t-sm border border-black/10 box-border"
+                              style={{ height: `${revenueHeightPercent}%`, minHeight: '4px', maxHeight: '100%' }}
+                            />
+                          </div>
+                          <div className="flex h-full w-6 shrink-0 items-end justify-center">
+                            <div
+                              className="w-6 bg-slate-800 rounded-t-sm border border-black/10 box-border"
+                              style={{ height: `${expenseHeightPercent}%`, minHeight: '4px', maxHeight: '100%' }}
+                            />
+                          </div>
+                        </div>
+                        <span className="text-[10px] font-bold text-zinc-500">{item.month}</span>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4 mt-4 text-[10px] font-bold text-zinc-400 uppercase">
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-primary" />Revenue</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-slate-800" />Expenses</div>
+            </div>
           </div>
 
           {/* Project Status */}
