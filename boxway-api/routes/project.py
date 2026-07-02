@@ -86,3 +86,11 @@ async def delete_project(id: str):
         project_collection.delete_one({"_id": ObjectId(id)})
         return {"message": "Success"}
     return {"message": "Project not found"}, 404
+
+@router.get("/{id}/activity", response_description="Get project activity/comments")
+async def get_project_activity(id: str):
+    project = project_collection.find_one({"_id": ObjectId(id)})
+    if project:
+        activity = project.get("activity", [])
+        return {"message": "Success", "data": activity}
+    return {"message": "Project not found"}, 404

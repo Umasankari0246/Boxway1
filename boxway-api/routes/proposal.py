@@ -82,3 +82,17 @@ async def delete_proposal(id: str):
         if delete_result.deleted_count == 1:
             return {"message": "Success"}
     return {"error": "Delete failed"}
+
+@router.get("/{id}/comments", response_description="Get proposal comments")
+async def get_proposal_comments(id: str):
+    # Try to find by proposalId first, then by MongoDB _id
+    proposal = proposal_collection.find_one({"proposalId": id})
+    if not proposal:
+        try:
+            proposal = proposal_collection.find_one({"_id": ObjectId(id)})
+        except:
+            pass
+    if proposal:
+        comments = proposal.get("comments", [])
+        return {"message": "Success", "data": comments}
+    return {"error": "Proposal not found"}
