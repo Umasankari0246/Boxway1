@@ -536,29 +536,464 @@ const PayslipsTab = () => {
   );
 };
 
-const SettingsTab = () => (
-  <div className="grid grid-cols-2 gap-6">
-    {[
-      { icon: 'payments', title: 'Salary Templates', desc: 'Define salary tiers and deduction rules for each department.' },
-      { icon: 'add_circle', title: 'Ad-Hoc Payments', desc: 'Manage bonuses, commissions, and one-time payments.' },
-      { icon: 'account_balance', title: 'Payment Methods', desc: 'Direct deposit, check, or wire transfer configuration.' },
-      { icon: 'manage_accounts', title: 'Roles & Access', desc: 'Control who can approve payroll runs.' },
-      { icon: 'task_alt', title: 'Approval Workflows', desc: 'Set up multi-level approval chains for payroll processing.' },
-      { icon: 'notifications', title: 'Notifications', desc: 'Configure email and in-app alerts for payroll events.' },
-    ].map(item => (
-      <div key={item.title} className="bg-white rounded-xl border border-slate-200 p-6 flex items-start gap-5 cursor-pointer hover:shadow-md transition-shadow">
-        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
-          <Icon name={item.icon} className="text-2xl" />
-        </div>
-        <div className="flex-1">
-          <h4 className="font-bold text-slate-900 text-sm">{item.title}</h4>
-          <p className="text-xs text-slate-500 mt-1 leading-relaxed">{item.desc}</p>
-        </div>
-        <Icon name="chevron_right" className="text-slate-300" />
+const SettingsTab = () => {
+  const [activeSection, setActiveSection] = useState('templates');
+  const [templates, setTemplates] = useState([
+    { id: 1, name: 'Standard Tech', department: 'Engineering', basicSalary: 4000, allowance: 600, deduction: 150 },
+    { id: 2, name: 'Operations Lead', department: 'Operations', basicSalary: 3200, allowance: 450, deduction: 120 },
+  ]);
+  const [templateForm, setTemplateForm] = useState({ name: '', department: '', basicSalary: '', allowance: '', deduction: '' });
+  const [editingTemplateId, setEditingTemplateId] = useState(null);
+  const [showTemplateForm, setShowTemplateForm] = useState(false);
+  const [templateMessage, setTemplateMessage] = useState('');
+
+  const [payments, setPayments] = useState([
+    { id: 1, employee: 'Alicia Chen', paymentType: 'Bonus', amount: 1200, date: '2026-07-01' },
+    { id: 2, employee: 'Daniel Brooks', paymentType: 'Commission', amount: 850, date: '2026-06-24' },
+  ]);
+  const [paymentForm, setPaymentForm] = useState({ employee: '', paymentType: 'Bonus', amount: '', date: new Date().toISOString().split('T')[0] });
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [paymentMessage, setPaymentMessage] = useState('');
+
+  const [paymentMethods, setPaymentMethods] = useState([
+    { id: 1, name: 'Direct Deposit', enabled: true, default: true },
+    { id: 2, name: 'Bank Transfer', enabled: true, default: false },
+    { id: 3, name: 'Check', enabled: false, default: false },
+    { id: 4, name: 'Wire Transfer', enabled: true, default: false },
+  ]);
+  const [paymentMethodMessage, setPaymentMethodMessage] = useState('');
+
+  const [roles, setRoles] = useState([
+    { id: 1, name: 'Payroll Admin', permissions: { view: true, create: true, edit: true, approve: true, delete: true } },
+    { id: 2, name: 'HR Manager', permissions: { view: true, create: true, edit: true, approve: true, delete: false } },
+    { id: 3, name: 'Finance Manager', permissions: { view: true, create: false, edit: true, approve: true, delete: false } },
+    { id: 4, name: 'Employee', permissions: { view: true, create: false, edit: false, approve: false, delete: false } },
+  ]);
+  const [roleMessage, setRoleMessage] = useState('');
+
+  const [workflows, setWorkflows] = useState([
+    { id: 1, role: 'HR Manager' },
+    { id: 2, role: 'Finance Manager' },
+    { id: 3, role: 'Payroll Admin' },
+  ]);
+  const [workflowMessage, setWorkflowMessage] = useState('');
+
+  const [notificationSettings, setNotificationSettings] = useState({
+    email: true,
+    inApp: true,
+    events: {
+      payrollCreated: true,
+      payrollApproved: true,
+      payrollRejected: true,
+      paymentCompleted: true,
+      approvalPending: true,
+    },
+  });
+  const [notificationMessage, setNotificationMessage] = useState('');
+
+  const sections = [
+    { id: 'templates', title: 'Salary Templates', icon: 'payments', desc: 'Create reusable salary templates by department.' },
+    { id: 'payments', title: 'Ad-Hoc Payments', icon: 'add_circle', desc: 'Add one-time bonuses and commissions quickly.' },
+    { id: 'methods', title: 'Payment Methods', icon: 'account_balance', desc: 'Enable payment channels and choose a default option.' },
+    { id: 'roles', title: 'Roles & Access', icon: 'manage_accounts', desc: 'Set user permissions for payroll tasks.' },
+    { id: 'workflows', title: 'Approval Workflows', icon: 'task_alt', desc: 'Arrange approval levels for payroll review.' },
+    { id: 'notifications', title: 'Notifications', icon: 'notifications', desc: 'Send alerts for payroll events and approvals.' },
+  ];
+
+  const resetTemplateForm = () => {
+    setTemplateForm({ name: '', department: '', basicSalary: '', allowance: '', deduction: '' });
+    setEditingTemplateId(null);
+    setShowTemplateForm(false);
+  };
+
+  const resetPaymentForm = () => {
+    setPaymentForm({ employee: '', paymentType: 'Bonus', amount: '', date: new Date().toISOString().split('T')[0] });
+    setShowPaymentForm(false);
+  };
+
+  const handleTemplateSave = (e) => {
+    e.preventDefault();
+    if (!templateForm.name || !templateForm.department) return;
+
+    const payload = {
+      id: editingTemplateId || Date.now(),
+      name: templateForm.name,
+      department: templateForm.department,
+      basicSalary: Number(templateForm.basicSalary) || 0,
+      allowance: Number(templateForm.allowance) || 0,
+      deduction: Number(templateForm.deduction) || 0,
+    };
+
+    if (editingTemplateId) {
+      setTemplates((prev) => prev.map((item) => item.id === editingTemplateId ? payload : item));
+      setTemplateMessage('Template updated successfully.');
+    } else {
+      setTemplates((prev) => [payload, ...prev]);
+      setTemplateMessage('Template saved successfully.');
+    }
+
+    resetTemplateForm();
+  };
+
+  const handleTemplateEdit = (template) => {
+    setTemplateForm({
+      name: template.name,
+      department: template.department,
+      basicSalary: template.basicSalary,
+      allowance: template.allowance,
+      deduction: template.deduction,
+    });
+    setEditingTemplateId(template.id);
+    setShowTemplateForm(true);
+    setTemplateMessage('');
+  };
+
+  const handleTemplateDelete = (id) => {
+    setTemplates((prev) => prev.filter((item) => item.id !== id));
+    setTemplateMessage('Template removed successfully.');
+  };
+
+  const handlePaymentSave = (e) => {
+    e.preventDefault();
+    if (!paymentForm.employee || !paymentForm.amount) return;
+
+    const payload = {
+      id: Date.now(),
+      employee: paymentForm.employee,
+      paymentType: paymentForm.paymentType,
+      amount: Number(paymentForm.amount) || 0,
+      date: paymentForm.date,
+    };
+
+    setPayments((prev) => [payload, ...prev]);
+    setPaymentMessage('Ad-hoc payment saved successfully.');
+    resetPaymentForm();
+  };
+
+  const handlePaymentDelete = (id) => {
+    setPayments((prev) => prev.filter((item) => item.id !== id));
+    setPaymentMessage('Payment removed successfully.');
+  };
+
+  const handleMethodToggle = (id) => {
+    setPaymentMethods((prev) => prev.map((item) => item.id === id ? { ...item, enabled: !item.enabled } : item));
+    setPaymentMethodMessage('Payment method updated.');
+  };
+
+  const handleDefaultMethod = (id) => {
+    setPaymentMethods((prev) => prev.map((item) => ({ ...item, default: item.id === id })));
+    setPaymentMethodMessage('Default method updated.');
+  };
+
+  const handleRolePermission = (roleId, permission) => {
+    setRoles((prev) => prev.map((role) => role.id === roleId ? { ...role, permissions: { ...role.permissions, [permission]: !role.permissions[permission] } } : role));
+    setRoleMessage('Permissions updated.');
+  };
+
+  const addWorkflowLevel = () => {
+    setWorkflows((prev) => [...prev, { id: Date.now(), role: 'Payroll Admin' }]);
+    setWorkflowMessage('Approval level added.');
+  };
+
+  const removeWorkflowLevel = (id) => {
+    setWorkflows((prev) => prev.filter((item) => item.id !== id));
+    setWorkflowMessage('Approval level removed.');
+  };
+
+  const moveWorkflowLevel = (id, direction) => {
+    const index = workflows.findIndex((item) => item.id === id);
+    if (index < 0) return;
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= workflows.length) return;
+    const updated = [...workflows];
+    const [moved] = updated.splice(index, 1);
+    updated.splice(targetIndex, 0, moved);
+    setWorkflows(updated);
+    setWorkflowMessage('Approval order updated.');
+  };
+
+  const updateWorkflowRole = (id, role) => {
+    setWorkflows((prev) => prev.map((item) => item.id === id ? { ...item, role } : item));
+  };
+
+  const toggleNotification = (eventKey) => {
+    setNotificationSettings((prev) => ({
+      ...prev,
+      events: { ...prev.events, [eventKey]: !prev.events[eventKey] },
+    }));
+  };
+
+  const renderSection = () => {
+    switch (activeSection) {
+      case 'templates':
+        return (
+          <div className="space-y-5">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">Salary Templates</h3>
+                <p className="text-sm text-slate-500">Quickly create salary structures for each department.</p>
+              </div>
+              <button onClick={() => { setShowTemplateForm(true); setTemplateMessage(''); }} className="px-3 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary/90">Add Template</button>
+            </div>
+            {templateMessage && <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-700">{templateMessage}</div>}
+            {showTemplateForm && (
+              <form onSubmit={handleTemplateSave} className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <input value={templateForm.name} onChange={(e) => setTemplateForm({ ...templateForm, name: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Template Name" />
+                <input value={templateForm.department} onChange={(e) => setTemplateForm({ ...templateForm, department: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Department" />
+                <input type="number" value={templateForm.basicSalary} onChange={(e) => setTemplateForm({ ...templateForm, basicSalary: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Basic Salary" />
+                <input type="number" value={templateForm.allowance} onChange={(e) => setTemplateForm({ ...templateForm, allowance: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Allowance" />
+                <input type="number" value={templateForm.deduction} onChange={(e) => setTemplateForm({ ...templateForm, deduction: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Deduction" />
+                <div className="md:col-span-2 flex justify-end gap-2">
+                  <button type="button" onClick={resetTemplateForm} className="px-3 py-2 border border-slate-200 rounded-lg text-sm font-semibold text-slate-600">Cancel</button>
+                  <button type="submit" className="px-3 py-2 bg-primary text-white text-sm font-semibold rounded-lg">Save</button>
+                </div>
+              </form>
+            )}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-slate-50">
+                  <tr>
+                    <th className="px-3 py-2 font-semibold text-slate-500">Template</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">Department</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">Basic</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">Allowance</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">Deduction</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {templates.map((item) => (
+                    <tr key={item.id}>
+                      <td className="px-3 py-2 font-semibold text-slate-800">{item.name}</td>
+                      <td className="px-3 py-2 text-slate-600">{item.department}</td>
+                      <td className="px-3 py-2 text-slate-600">${item.basicSalary.toLocaleString()}</td>
+                      <td className="px-3 py-2 text-slate-600">${item.allowance.toLocaleString()}</td>
+                      <td className="px-3 py-2 text-slate-600">${item.deduction.toLocaleString()}</td>
+                      <td className="px-3 py-2">
+                        <div className="flex gap-2">
+                          <button onClick={() => handleTemplateEdit(item)} className="text-sm font-semibold text-primary">Edit</button>
+                          <button onClick={() => handleTemplateDelete(item.id)} className="text-sm font-semibold text-red-500">Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+      case 'payments':
+        return (
+          <div className="space-y-5">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">Ad-Hoc Payments</h3>
+                <p className="text-sm text-slate-500">Create quick one-time payouts for employees.</p>
+              </div>
+              <button onClick={() => { setShowPaymentForm(true); setPaymentMessage(''); }} className="px-3 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary/90">Add Payment</button>
+            </div>
+            {paymentMessage && <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-700">{paymentMessage}</div>}
+            {showPaymentForm && (
+              <form onSubmit={handlePaymentSave} className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <input value={paymentForm.employee} onChange={(e) => setPaymentForm({ ...paymentForm, employee: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Employee" />
+                <select value={paymentForm.paymentType} onChange={(e) => setPaymentForm({ ...paymentForm, paymentType: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm">
+                  <option value="Bonus">Bonus</option>
+                  <option value="Commission">Commission</option>
+                </select>
+                <input type="number" value={paymentForm.amount} onChange={(e) => setPaymentForm({ ...paymentForm, amount: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Amount" />
+                <input type="date" value={paymentForm.date} onChange={(e) => setPaymentForm({ ...paymentForm, date: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+                <div className="md:col-span-2 flex justify-end gap-2">
+                  <button type="button" onClick={resetPaymentForm} className="px-3 py-2 border border-slate-200 rounded-lg text-sm font-semibold text-slate-600">Cancel</button>
+                  <button type="submit" className="px-3 py-2 bg-primary text-white text-sm font-semibold rounded-lg">Save</button>
+                </div>
+              </form>
+            )}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-slate-50">
+                  <tr>
+                    <th className="px-3 py-2 font-semibold text-slate-500">Employee</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">Type</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">Amount</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">Date</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {payments.map((item) => (
+                    <tr key={item.id}>
+                      <td className="px-3 py-2 font-semibold text-slate-800">{item.employee}</td>
+                      <td className="px-3 py-2 text-slate-600">{item.paymentType}</td>
+                      <td className="px-3 py-2 text-slate-600">${item.amount.toLocaleString()}</td>
+                      <td className="px-3 py-2 text-slate-600">{item.date}</td>
+                      <td className="px-3 py-2">
+                        <button onClick={() => handlePaymentDelete(item.id)} className="text-sm font-semibold text-red-500">Delete</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+      case 'methods':
+        return (
+          <div className="space-y-5">
+            <div>
+              <h3 className="text-lg font-bold text-slate-900">Payment Methods</h3>
+              <p className="text-sm text-slate-500">Enable or disable each method and pick your default one.</p>
+            </div>
+            {paymentMethodMessage && <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-700">{paymentMethodMessage}</div>}
+            <div className="space-y-3">
+              {paymentMethods.map((method) => (
+                <div key={method.id} className="flex flex-col md:flex-row md:items-center md:justify-between rounded-xl border border-slate-200 p-4 gap-3">
+                  <div>
+                    <p className="font-semibold text-slate-800">{method.name}</p>
+                    <p className="text-sm text-slate-500">{method.enabled ? 'Enabled for payroll disbursement' : 'Disabled for now'}</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <label className="flex items-center gap-2 text-sm text-slate-700">
+                      <input type="checkbox" checked={method.enabled} onChange={() => handleMethodToggle(method.id)} />
+                      Enable/Disable
+                    </label>
+                    <label className="flex items-center gap-2 text-sm text-slate-700">
+                      <input type="radio" name="defaultMethod" checked={method.default} onChange={() => handleDefaultMethod(method.id)} />
+                      Default
+                    </label>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case 'roles':
+        return (
+          <div className="space-y-5">
+            <div>
+              <h3 className="text-lg font-bold text-slate-900">Roles & Access</h3>
+              <p className="text-sm text-slate-500">Control who can view, create, edit, approve, and delete payroll records.</p>
+            </div>
+            {roleMessage && <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-700">{roleMessage}</div>}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-slate-50">
+                  <tr>
+                    <th className="px-3 py-2 font-semibold text-slate-500">Role</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">View</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">Create</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">Edit</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">Approve</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">Delete</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {roles.map((role) => (
+                    <tr key={role.id}>
+                      <td className="px-3 py-2 font-semibold text-slate-800">{role.name}</td>
+                      {['view', 'create', 'edit', 'approve', 'delete'].map((permission) => (
+                        <td key={permission} className="px-3 py-2">
+                          <input type="checkbox" checked={role.permissions[permission]} onChange={() => handleRolePermission(role.id, permission)} />
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+      case 'workflows':
+        return (
+          <div className="space-y-5">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">Approval Workflows</h3>
+                <p className="text-sm text-slate-500">Add, remove, and reorder approval stages with one click.</p>
+              </div>
+              <button onClick={addWorkflowLevel} className="px-3 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary/90">Add Level</button>
+            </div>
+            {workflowMessage && <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-700">{workflowMessage}</div>}
+            <div className="space-y-3">
+              {workflows.map((item, index) => (
+                <div key={item.id} className="flex flex-col md:flex-row md:items-center md:justify-between rounded-xl border border-slate-200 p-4 gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-700">Level {index + 1}</p>
+                    <p className="text-xs text-slate-500">{item.role}</p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <select value={item.role} onChange={(e) => updateWorkflowRole(item.id, e.target.value)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm">
+                      <option value="HR Manager">HR Manager</option>
+                      <option value="Finance Manager">Finance Manager</option>
+                      <option value="Payroll Admin">Payroll Admin</option>
+                    </select>
+                    <button onClick={() => moveWorkflowLevel(item.id, 'up')} className="px-2 py-2 border border-slate-200 rounded-lg text-sm">↑</button>
+                    <button onClick={() => moveWorkflowLevel(item.id, 'down')} className="px-2 py-2 border border-slate-200 rounded-lg text-sm">↓</button>
+                    <button onClick={() => removeWorkflowLevel(item.id)} className="px-3 py-2 bg-red-50 text-red-600 text-sm font-semibold rounded-lg">Remove</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      case 'notifications':
+        return (
+          <div className="space-y-5">
+            <div>
+              <h3 className="text-lg font-bold text-slate-900">Notifications</h3>
+              <p className="text-sm text-slate-500">Turn on alerts for payroll activity and approvals.</p>
+            </div>
+            {notificationMessage && <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-700">{notificationMessage}</div>}
+            <div className="rounded-xl border border-slate-200 p-4 space-y-3">
+              <label className="flex items-center justify-between text-sm text-slate-700">
+                <span>Email Notifications</span>
+                <input type="checkbox" checked={notificationSettings.email} onChange={() => setNotificationSettings({ ...notificationSettings, email: !notificationSettings.email })} />
+              </label>
+              <label className="flex items-center justify-between text-sm text-slate-700">
+                <span>In-App Notifications</span>
+                <input type="checkbox" checked={notificationSettings.inApp} onChange={() => setNotificationSettings({ ...notificationSettings, inApp: !notificationSettings.inApp })} />
+              </label>
+            </div>
+            <div className="rounded-xl border border-slate-200 p-4 space-y-3">
+              <p className="text-sm font-semibold text-slate-800">Notification Events</p>
+              {Object.entries(notificationSettings.events).map(([key, value]) => (
+                <label key={key} className="flex items-center justify-between text-sm text-slate-700">
+                  <span>{key.replace(/([A-Z])/g, ' $1').replace(/^./, (c) => c.toUpperCase())}</span>
+                  <input type="checkbox" checked={value} onChange={() => toggleNotification(key)} />
+                </label>
+              ))}
+            </div>
+            <div className="flex justify-end">
+              <button onClick={() => setNotificationMessage('Notification settings saved.')} className="px-3 py-2 bg-primary text-white text-sm font-semibold rounded-lg">Save</button>
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        {sections.map((section) => (
+          <button key={section.id} type="button" onClick={() => setActiveSection(section.id)} className={`rounded-xl border p-5 text-left transition-all ${activeSection === section.id ? 'border-primary bg-primary/10 shadow-sm' : 'border-slate-200 bg-white hover:shadow-sm'}`}>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <Icon name={section.icon} className="text-xl" />
+              </div>
+              <h4 className="font-bold text-slate-900 text-sm">{section.title}</h4>
+            </div>
+            <p className="text-xs text-slate-500 leading-relaxed">{section.desc}</p>
+          </button>
+        ))}
       </div>
-    ))}
-  </div>
-);
+
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
+        {renderSection()}
+      </div>
+    </div>
+  );
+};
 
 const PayrollPage = () => {
   const [activeTab, setActiveTab] = useState('Dashboard');
