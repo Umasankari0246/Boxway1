@@ -36,8 +36,6 @@ const AnalyticsPage = () => {
           api.get('/clients/'),
           api.get('/proposals/'),
         ]);
-        console.log('Analytics API Response - Projects:', projectsRes.data.data);
-        console.log('Analytics API Response - Expenses:', expensesRes.data.data);
         setProjects(projectsRes.data.data);
         setEmployees(employeesRes.data.data);
         setInvoices(invoicesRes.data.data);
@@ -80,11 +78,12 @@ const AnalyticsPage = () => {
     const now = new Date();
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     
-    console.log('Analytics - Current Month:', new Date(0, now.getMonth()).toLocaleString('default', { month: 'short' }), 'Year:', now.getFullYear());
-    console.log('Analytics - Projects with startDate:', projects.filter(p => p.startDate).map(p => ({ name: p.name, startDate: p.startDate, status: p.status, budget: p.budget })));
-    console.log('Analytics - Expenses with date:', expenses.filter(exp => exp.date).map(exp => ({ title: exp.title, date: exp.date, status: exp.status, amount: exp.amount })));
+    // Calculate total revenue from all projects with valid status
+    const totalRevenue = projects.filter(p => {
+      return REVENUE_PROJECT_STATUSES.has(p.status);
+    }).reduce((sum, p) => sum + toNumber(p.budget), 0);
 
-    // Calculate revenue and expenses for the last 3 months, matching the dashboard chart.
+    // Calculate revenue and expenses for the last 3 months
     const revenueByMonth = [];
     const currentMonthIndex = now.getMonth();
     const currentYear = now.getFullYear();
@@ -94,14 +93,8 @@ const AnalyticsPage = () => {
       const year = currentMonthIndex - i >= 0 ? currentYear : currentYear - 1;
       const monthName = monthNames[monthIndex];
 
-      const monthRevenue = projects.filter(p => {
-        const projectDate = p.startDate && p.startDate.trim() !== '' ? p.startDate : p.createdAt;
-        if (!projectDate) {
-          return false;
-        }
-        const projDate = new Date(projectDate);
-        return projDate.getMonth() === monthIndex && projDate.getFullYear() === year && REVENUE_PROJECT_STATUSES.has(p.status);
-      }).reduce((sum, p) => sum + toNumber(p.budget), 0);
+      // Show total revenue for all months (not filtered by month)
+      const monthRevenue = totalRevenue;
 
       const monthExpenses = expenses.filter(exp => {
         const expenseDateValue = exp.date && exp.date.trim() !== '' && exp.date !== '-' ? exp.date : exp.createdAt;
@@ -121,12 +114,9 @@ const AnalyticsPage = () => {
         expenses: Math.round(monthExpenses)
       });
     }
-    
-    console.log('Analytics - Final revenueByMonth data:', revenueByMonth);
 
     // KPIs
     const totalProjectBudget = projects.reduce((sum, p) => sum + (p.budget || 0), 0);
-    const totalRevenue = totalProjectBudget;
     const activeProjects = projects.filter(p => p.status === 'In Progress' || p.status === 'Planning').length;
     const avgProjectValue = projects.length > 0 ? totalProjectBudget / projects.length : 0;
     const totalExpenses = expenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);

@@ -26,11 +26,15 @@ const DashboardPage = () => {
   const [invoices, setInvoices] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [clients, setClients] = useState([]);
+  const [proposals, setProposals] = useState([]);
+  const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [hoveredData, setHoveredData] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Fetch required data
         const [projectsRes, employeesRes, invoicesRes, expensesRes, clientsRes] = await Promise.all([
           api.get('/projects/'),
           api.get('/employees/'),
@@ -38,50 +42,28 @@ const DashboardPage = () => {
           api.get('/expenses/'),
           api.get('/clients/'),
         ]);
-        console.log('=== DASHBOARD API RESPONSE DEBUGGING ===');
-        console.log('Projects API Response:');
-        console.table(projectsRes.data.data);
-        console.log('Projects JSON:', JSON.stringify(projectsRes.data.data, null, 2));
-        console.log('Employees API Full Response:', employeesRes.data);
-        console.log('Employees API Response:');
-        console.table(employeesRes.data.data);
-        console.log('Employees JSON:', JSON.stringify(employeesRes.data.data, null, 2));
-        const employeeRecords = Array.isArray(employeesRes.data?.data)
-          ? employeesRes.data.data
-          : Array.isArray(employeesRes.data)
-            ? employeesRes.data
-            : [];
-        console.log('Employees record count:', employeeRecords.length);
-        employeeRecords.forEach((employee, index) => {
-          console.log(`Employee ${index}:`, {
-            id: employee.id,
-            name: employee.name,
-            status: employee.status,
-            department: employee.department,
-            role: employee.role
-          });
-        });
-        console.log('Expenses API Full Response:', expensesRes.data);
-        console.log('Expenses API Response:');
-        console.table(expensesRes.data.data);
-        console.log('Expenses JSON:', JSON.stringify(expensesRes.data.data, null, 2));
-        console.log('Dashboard API Response - Expenses:', expensesRes.data.data);
-        const expenseRecords = expensesRes.data.data;
-        console.log('Expenses record count:', Array.isArray(expenseRecords) ? expenseRecords.length : 0);
-        (Array.isArray(expenseRecords) ? expenseRecords : []).forEach((expense, index) => {
-          console.log(`Expense ${index}:`, {
-            id: expense.id,
-            amount: expense.amount,
-            date: expense.date,
-            status: expense.status
-          });
-        });
-        console.log('=== END API RESPONSE DEBUGGING ===');
         setProjects(projectsRes.data.data);
-        setEmployees(employeeRecords);
+        setEmployees(employeesRes.data.data);
         setInvoices(invoicesRes.data.data);
-        setExpenses(expenseRecords);
+        setExpenses(expensesRes.data.data);
         setClients(clientsRes.data.data);
+
+        // Fetch optional data (don't fail if these fail)
+        try {
+          const proposalsRes = await api.get('/proposals/');
+          setProposals(proposalsRes.data.data || []);
+        } catch (e) {
+          console.warn('Failed to fetch proposals:', e);
+          setProposals([]);
+        }
+
+        try {
+          const documentsRes = await api.get('/documents/');
+          setDocuments(documentsRes.data.data || []);
+        } catch (e) {
+          console.warn('Failed to fetch documents:', e);
+          setDocuments([]);
+        }
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
       } finally {
@@ -98,119 +80,45 @@ const DashboardPage = () => {
   const totalRevenue = totalBudget; // Use project budgets as total revenue (same as Analytics)
   const teamCount = employees.length;
 
-  // Financial data from API - calculate last 3 months individually
+  // Financial data from API - calculate last 3 months
   const getFinancialData = () => {
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const now = new Date();
     const currentMonthIndex = now.getMonth();
     const currentYear = now.getFullYear();
     
-    console.log('=== FINANCIAL DATA CALCULATION DEBUGGING ===');
-    console.log('Dashboard - Current Month Index:', currentMonthIndex, 'Year:', currentYear);
-    console.log('Dashboard - Number of projects:', projects.length);
-    console.log('Dashboard - Number of expenses:', expenses.length);
-    
-    // Inspect each project's fields
-    projects.forEach((p, idx) => {
-      console.log(`Project ${idx}:`, {
-        id: p.id,
-        name: p.name,
-        startDate: p.startDate,
-        budget: p.budget,
-        status: p.status,
-        startDateType: typeof p.startDate,
-        budgetType: typeof p.budget,
-        statusType: typeof p.status
-      });
-      if (p.startDate) {
-        console.log(`  - startDate parsed:`, new Date(p.startDate));
-      }
-    });
-    
-    // Inspect each expense's fields
-    expenses.forEach((e, idx) => {
-      console.log(`Expense ${idx}:`, {
-        id: e.id,
-        title: e.title,
-        date: e.date,
-        amount: e.amount,
-        status: e.status,
-        dateType: typeof e.date,
-        amountType: typeof e.amount,
-        statusType: typeof e.status
-      });
-      if (e.date) {
-        console.log(`  - date parsed:`, new Date(e.date));
-      }
-    });
+    // Calculate total revenue from all projects with valid status (same as Analytics)
+    const totalRevenue = projects.filter(p => {
+      return REVENUE_PROJECT_STATUSES.has(p.status);
+    }).reduce((sum, p) => sum + toNumber(p.budget), 0);
     
     const data = [];
     
-    // Generate last 3 months data individually
+    // Generate last 3 months data
     for (let i = 2; i >= 0; i--) {
       const monthIndex = (currentMonthIndex - i + 12) % 12;
       const year = currentMonthIndex - i >= 0 ? currentYear : currentYear - 1;
       const monthName = monthNames[monthIndex];
       
-      console.log(`Dashboard - Processing month: ${monthName} (index: ${monthIndex}, year: ${year})`);
-      
-      // Calculate revenue from project budgets for this specific month
-      const monthRevenue = projects.filter(p => {
-        // Use startDate if available, otherwise fall back to createdAt
-        const projectDate = p.startDate && p.startDate.trim() !== '' ? p.startDate : p.createdAt;
-        if (!projectDate) {
-          console.log(`  - Project "${p.name}" skipped: no startDate or createdAt`);
-          return false;
-        }
-        const projDate = new Date(projectDate);
-        const matchesMonth = projDate.getMonth() === monthIndex;
-        const matchesYear = projDate.getFullYear() === year;
-        const matchesStatus = REVENUE_PROJECT_STATUSES.has(p.status);
-        
-        console.log(`  - Project "${p.name}":`, {
-          projectDate,
-          projDate: projDate,
-          matchesMonth,
-          matchesYear,
-          status: p.status,
-          matchesStatus,
-          budget: p.budget
-        });
-        
-        return matchesMonth && matchesYear && matchesStatus;
-      }).reduce((sum, p) => sum + toNumber(p.budget), 0);
+      // Show total revenue for all months (not filtered by month) - same as Analytics
+      const monthRevenue = totalRevenue;
       
       // Calculate expenses for this specific month
       const monthExpenses = expenses.filter(exp => {
         const expenseDateValue = exp.date && exp.date.trim() !== '' && exp.date !== '-' ? exp.date : exp.createdAt;
 
         if (!expenseDateValue || exp.status !== 'Approved') {
-          if (!expenseDateValue) console.log(`  - Expense "${exp.title}" skipped: no valid date`);
-          if (exp.status !== 'Approved') console.log(`  - Expense "${exp.title}" skipped: status is "${exp.status}" not "Approved"`);
           return false;
         }
         const expDate = new Date(expenseDateValue);
         if (Number.isNaN(expDate.getTime())) {
-          console.log(`  - Expense "${exp.title}" skipped: invalid date value`, expenseDateValue);
           return false;
         }
         const matchesMonth = expDate.getMonth() === monthIndex;
         const matchesYear = expDate.getFullYear() === year;
         
-        console.log(`  - Expense "${exp.title}":`, {
-          id: exp.id,
-          expenseDateValue,
-          expDate: expDate,
-          matchesMonth,
-          matchesYear,
-          status: exp.status,
-          amount: exp.amount
-        });
-        
         return matchesMonth && matchesYear;
       }).reduce((sum, exp) => sum + (exp.amount || 0), 0);
-      
-      console.log(`Dashboard - ${monthName} Revenue: ${monthRevenue}, Expenses: ${monthExpenses}`);
       
       data.push({
         month: monthName,
@@ -219,8 +127,6 @@ const DashboardPage = () => {
       });
     }
     
-    console.log('Dashboard - Final financial data:', data);
-    console.log('=== END FINANCIAL DATA DEBUGGING ===');
     return data;
   };
   
@@ -229,9 +135,6 @@ const DashboardPage = () => {
   const maxValue = Math.max(...allValues, 1) || 1;
   const revenueMaxValue = Math.max(...financialData.map(d => d.revenue), 1) || 1;
   const expenseMaxValue = Math.max(...financialData.map(d => d.expenses), 1) || 1;
-  
-  console.log('Dashboard - All values:', allValues);
-  console.log('Dashboard - Max value:', maxValue);
 
   // Generate recent activity from real data with timestamps
   const generateRecentActivity = () => {
@@ -248,11 +151,13 @@ const DashboardPage = () => {
     // Helper to format time difference
     const formatTime = (date) => {
       if (!date) return 'Recently';
+      const now = new Date(); // Get current time at the moment of calculation
       const diff = now - new Date(date);
       const minutes = Math.floor(diff / 60000);
       const hours = Math.floor(diff / 3600000);
       const days = Math.floor(diff / 86400000);
       
+      if (minutes < 1) return 'Just now';
       if (minutes < 60) return `${minutes}m ago`;
       if (hours < 24) return `${hours}h ago`;
       if (days < 7) return `${days}d ago`;
@@ -474,6 +379,21 @@ const DashboardPage = () => {
               <div className="absolute inset-x-4 top-28 h-px bg-zinc-200" />
               <div className="absolute inset-x-4 top-40 h-px bg-zinc-200" />
               <div className="absolute inset-x-4 bottom-14 h-px bg-zinc-200" />
+              
+              {/* Tooltip */}
+              {hoveredData && (
+                <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-zinc-900 text-white px-3 py-2 rounded-lg text-[10px] font-bold z-10 shadow-lg pointer-events-none">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="w-2 h-2 bg-primary rounded-full"></span>
+                    <span>Revenue: ${hoveredData.revenue.toLocaleString()}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-slate-800 rounded-full"></span>
+                    <span>Expenses: ${hoveredData.expenses.toLocaleString()}</span>
+                  </div>
+                </div>
+              )}
+              
               <div className="relative h-full flex items-end gap-3 pt-2 pb-2">
                 {loading ? (
                   <div className="w-full flex items-center justify-center text-zinc-400 text-[10px]">Loading financial data...</div>
@@ -482,19 +402,24 @@ const DashboardPage = () => {
                     const revenueHeightPercent = Math.max((item.revenue / revenueMaxValue) * 100, 2);
                     const expenseHeightPercent = Math.max((item.expenses / expenseMaxValue) * 100, 2);
                     return (
-                      <div key={item.month} className="flex-1 h-full flex flex-col items-center gap-2 min-w-0">
+                      <div 
+                        key={item.month} 
+                        className="flex-1 h-full flex flex-col items-center gap-2 min-w-0"
+                        onMouseEnter={() => setHoveredData(item)}
+                        onMouseLeave={() => setHoveredData(null)}
+                      >
                         <div className="flex h-full w-full gap-2 items-end justify-center px-1">
                           {/* Revenue bar */}
                           <div className="flex h-full w-6 shrink-0 items-end justify-center">
                             <div 
-                              className="w-6 bg-primary rounded-t-sm border border-black/10 box-border" 
+                              className="w-6 bg-primary rounded-t-sm border border-black/10 box-border hover:bg-primary/80 transition-colors cursor-pointer" 
                               style={{ height: `${revenueHeightPercent}%`, minHeight: '4px', maxHeight: '100%' }} 
                             />
                           </div>
                           {/* Expenses bar */}
                           <div className="flex h-full w-6 shrink-0 items-end justify-center">
                             <div 
-                              className="w-6 bg-slate-800 rounded-t-sm border border-black/10 box-border" 
+                              className="w-6 bg-slate-800 rounded-t-sm border border-black/10 box-border hover:bg-slate-700 transition-colors cursor-pointer" 
                               style={{ height: `${expenseHeightPercent}%`, minHeight: '4px', maxHeight: '100%' }} 
                             />
                           </div>
@@ -515,10 +440,45 @@ const DashboardPage = () => {
 
         {/* Right Column */}
         <div className="flex h-full flex-col gap-6 min-h-0">
+          {/* Summary Stats Card */}
+          <section className="bg-white p-6 border border-zinc-100 shadow-sm">
+            <h3 className="text-xs font-black uppercase mb-4">Overview</h3>
+            <div className="grid grid-cols-4 gap-4">
+              <div className="text-center">
+                <p className="text-2xl font-black text-primary">{employees.length}</p>
+                <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">Employees</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-black text-primary">{clients.length}</p>
+                <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">Clients</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-black text-primary">{proposals.length}</p>
+                <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">Proposals</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-black text-primary">{invoices.length}</p>
+                <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">Invoices</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-black text-primary">{documents.length}</p>
+                <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">Documents</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-black text-primary">{expenses.length}</p>
+                <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">Expenses</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-black text-primary">{projects.length}</p>
+                <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">Projects</p>
+              </div>
+            </div>
+          </section>
+
           {/* Recent Activity */}
-          <section className="bg-white p-6 border border-zinc-100 shadow-sm flex flex-col flex-1 min-h-0">
-            <h3 className="text-xs font-black uppercase mb-6">Recent Activity</h3>
-            <div className="relative flex-1 min-h-0 space-y-6 overflow-y-auto pr-1">
+          <section className="bg-white p-6 border border-zinc-100 shadow-sm flex flex-col" style={{ maxHeight: '300px' }}>
+            <h3 className="text-xs font-black uppercase mb-4">Recent Activity</h3>
+            <div className="relative space-y-4 overflow-y-auto pr-1" style={{ maxHeight: '200px' }}>
               <div className="absolute left-[13px] top-2 bottom-4 w-[1px] bg-zinc-100"></div>
               
               {recentActivity.map((activity) => (
