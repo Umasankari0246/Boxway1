@@ -56,8 +56,15 @@ async def get_clients():
         }))
         total_value = sum(p.get("budget", 0) for p in projects)
         
-        client_data["totalProjects"] = project_count
-        client_data["totalValue"] = total_value
+        # Use calculated values if projects exist, otherwise use manually entered values
+        if project_count > 0:
+            client_data["totalProjects"] = project_count
+            client_data["totalValue"] = total_value
+        else:
+            # Keep the manually entered values for clients without projects
+            client_data["totalProjects"] = client.get("totalProjects", 0)
+            client_data["totalValue"] = client.get("totalValue", 0.0)
+        
         clients.append(client_data)
     return {"message": "Success", "data": clients}
 

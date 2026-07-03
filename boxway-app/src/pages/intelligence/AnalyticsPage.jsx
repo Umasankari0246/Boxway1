@@ -329,7 +329,6 @@ const AnalyticsPage = () => {
       <div className="bg-white border-b border-slate-200 px-8 py-6">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-black tracking-tight text-slate-900">Analytics & Reports</h1>
             <p className="text-sm text-slate-500 mt-1">Business performance insights and metrics</p>
           </div>
           <div className="flex gap-3">

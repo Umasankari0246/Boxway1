@@ -224,18 +224,36 @@ const EmployeesPage = () => {
   const totalPages = Math.ceil(filteredEmployees.length / rowsPerPage);
 
   const handleExport = () => {
+    console.log('Exporting employees. Total employees:', employees.length);
+    console.log('Filtered employees:', filteredEmployees.length);
+    console.log('Filtered data:', filteredEmployees);
+    
+    // Escape CSV values properly
+    const escapeCSV = (value) => {
+      if (!value) return '';
+      const stringValue = String(value);
+      // If value contains comma, quote it and escape any quotes
+      if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+        return `"${stringValue.replace(/"/g, '""')}"`;
+      }
+      return stringValue;
+    };
+    
     const csvContent = [
       ['Name', 'Email', 'Phone', 'Role', 'Department', 'Status', 'Location'].join(','),
       ...filteredEmployees.map(emp => [
-        emp.name,
-        emp.email,
-        emp.phone || '',
-        emp.role,
-        emp.department,
-        emp.status,
-        emp.city || emp.location || 'N/A'
+        escapeCSV(emp.name),
+        escapeCSV(emp.email),
+        escapeCSV(emp.phone || ''),
+        escapeCSV(emp.role),
+        escapeCSV(emp.department),
+        escapeCSV(emp.status),
+        escapeCSV(emp.city || emp.location || 'N/A')
       ].join(','))
     ].join('\n');
+
+    console.log('CSV content length:', csvContent.length);
+    console.log('CSV preview:', csvContent.substring(0, 500));
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');

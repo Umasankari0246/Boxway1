@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
+import { RefreshCw } from 'lucide-react';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -29,6 +30,8 @@ const ProposalsPage = () => {
   const [statusDropdownId, setStatusDropdownId] = useState(null);
   const [phaseDropdownId, setPhaseDropdownId] = useState(null);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchProposals = async () => {
@@ -43,6 +46,19 @@ const ProposalsPage = () => {
     };
     fetchProposals();
   }, []);
+
+  const handleRefresh = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get('/proposals/');
+      setProposals(response.data.data);
+    } catch (err) {
+      console.error("Error refreshing proposals:", err);
+      alert("Failed to refresh proposals");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const won = proposals.filter(p => p.status === 'Won').length;
   const closed = proposals.filter(p => ['Won', 'Lost'].includes(p.status)).length;
@@ -61,6 +77,12 @@ const ProposalsPage = () => {
     if (sortBy === 'status') return a.status.localeCompare(b.status);
     return 0;
   });
+
+  const totalPages = Math.max(1, Math.ceil(sorted.length / itemsPerPage));
+  const paginatedProposals = sorted.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const handleDelete = async () => {
     try {
@@ -101,16 +123,27 @@ const ProposalsPage = () => {
       {/* Sticky sub-header */}
       <div className="sticky top-0 z-20 bg-[#fcf9f8]/90 backdrop-blur border-b border-zinc-100 px-8 py-5 flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-black tracking-tight text-zinc-900 uppercase">Proposals</h2>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mt-0.5">{proposals.length} enquiries · Architecture firm pipeline</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mt-0.5">· Architecture firm pipeline</p>
+
+          <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mt-0.5"> · Create and manage proposals for your clients.</p>
         </div>
-        <button
-          onClick={() => navigate('/proposals/new')}
-          className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-[11px] font-black uppercase tracking-widest hover:bg-black transition-colors shadow-lg shadow-primary/20"
-        >
-          <Icon name="add" className="text-[18px]" />
-          New Enquiry / Proposal
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={handleRefresh}
+            disabled={loading}
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-zinc-200 text-zinc-700 text-[11px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`text-[18px] ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </button>
+          <button
+            onClick={() => navigate('/proposals/new')}
+            className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-[11px] font-black uppercase tracking-widest hover:bg-black transition-colors shadow-lg shadow-primary/20"
+          >
+            <Icon name="add" className="text-[18px]" />
+            New Enquiry / Proposal
+          </button>
+        </div>
       </div>
 
       <div className="p-8 space-y-6 overflow-visible">
@@ -185,7 +218,7 @@ const ProposalsPage = () => {
                   </td>
                 </tr>
               )}
-              {sorted.map(p => {
+              {paginatedProposals.map(p => {
                 const cfg = statusConfig[p.status] || statusConfig.Draft;
                 return (
                   <tr
@@ -268,9 +301,40 @@ const ProposalsPage = () => {
               })}
             </tbody>
           </table>
-          <div className="px-5 py-3 border-t border-zinc-100 flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-zinc-400">
-            <span>Showing {sorted.length} of {proposals.length} proposals</span>
-          </div>
+          {sorted.length > 0 && (
+            <div className="px-5 py-3 border-t border-zinc-100 flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-zinc-400">
+              <span>Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, sorted.length)} of {sorted.length} proposals</span>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1.5 text-[10px] font-medium rounded border border-zinc-200 hover:bg-zinc-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`px-3 py-1.5 text-[10px] font-medium rounded border ${
+                      currentPage === page
+                        ? 'bg-primary text-white border-primary'
+                        : 'border-zinc-200 hover:bg-zinc-50'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1.5 text-[10px] font-medium rounded border border-zinc-200 hover:bg-zinc-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

@@ -14,6 +14,9 @@ class ClientSchema(BaseModel):
     totalValue: Optional[float] = 0.0
     status: Optional[str] = "Active"
     notes: Optional[str] = None
+    projectType: Optional[str] = None
+    timeline: Optional[str] = None
+    description: Optional[str] = None
     createdAt: Optional[str] = None
     updatedAt: Optional[str] = None
 
@@ -29,6 +32,9 @@ class UpdateClientSchema(BaseModel):
     totalValue: Optional[float]
     status: Optional[str]
     notes: Optional[str]
+    projectType: Optional[str]
+    timeline: Optional[str]
+    description: Optional[str]
 
 def client_helper(client) -> dict:
     return {
@@ -45,6 +51,9 @@ def client_helper(client) -> dict:
         "totalValue": client.get("totalValue", 0.0),
         "status": client.get("status", "Active"),
         "notes": client.get("notes"),
+        "projectType": client.get("projectType"),
+        "timeline": client.get("timeline"),
+        "description": client.get("description"),
         "createdAt": client.get("createdAt"),
         "updatedAt": client.get("updatedAt")
     }

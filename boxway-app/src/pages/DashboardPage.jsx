@@ -51,6 +51,7 @@ const DashboardPage = () => {
         // Fetch optional data (don't fail if these fail)
         try {
           const proposalsRes = await api.get('/proposals/');
+          console.log('Proposals response:', proposalsRes.data);
           setProposals(proposalsRes.data.data || []);
         } catch (e) {
           console.warn('Failed to fetch proposals:', e);
@@ -59,6 +60,7 @@ const DashboardPage = () => {
 
         try {
           const documentsRes = await api.get('/documents/');
+          console.log('Documents response:', documentsRes.data);
           setDocuments(documentsRes.data.data || []);
         } catch (e) {
           console.warn('Failed to fetch documents:', e);

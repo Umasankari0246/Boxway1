@@ -554,11 +554,19 @@ const DocumentsPage = () => {
   const ft = (key) => FOLDER_TYPES.find(f => f.key === key);
 
   const handleUpload = async (form) => {
+    console.log('Upload form data:', form);
+    console.log('Form projectId:', form.projectId);
     const fileExt = form.file.name.split('.').pop().toUpperCase();
     const fileSize = (form.file.size / (1024 * 1024)).toFixed(1) + ' MB';
     const fileUrl = await readFileAsDataUrl(form.file);
     const project = projects.find(item => getEntityId(item) === form.projectId);
     const client = clients.find(item => getEntityId(item) === form.clientId);
+    console.log('Found project:', project);
+    console.log('Project entity ID:', project ? getEntityId(project) : 'Not found');
+    console.log('Project._id:', project?._id);
+    console.log('Project.id:', project?.id);
+    console.log('Project.projectId:', project?.projectId);
+    
     // Optimistic UI: insert temporary entry immediately
     const tempId = `temp-${Date.now()}`;
     const tempDoc = {
@@ -583,6 +591,8 @@ const DocumentsPage = () => {
       createdAt: new Date().toISOString(),
     };
 
+    console.log('Temporary document to be saved:', tempDoc);
+    console.log('Document projectId being saved:', tempDoc.projectId);
     setDocuments(prev => [tempDoc, ...prev]);
     setShowUpload(false);
 
@@ -593,6 +603,8 @@ const DocumentsPage = () => {
       delete newDoc.documentId;
       const response = await api.post('/documents/', newDoc);
       const saved = response.data.data;
+      console.log('Saved document from server:', saved);
+      console.log('Saved document projectId:', saved.projectId);
       setDocuments(prev => prev.map(d => d.id === tempId ? saved : d));
     } catch (err) {
       console.error("Error uploading document:", err);

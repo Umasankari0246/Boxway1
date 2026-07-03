@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
+import { RefreshCw } from 'lucide-react';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -35,7 +36,8 @@ const ProjectsPage = () => {
   const [typeFilter, setTypeFilter] = useState('All');
   const [sortBy, setSortBy] = useState('name');
   const [sortDir, setSortDir] = useState('asc');
-  const [deletingId, setDeletingId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -50,6 +52,19 @@ const ProjectsPage = () => {
     };
     fetchProjects();
   }, []);
+
+  const handleRefresh = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get('/projects/');
+      setProjects(response.data.data);
+    } catch (err) {
+      console.error("Error refreshing projects:", err);
+      alert("Failed to refresh projects");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const types = ['All', ...Array.from(new Set(projects.map(p => p.type)))];
 
@@ -83,19 +98,14 @@ const ProjectsPage = () => {
       return sortDir === 'asc' ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1);
     });
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
+  const paginatedProjects = filtered.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   const totalBudget = projects.reduce((s, p) => s + (p.budget || 0), 0);
   const totalSpent  = projects.reduce((s, p) => s + (p.spent || 0), 0);
-
-  const handleDelete = async () => {
-    try {
-      await api.delete(`/projects/${deletingId}`);
-      setProjects(projects.filter(p => p.id !== deletingId));
-      setDeletingId(null);
-    } catch (err) {
-      console.error("Error deleting project:", err);
-      alert("Failed to delete project");
-    }
-  };
 
   const SortIcon = ({ col }) => (
     <Icon name={sortBy === col ? (sortDir === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'} className={`text-[14px] ml-0.5 ${sortBy === col ? 'text-primary' : 'text-zinc-300'}`} />
@@ -146,8 +156,17 @@ const ProjectsPage = () => {
             <option value="progress">Sort: Progress</option>
             <option value="endDate">Sort: End Date</option>
           </select>
+          {/* Refresh */}
+          <button
+            onClick={handleRefresh}
+            disabled={loading}
+            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-zinc-200 text-zinc-700 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`text-[16px] ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </button>
           {/* New Project CTA */}
-          <button onClick={() => navigate('/projects/new')} className="ml-auto flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors shadow-sm shadow-primary/20">
+          <button onClick={() => navigate('/projects/new')} className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors shadow-sm shadow-primary/20">
             <Icon name="add" className="text-[16px]" />New Project
           </button>
         </div>
@@ -187,7 +206,7 @@ const ProjectsPage = () => {
                   <p className="text-zinc-400 text-sm">No projects match your filters.</p>
                 </td></tr>
               )}
-              {filtered.map(p => {
+              {paginatedProjects.map(p => {
                 const sc = STATUS_CFG[p.status] || STATUS_CFG['On Hold'];
                 const tc = TYPE_COLORS[p.type] || 'bg-zinc-50 text-zinc-600';
                 const budgetPct = Math.round((p.spent / p.budget) * 100);
@@ -223,7 +242,6 @@ const ProjectsPage = () => {
                       <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button onClick={() => navigate(`/projects/${p.id}`)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700 transition-colors" title="View"><Icon name="visibility" className="text-[15px]" /></button>
                         <button onClick={() => navigate(`/projects/${p.id}/edit`)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors" title="Edit"><Icon name="edit" className="text-[15px]" /></button>
-                        <button onClick={() => setDeletingId(p.id)} className="p-1.5 hover:bg-red-50 text-zinc-400 hover:text-red-600 transition-colors" title="Delete"><Icon name="delete" className="text-[15px]" /></button>
                       </div>
                     </td>
                   </tr>
@@ -231,27 +249,42 @@ const ProjectsPage = () => {
               })}
             </tbody>
           </table>
-          <div className="px-5 py-3 border-t border-zinc-50 text-[9px] font-black uppercase tracking-widest text-zinc-400 flex justify-between">
-            <span>Showing {filtered.length} of {projects.length} projects</span>
-            <span>Total budget: ${(totalBudget / 1000000).toFixed(1)}M · Spent: ${(totalSpent / 1000000).toFixed(1)}M</span>
-          </div>
+          {filtered.length > 0 && (
+            <div className="px-5 py-3 border-t border-zinc-50 text-[9px] font-black uppercase tracking-widest text-zinc-400 flex justify-between items-center">
+              <span>Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filtered.length)} of {filtered.length} projects</span>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1.5 text-[10px] font-medium rounded border border-zinc-200 hover:bg-zinc-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`px-3 py-1.5 text-[10px] font-medium rounded border ${
+                      currentPage === page
+                        ? 'bg-primary text-white border-primary'
+                        : 'border-zinc-200 hover:bg-zinc-50'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1.5 text-[10px] font-medium rounded border border-zinc-200 hover:bg-zinc-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Delete Modal */}
-      {deletingId && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" onClick={() => setDeletingId(null)}>
-          <div className="bg-white p-8 w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
-            <Icon name="warning" className="text-red-500 text-3xl mb-3 block" />
-            <h3 className="text-lg font-black uppercase tracking-tight mb-2">Delete Project?</h3>
-            <p className="text-sm text-zinc-500 mb-6">This will permanently delete the project and all associated data.</p>
-            <div className="flex gap-3">
-              <button onClick={() => setDeletingId(null)} className="flex-1 py-2.5 border border-zinc-200 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50">Cancel</button>
-              <button onClick={handleDelete} className="flex-1 py-2.5 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-red-700">Delete</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

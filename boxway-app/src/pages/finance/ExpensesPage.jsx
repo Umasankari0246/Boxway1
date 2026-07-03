@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Plus, RefreshCw, DollarSign, CheckCircle, Clock, ChevronRight, Trash2, Edit3, Eye, X } from 'lucide-react';
+import { Search, Plus, RefreshCw, DollarSign, CheckCircle, Clock, Trash2, Edit3, Eye, X, AlertTriangle, Download } from 'lucide-react';
 import axios from 'axios';
+import jsPDF from 'jspdf';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -168,6 +169,70 @@ const ExpensesPage = () => {
     setShowEdit(true);
   };
 
+  const handleDownload = (expense) => {
+    try {
+      const doc = new jsPDF();
+      const margin = 20;
+      let y = margin;
+
+      // Header
+      doc.setFontSize(20);
+      doc.setFont('helvetica', 'bold');
+      doc.text('EXPENSE RECEIPT', margin, y);
+      y += 15;
+
+      // Expense details
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Title: ${expense.title}`, margin, y);
+      y += 8;
+      doc.text(`Category: ${expense.category}`, margin, y);
+      y += 8;
+      doc.text(`Date: ${expense.date}`, margin, y);
+      y += 8;
+      doc.text(`Status: ${expense.status}`, margin, y);
+      y += 15;
+
+      // Amount
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Amount:', margin, y);
+      y += 8;
+      doc.setFontSize(16);
+      doc.text(`$${expense.amount.toLocaleString()}`, margin, y);
+      y += 15;
+
+      // Project if available
+      if (expense.project) {
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Project: ${expense.project}`, margin, y);
+        y += 15;
+      }
+
+      // Notes if available
+      if (expense.notes) {
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Notes:', margin, y);
+        y += 8;
+        const splitNotes = doc.splitTextToSize(expense.notes, 170);
+        doc.text(splitNotes, margin, y);
+      }
+
+      // Footer
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'italic');
+      doc.text('Boxway Expense Management', margin, 280);
+
+      // Save the PDF
+      doc.save(`expense-${expense.id || expense.title}.pdf`);
+    } catch (err) {
+      console.error("Error generating PDF:", err);
+      alert("Failed to download expense");
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-[#f8f6f6]">
       {/* Header Container */}
@@ -298,6 +363,9 @@ const ExpensesPage = () => {
                     </select>
                   </div>
                   <div className="flex justify-end gap-1 items-center">
+                    <button onClick={() => handleDownload(e)} className="text-slate-400 hover:text-black p-1.5 rounded hover:bg-slate-50 transition-colors" title="Download">
+                      <Download className="h-4 w-4" />
+                    </button>
                     <button onClick={() => { setSelectedExpense(e); setShowView(true); }} className="text-slate-400 hover:text-black p-1.5 rounded hover:bg-slate-50 transition-colors" title="View">
                       <Eye className="h-4 w-4" />
                     </button>
@@ -306,9 +374,6 @@ const ExpensesPage = () => {
                     </button>
                     <button onClick={() => setDeletingId(e.id)} className="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition-colors" title="Delete">
                       <Trash2 className="h-4 w-4" />
-                    </button>
-                    <button onClick={() => { setSelectedExpense(e); setShowView(true); }} className="text-slate-400 hover:text-primary p-1.5 rounded hover:bg-primary/10 transition-colors" title="View Details">
-                      <ChevronRight className="h-5 w-5" />
                     </button>
                   </div>
                 </div>
@@ -436,7 +501,7 @@ const ExpensesPage = () => {
           <div className="bg-white rounded-xl p-8 w-full max-w-lg shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-black text-slate-900">Expense Details</h3>
-              <button onClick={() => setShowView(false)} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded"><Icon name="close" /></button>
+              <button onClick={() => setShowView(false)} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded"><X className="text-lg" /></button>
             </div>
             <div className="space-y-4">
               <div>
@@ -482,7 +547,7 @@ const ExpensesPage = () => {
       {deletingId && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setDeletingId(null)}>
           <div className="bg-white rounded-xl p-8 w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
-            <Icon name="warning" className="text-red-500 text-3xl mb-3 block" />
+            <AlertTriangle className="text-red-500 text-3xl mb-3 block" />
             <h3 className="text-lg font-black uppercase tracking-tight mb-2">Delete Expense?</h3>
             <p className="text-sm text-slate-500 mb-6">This will permanently remove the expense record.</p>
             <div className="flex gap-3">

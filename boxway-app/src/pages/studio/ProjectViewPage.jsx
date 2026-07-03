@@ -56,6 +56,20 @@ const ProjectViewPage = () => {
   const [editingStatus, setEditingStatus] = useState(false);
   const [projectStatus, setProjectStatus] = useState('Planning');
   const [team, setTeam] = useState([]);
+
+  const handleDownload = (doc) => {
+    if (doc.fileUrl) {
+      // Create a temporary link to download the file
+      const link = document.createElement('a');
+      link.href = doc.fileUrl;
+      link.download = doc.name || doc.fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      alert('No file available for download');
+    }
+  };
   
   // Initialize team from project.teamMembers
   const getEmployeeById = (empId) => employees.find(e => e.id === empId || e.employeeId === empId);
@@ -88,7 +102,19 @@ const ProjectViewPage = () => {
         // Fetch documents
         try {
           const docsRes = await api.get('/documents/');
-          setDocuments(docsRes.data.data.filter(d => d.projectId === id) || []);
+          const allDocs = docsRes.data.data || [];
+          // Filter documents by project using multiple possible ID fields
+          const projectDocs = allDocs.filter(d => 
+            d.projectId === id || 
+            (project && d.projectId === project.id) || 
+            (project && d.projectId === project.projectId) ||
+            (project && d.project === project.name) ||
+            (project && d.projectCode === project.projectId)
+          );
+          console.log('Project ID:', id);
+          console.log('All documents:', allDocs);
+          console.log('Filtered documents for project:', projectDocs);
+          setDocuments(projectDocs);
         } catch (err) {
           console.error('Error fetching documents:', err);
         }
@@ -329,16 +355,16 @@ const ProjectViewPage = () => {
               <div className="bg-white border border-zinc-100 shadow-sm p-5 space-y-2">
                 <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-3">Quick Actions</h3>
                 <button onClick={() => { setTab('activity'); }} className="w-full flex items-center gap-2 px-3 py-2 bg-zinc-50 hover:bg-zinc-100 transition-colors text-[10px] font-black text-left">
-                  <Icon name="chat" className="text-[16px]" text-zinc-400 />Add Comment
+                  <Icon name="chat" className="text-[16px] text-zinc-400" />Add Comment
                 </button>
                 <button onClick={() => navigate('/documents')} className="w-full flex items-center gap-2 px-3 py-2 bg-zinc-50 hover:bg-zinc-100 transition-colors text-[10px] font-black text-left">
-                  <Icon name="upload" className="text-[16px]" text-zinc-400 />Upload Document
+                  <Icon name="upload" className="text-[16px] text-zinc-400" />Upload Document
                 </button>
                 <button onClick={() => navigate('/invoices/new')} className="w-full flex items-center gap-2 px-3 py-2 bg-zinc-50 hover:bg-zinc-100 transition-colors text-[10px] font-black text-left">
-                  <Icon name="receipt_long" className="text-[16px]" text-zinc-400 />Create Invoice
+                  <Icon name="receipt_long" className="text-[16px] text-zinc-400" />Create Invoice
                 </button>
                 <button onClick={() => navigate('/proposals')} className="w-full flex items-center gap-2 px-3 py-2 bg-zinc-50 hover:bg-zinc-100 transition-colors text-[10px] font-black text-left">
-                  <Icon name="description" className="text-[16px]" text-zinc-400 />View Parent Proposal
+                  <Icon name="description" className="text-[16px] text-zinc-400" />View Parent Proposal
                 </button>
               </div>
             </div>
@@ -473,8 +499,7 @@ const ProjectViewPage = () => {
                       <td className="px-5 py-3.5 text-xs text-zinc-400">{doc.date}</td>
                       <td className="px-5 py-3.5">
                         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button className="p-1 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors"><Icon name="download" className="text-[15px]" /></button>
-                          <button className="p-1 hover:bg-red-50 text-zinc-400 hover:text-red-500 transition-colors"><Icon name="delete" className="text-[15px]" /></button>
+                          <button onClick={() => handleDownload(doc)} className="p-1 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors"><Icon name="download" className="text-[15px]" /></button>
                         </div>
                       </td>
                     </tr>

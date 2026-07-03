@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Plus, RefreshCw, DollarSign, Clock, AlertCircle, CheckCircle, ChevronRight, Trash2, Edit3, Download, X } from 'lucide-react';
+import { Search, Plus, RefreshCw, DollarSign, Clock, AlertCircle, CheckCircle, Trash2, Edit3, Download, X, AlertTriangle, Eye } from 'lucide-react';
 import axios from 'axios';
+import jsPDF from 'jspdf';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -17,6 +18,7 @@ const InvoicesPage = () => {
   const [statusFilter, setStatusFilter] = useState('All Statuses');
   const [deletingId, setDeletingId] = useState(null);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [showViewModal, setShowViewModal] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [editForm, setEditForm] = useState({ client: '', project: '', amount: '', date: '', status: '', notes: '' });
   const [currentPage, setCurrentPage] = useState(1);
@@ -78,6 +80,7 @@ const InvoicesPage = () => {
   };
 
   const openEditModal = (invoice) => {
+    console.log('Opening edit modal for invoice:', invoice);
     setSelectedInvoice(invoice);
     setEditForm({
       client: invoice.client,
@@ -88,9 +91,18 @@ const InvoicesPage = () => {
       notes: invoice.notes || ''
     });
     setShowEdit(true);
+    setShowViewModal(false);
+  };
+
+  const openViewModal = (invoice) => {
+    setSelectedInvoice(invoice);
+    setShowViewModal(true);
+    setShowEdit(false);
   };
 
   const handleEditInvoice = async () => {
+    console.log('handleEditInvoice called, selectedInvoice:', selectedInvoice);
+    console.log('editForm:', editForm);
     if (selectedInvoice) {
       try {
         const updatedInvoice = {
@@ -101,7 +113,9 @@ const InvoicesPage = () => {
           status: editForm.status,
           notes: editForm.notes
         };
+        console.log('Sending update request:', updatedInvoice);
         const response = await api.patch(`/invoices/${encodeURIComponent(selectedInvoice.id)}`, updatedInvoice);
+        console.log('Update response:', response.data);
         setInvoices(prevInvoices => 
           prevInvoices.map(inv => inv.id === selectedInvoice.id ? response.data.data : inv)
         );
@@ -124,6 +138,72 @@ const InvoicesPage = () => {
       alert("Failed to refresh invoices");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownload = async (invoice) => {
+    try {
+      const doc = new jsPDF();
+      const margin = 20;
+      let y = margin;
+
+      // Header
+      doc.setFontSize(20);
+      doc.setFont('helvetica', 'bold');
+      doc.text('INVOICE', margin, y);
+      y += 15;
+
+      // Invoice details
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Invoice ID: ${invoice.id}`, margin, y);
+      y += 8;
+      doc.text(`Date: ${invoice.date}`, margin, y);
+      y += 8;
+      doc.text(`Status: ${invoice.status}`, margin, y);
+      y += 15;
+
+      // Client info
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Bill To:', margin, y);
+      y += 8;
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(invoice.client, margin, y);
+      y += 8;
+      doc.text(`Project: ${invoice.project}`, margin, y);
+      y += 15;
+
+      // Amount
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Total Amount:', margin, y);
+      y += 8;
+      doc.setFontSize(16);
+      doc.text(`$${invoice.amount.toLocaleString()}`, margin, y);
+      y += 15;
+
+      // Notes if available
+      if (invoice.notes) {
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Notes:', margin, y);
+        y += 8;
+        const splitNotes = doc.splitTextToSize(invoice.notes, 170);
+        doc.text(splitNotes, margin, y);
+      }
+
+      // Footer
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'italic');
+      doc.text('Thank you for your business!', margin, 280);
+
+      // Save the PDF
+      doc.save(`invoice-${invoice.id}.pdf`);
+    } catch (err) {
+      console.error("Error generating PDF:", err);
+      alert("Failed to download invoice");
     }
   };
 
@@ -275,17 +355,17 @@ const InvoicesPage = () => {
                     </select>
                   </div>
                   <div className="flex justify-end gap-1 items-center">
-                    <button onClick={() => setSelectedInvoice(inv)} className="text-slate-400 hover:text-black p-1.5 rounded hover:bg-slate-50 transition-colors" title="View">
+                    <button onClick={() => handleDownload(inv)} className="text-slate-400 hover:text-black p-1.5 rounded hover:bg-slate-50 transition-colors" title="Download">
                       <Download className="h-4 w-4" />
+                    </button>
+                    <button onClick={() => openViewModal(inv)} className="text-slate-400 hover:text-primary p-1.5 rounded hover:bg-primary/10 transition-colors" title="View">
+                      <Eye className="h-4 w-4" />
                     </button>
                     <button onClick={() => openEditModal(inv)} className="text-slate-400 hover:text-primary p-1.5 rounded hover:bg-primary/10 transition-colors" title="Edit">
                       <Edit3 className="h-4 w-4" />
                     </button>
                     <button onClick={() => setDeletingId(inv.id)} className="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition-colors" title="Delete">
                       <Trash2 className="h-4 w-4" />
-                    </button>
-                    <button onClick={() => navigate(`/invoices/${inv.id}`)} className="text-slate-400 hover:text-primary p-1.5 rounded hover:bg-primary/10 transition-colors" title="View Details">
-                      <ChevronRight className="h-5 w-5" />
                     </button>
                   </div>
                 </div>
@@ -416,7 +496,7 @@ const InvoicesPage = () => {
       {deletingId && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" onClick={() => setDeletingId(null)}>
           <div className="bg-white p-8 w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
-            <Icon name="warning" className="text-red-500 text-3xl mb-3 block" />
+            <AlertTriangle className="text-red-500 text-3xl mb-3 block" />
             <h3 className="text-lg font-black uppercase tracking-tight mb-2">Delete Invoice?</h3>
             <p className="text-sm text-zinc-500 mb-6">This will permanently remove the invoice and all its associated data.</p>
             <div className="flex gap-3">
@@ -428,13 +508,13 @@ const InvoicesPage = () => {
       )}
 
       {/* View Invoice Modal */}
-      {selectedInvoice && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" onClick={() => setSelectedInvoice(null)}>
+      {showViewModal && selectedInvoice && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" onClick={() => setShowViewModal(false)}>
           <div className="bg-white w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="p-6 border-b border-zinc-100 flex justify-between items-center">
               <h3 className="text-lg font-black uppercase tracking-tight">Invoice Details</h3>
-              <button onClick={() => setSelectedInvoice(null)} className="p-1.5 hover:bg-zinc-100 transition-colors">
-                <Icon name="close" className="text-[20px]" />
+              <button onClick={() => setShowViewModal(false)} className="p-1.5 hover:bg-zinc-100 transition-colors">
+                <X className="text-[20px]" />
               </button>
             </div>
             <div className="p-6 space-y-4">
