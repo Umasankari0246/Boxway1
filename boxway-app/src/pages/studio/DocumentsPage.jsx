@@ -384,10 +384,7 @@ const DocDrawer = ({ doc, onClose }) => {
             <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mt-0.5">{doc.type} · {doc.size}</p>
           </div>
           <div className="flex gap-1 shrink-0">
-            <button onClick={handleDrawerDownload} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors" title="Download"><Icon name="download" className="text-[18px]" /></button>
-            <button onClick={handleDrawerEdit} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-900 transition-colors" title="Edit"><Icon name="edit" className="text-[18px]" /></button>
-            <button className="p-1.5 hover:bg-red-50 text-zinc-400 hover:text-red-600 transition-colors" title="Delete"><Icon name="delete" className="text-[18px]" /></button>
-            <button onClick={onClose} className="p-1.5 hover:bg-zinc-100 text-zinc-400 transition-colors ml-1"><Icon name="close" className="text-[18px]" /></button>
+            <button onClick={onClose} className="p-1.5 hover:bg-zinc-100 text-zinc-400 transition-colors"><Icon name="close" className="text-[18px]" /></button>
           </div>
         </div>
 
