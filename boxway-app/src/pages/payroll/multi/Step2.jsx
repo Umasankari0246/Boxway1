@@ -2,10 +2,16 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePayrollStore } from '../../../store/payrollStore';
 import Icon from "../../../components/ui/Icon.jsx"
+import { useTranslation } from '../../../store/settingsStore';
+import { useFormatters } from '../../../store/settingsStore';
 
 const STEPS = ['Select Employees', 'Setup Payroll', 'Review & Confirm'];
 
 const Step2 = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const { multiRun, setMultiPayrollConfig } = usePayrollStore();
   const emps = multiRun.selectedEmployees;
@@ -30,7 +36,7 @@ const Step2 = () => {
             <Icon name="arrow_back" />
           </button>
           <div>
-            <h2 className="text-2xl font-black text-slate-900">Setup Payroll</h2>
+            <h2 className="text-2xl font-black text-slate-900">{t('Setup Payroll')}</h2>
             <p className="text-sm text-slate-500">Configure settings for {emps.length} employees</p>
           </div>
         </div>
@@ -51,7 +57,7 @@ const Step2 = () => {
 
         <div className="grid grid-cols-5 gap-6">
           <div className="col-span-3 bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-            <h3 className="text-lg font-bold text-slate-900 mb-5">Payroll Configuration</h3>
+            <h3 className="text-lg font-bold text-slate-900 mb-5">{t('Payroll Configuration')}</h3>
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Bonus % (applied to all)</label>
@@ -66,27 +72,27 @@ const Step2 = () => {
                 <input type="number" value={form.taxRate} onChange={e => set('taxRate', e.target.value)} min="0" max="50" className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Pay Period</label>
+                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{t('Pay Period')}</label>
                 <select value={form.payPeriod} onChange={e => set('payPeriod', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary">
-                  <option>Monthly</option><option>Bi-weekly</option><option>Weekly</option>
+                  <option>{t('Monthly')}</option><option>{t('Bi-weekly')}</option><option>{t('Weekly')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Notes</label>
+                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{t('Notes')}</label>
                 <textarea rows={3} value={form.notes} onChange={e => set('notes', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary resize-none" />
               </div>
             </div>
           </div>
           <div className="col-span-2">
             <div className="bg-zinc-900 rounded-xl p-6 text-white sticky top-0">
-              <h4 className="font-bold mb-4">Payroll Summary</h4>
+              <h4 className="font-bold mb-4">{t('Payroll Summary')}</h4>
               <div className="space-y-2 text-sm mb-5">
-                <div className="flex justify-between"><span className="text-zinc-400">Employees</span><span>{emps.length}</span></div>
-                <div className="flex justify-between"><span className="text-zinc-400">Total Gross</span><span>${totalGross.toLocaleString()}</span></div>
-                <div className="flex justify-between"><span className="text-zinc-400">Deductions</span><span className="text-red-400">-${totalDeductions.toLocaleString()}</span></div>
-                <div className="flex justify-between"><span className="text-zinc-400">Tax</span><span className="text-red-400">-${totalTax.toLocaleString()}</span></div>
+                <div className="flex justify-between"><span className="text-zinc-400">{t('Employees')}</span><span>{emps.length}</span></div>
+                <div className="flex justify-between"><span className="text-zinc-400">{t('Total Gross')}</span><span>{formatCurrency(totalGross.toLocaleString())}</span></div>
+                <div className="flex justify-between"><span className="text-zinc-400">{t('Deductions')}</span><span className="text-red-400">-{formatCurrency(totalDeductions.toLocaleString())}</span></div>
+                <div className="flex justify-between"><span className="text-zinc-400">{t('Tax')}</span><span className="text-red-400">-{formatCurrency(totalTax.toLocaleString())}</span></div>
                 <div className="border-t border-white/10 pt-2 flex justify-between">
-                  <span className="font-bold">TOTAL NET</span><span className="text-xl font-black text-primary">${totalNet.toLocaleString()}</span>
+                  <span className="font-bold">{t('TOTAL NET')}</span><span className="text-xl font-black text-primary">{formatCurrency(totalNet.toLocaleString())}</span>
                 </div>
               </div>
               <div className="space-y-1.5">
@@ -103,8 +109,8 @@ const Step2 = () => {
         </div>
 
         <div className="flex justify-between mt-6">
-          <button onClick={() => navigate('/payroll/run/multi/step1')} className="px-6 py-2.5 border border-slate-200 bg-white text-slate-700 text-sm font-semibold rounded hover:bg-slate-50">Back</button>
-          <button onClick={() => { setMultiPayrollConfig({ ...form, totalGross, totalDeductions, totalTax, totalNet }); navigate('/payroll/run/multi/step3'); }} className="px-6 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20">Review & Confirm</button>
+          <button onClick={() => navigate('/payroll/run/multi/step1')} className="px-6 py-2.5 border border-slate-200 bg-white text-slate-700 text-sm font-semibold rounded hover:bg-slate-50">{t('Back')}</button>
+          <button onClick={() => { setMultiPayrollConfig({ ...form, totalGross, totalDeductions, totalTax, totalNet }); navigate('/payroll/run/multi/step3'); }} className="px-6 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20">{t('Review & Confirm')}</button>
         </div>
       </div>
     </div>

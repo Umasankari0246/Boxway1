@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Icon from '../components/ui/Icon.jsx';
+import { useFormatters } from '../hooks/useFormatters.js';
+import { useTranslation } from '../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -20,7 +22,9 @@ const toNumber = (value) => {
 
 
 const DashboardPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+  const { formatCurrency } = useFormatters();
   const [projects, setProjects] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [invoices, setInvoices] = useState([]);
@@ -266,7 +270,7 @@ const DashboardPage = () => {
               <Icon name="box" className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Active Projects</p>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">{t('Active Projects')}</p>
               <h3 className="text-2xl font-black">{loading ? '...' : activeProjects}</h3>
             </div>
           </div>
@@ -277,9 +281,9 @@ const DashboardPage = () => {
               <Icon name="payments" className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Total Revenue</p>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">{t('Total Revenue')}</p>
               <h3 className="text-2xl font-black">
-                {loading ? '...' : `$${(totalRevenue / 1000).toFixed(0)}K`}
+                {loading ? '...' : `$${formatCurrency((totalRevenue / 1000).toFixed(0))}K`}
               </h3>
             </div>
           </div>
@@ -290,7 +294,7 @@ const DashboardPage = () => {
               <Icon name="pending_actions" className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Pending</p>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">{t('Pending')}</p>
               <h3 className="text-2xl font-black">{loading ? '...' : pendingProjects}</h3>
             </div>
           </div>
@@ -301,7 +305,7 @@ const DashboardPage = () => {
               <Icon name="group" className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Team</p>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">{t('Team')}</p>
               <h3 className="text-2xl font-black">{loading ? '...' : teamCount}</h3>
             </div>
           </div>
@@ -317,15 +321,15 @@ const DashboardPage = () => {
           <section className="bg-white p-6 border border-zinc-100 shadow-sm">
             <div className="flex items-center justify-between mb-8">
               <div>
-                <h3 className="text-xs font-black uppercase tracking-tight">Project Progress Overview</h3>
-                <p className="text-[10px] text-zinc-500 uppercase mt-0.5">Tracking current status of top architectural projects</p>
+                <h3 className="text-xs font-black uppercase tracking-tight">{t('Project Progress Overview')}</h3>
+                <p className="text-[10px] text-zinc-500 uppercase mt-0.5">{t('Tracking current status of top architectural projects')}</p>
               </div>
-              <button onClick={() => navigate('/projects')} className="text-[10px] font-bold text-primary hover:underline uppercase">View All</button>
+              <button onClick={() => navigate('/projects')} className="text-[10px] font-bold text-primary hover:underline uppercase">{t('View All')}</button>
             </div>
             
             <div className="space-y-6">
               {loading ? (
-                <div className="text-center py-8 text-zinc-400">Loading projects...</div>
+                <div className="text-center py-8 text-zinc-400">{t('Loading projects...')}</div>
               ) : (
                 projects.slice(0, 4).map((project) => {
                   // Calculate progress if missing
@@ -364,14 +368,14 @@ const DashboardPage = () => {
           <section className="bg-white p-6 border border-zinc-100 shadow-sm">
             <div className="flex items-center justify-between mb-8">
               <div>
-                <h3 className="text-xs font-black uppercase tracking-tight">Financial Summary</h3>
-                <p className="text-[10px] text-zinc-500 uppercase mt-0.5">Revenue vs Expenditures trend</p>
+                <h3 className="text-xs font-black uppercase tracking-tight">{t('Financial Summary')}</h3>
+                <p className="text-[10px] text-zinc-500 uppercase mt-0.5">{t('Revenue vs Expenditures trend')}</p>
               </div>
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1.5"><span className="w-2 h-2 bg-primary"></span><span className="text-[10px] font-bold uppercase">Revenue</span></div>
-                <div className="flex items-center gap-1.5"><span className="w-2 h-2 bg-slate-800"></span><span className="text-[10px] font-bold uppercase">Expenses</span></div>
+                <div className="flex items-center gap-1.5"><span className="w-2 h-2 bg-primary"></span><span className="text-[10px] font-bold uppercase">{t('Revenue')}</span></div>
+                <div className="flex items-center gap-1.5"><span className="w-2 h-2 bg-slate-800"></span><span className="text-[10px] font-bold uppercase">{t('Expenses')}</span></div>
                 <div className="h-4 w-[1px] bg-zinc-200"></div>
-                <span className="text-[10px] font-bold text-zinc-400 uppercase">Last 3 Months</span>
+                <span className="text-[10px] font-bold text-zinc-400 uppercase">{t('Last 3 Months')}</span>
               </div>
             </div>
             
@@ -387,18 +391,18 @@ const DashboardPage = () => {
                 <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-zinc-900 text-white px-3 py-2 rounded-lg text-[10px] font-bold z-10 shadow-lg pointer-events-none">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="w-2 h-2 bg-primary rounded-full"></span>
-                    <span>Revenue: ${hoveredData.revenue.toLocaleString()}</span>
+                    <span>Revenue: {formatCurrency(hoveredData.revenue)}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 bg-slate-800 rounded-full"></span>
-                    <span>Expenses: ${hoveredData.expenses.toLocaleString()}</span>
+                    <span>Expenses: {formatCurrency(hoveredData.expenses)}</span>
                   </div>
                 </div>
               )}
               
               <div className="relative h-full flex items-end gap-3 pt-2 pb-2">
                 {loading ? (
-                  <div className="w-full flex items-center justify-center text-zinc-400 text-[10px]">Loading financial data...</div>
+                  <div className="w-full flex items-center justify-center text-zinc-400 text-[10px]">{t('Loading financial data...')}</div>
                 ) : (
                   financialData.map((item) => {
                     const revenueHeightPercent = Math.max((item.revenue / revenueMaxValue) * 100, 2);
@@ -434,8 +438,8 @@ const DashboardPage = () => {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4 mt-4 text-[10px] font-bold text-zinc-400 uppercase">
-              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-primary" />Revenue</div>
-              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-slate-800" />Expenses</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-primary" />{t('Revenue')}</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-slate-800" />{t('Expenses')}</div>
             </div>
           </section>
         </div>
@@ -444,42 +448,42 @@ const DashboardPage = () => {
         <div className="flex h-full flex-col gap-6 min-h-0">
           {/* Summary Stats Card */}
           <section className="bg-white p-6 border border-zinc-100 shadow-sm">
-            <h3 className="text-xs font-black uppercase mb-4">Overview</h3>
+            <h3 className="text-xs font-black uppercase mb-4">{t('Overview')}</h3>
             <div className="grid grid-cols-4 gap-4">
               <div className="text-center">
                 <p className="text-2xl font-black text-primary">{employees.length}</p>
-                <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">Employees</p>
+                <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">{t('Employees')}</p>
               </div>
               <div className="text-center">
                 <p className="text-2xl font-black text-primary">{clients.length}</p>
-                <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">Clients</p>
+                <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">{t('Clients')}</p>
               </div>
               <div className="text-center">
                 <p className="text-2xl font-black text-primary">{proposals.length}</p>
-                <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">Proposals</p>
+                <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">{t('Proposals')}</p>
               </div>
               <div className="text-center">
                 <p className="text-2xl font-black text-primary">{invoices.length}</p>
-                <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">Invoices</p>
+                <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">{t('Invoices')}</p>
               </div>
               <div className="text-center">
                 <p className="text-2xl font-black text-primary">{documents.length}</p>
-                <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">Documents</p>
+                <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">{t('Documents')}</p>
               </div>
               <div className="text-center">
                 <p className="text-2xl font-black text-primary">{expenses.length}</p>
-                <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">Expenses</p>
+                <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">{t('Expenses')}</p>
               </div>
               <div className="text-center">
                 <p className="text-2xl font-black text-primary">{projects.length}</p>
-                <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">Projects</p>
+                <p className="text-[9px] font-bold text-zinc-500 uppercase mt-1">{t('Projects')}</p>
               </div>
             </div>
           </section>
 
           {/* Recent Activity */}
           <section className="bg-white p-6 border border-zinc-100 shadow-sm flex flex-col" style={{ maxHeight: '300px' }}>
-            <h3 className="text-xs font-black uppercase mb-4">Recent Activity</h3>
+            <h3 className="text-xs font-black uppercase mb-4">{t('Recent Activity')}</h3>
             <div className="relative space-y-4 overflow-y-auto pr-1" style={{ maxHeight: '200px' }}>
               <div className="absolute left-[13px] top-2 bottom-4 w-[1px] bg-zinc-100"></div>
               
@@ -505,8 +509,8 @@ const DashboardPage = () => {
       <footer className="h-10 flex-shrink-0 border-t border-zinc-100 flex items-center justify-between pb-6 pt-2">
         <p className="text-[9px] font-black text-zinc-300 uppercase tracking-widest">© 2023 BOXWAY DIGITAL SYSTEMS</p>
         <div className="flex gap-4">
-          <a className="text-[9px] font-black text-zinc-400 hover:text-primary uppercase" href="#">Security</a>
-          <a className="text-[9px] font-black text-zinc-400 hover:text-primary uppercase" href="#">Privacy</a>
+          <a className="text-[9px] font-black text-zinc-400 hover:text-primary uppercase" href="#">{t('Security')}</a>
+          <a className="text-[9px] font-black text-zinc-400 hover:text-primary uppercase" href="#">{t('Privacy')}</a>
         </div>
       </footer>
     </div>

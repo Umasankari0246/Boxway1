@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { usePayrollStore } from '../../../store/payrollStore';
 import Icon from "../../../components/ui/Icon.jsx"
+import { useTranslation } from '../../../store/settingsStore';
+import { useFormatters } from '../../../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -13,6 +15,10 @@ const api = axios.create({
 const RECENT_EMPLOYEES_KEY = 'payrollRecentEmployees';
 
 const Step1 = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const { multiRun, setMultiEmployees } = usePayrollStore();
   const [selected, setSelected] = React.useState(new Set(multiRun.selectedEmployees.map(e => e.id)));
@@ -91,8 +97,8 @@ const Step1 = () => {
             <Icon name="arrow_back" />
           </button>
           <div>
-            <h2 className="text-2xl font-black text-slate-900">Multi-Employee Payroll Run</h2>
-            <p className="text-sm text-slate-500">Process payroll for multiple employees</p>
+            <h2 className="text-2xl font-black text-slate-900">{t('Multi-Employee Payroll Run')}</h2>
+            <p className="text-sm text-slate-500">{t('Process payroll for multiple employees')}</p>
           </div>
         </div>
         <div className="flex items-center mb-8">
@@ -116,7 +122,7 @@ const Step1 = () => {
           </div>
           <div className="space-y-2">
             {loading ? (
-              <div className="text-center py-8 text-slate-400">Loading employees...</div>
+              <div className="text-center py-8 text-slate-400">{t('Loading employees...')}</div>
             ) : employees.map(e => (
               <div key={e.id} onClick={() => toggle(e.id)}
                 className={`flex items-center gap-4 p-4 rounded-lg border cursor-pointer transition-all ${selected.has(e.id) ? 'border-primary bg-primary/5' : 'border-slate-200 hover:border-slate-300'}`}>
@@ -129,7 +135,7 @@ const Step1 = () => {
                   <p className="text-xs text-slate-400">{e.role} · {e.department}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-bold">${(e.salary / 12).toLocaleString(undefined, { maximumFractionDigits: 0 })}<span className="text-slate-400 font-normal text-xs">/mo</span></p>
+                  <p className="text-sm font-bold">{formatCurrency(e.salary / 12)}<span className="text-slate-400 font-normal text-xs">/mo</span></p>
                   <span className={`text-[10px] font-bold ${e.status === 'Active' ? 'text-green-600' : 'text-yellow-600'}`}>{e.status}</span>
                 </div>
               </div>
@@ -140,17 +146,15 @@ const Step1 = () => {
         {selected.size > 0 && (
           <div className="mt-4 p-4 bg-primary/10 rounded-lg flex justify-between text-sm">
             <span className="font-semibold text-primary">{selected.size} employees selected</span>
-            <span className="font-bold text-slate-900">Est. Total: ${employees.filter(e => selected.has(e.id)).reduce((s, e) => s + Math.round((e.salary || 0) / 12), 0).toLocaleString()}</span>
+            <span className="font-bold text-slate-900">Est. Total: {formatCurrency(employees.filter(e => selected.has(e.id)).reduce((s, e) => s + Math.round((e.salary || 0) / 12), 0).toLocaleString())}</span>
           </div>
         )}
 
         <div className="flex justify-between mt-6">
-          <button onClick={() => navigate('/payroll')} className="px-6 py-2.5 border border-slate-200 bg-white text-slate-700 text-sm font-semibold rounded hover:bg-slate-50">Cancel</button>
+          <button onClick={() => navigate('/payroll')} className="px-6 py-2.5 border border-slate-200 bg-white text-slate-700 text-sm font-semibold rounded hover:bg-slate-50">{t('Cancel')}</button>
           <button disabled={selected.size === 0}
             onClick={() => { setMultiEmployees(employees.filter(e => selected.has(e.id))); navigate('/payroll/run/multi/step2'); }}
-            className="px-6 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20 disabled:opacity-40">
-            Continue
-          </button>
+            className="px-6 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20 disabled:opacity-40">{t('Continue')}</button>
         </div>
       </div>
     </div>

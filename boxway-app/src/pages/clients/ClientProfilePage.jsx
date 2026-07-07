@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ArrowLeft, User, Mail, MapPin } from 'lucide-react';
 import Icon from "../../components/ui/Icon.jsx"
+import { useTranslation } from '../../store/settingsStore';
+import { useFormatters } from '../../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -11,6 +13,10 @@ const api = axios.create({
 });
 
 const ClientProfilePage = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const { id } = useParams();
   const navigate = useNavigate();
   const [tab, setTab] = React.useState('overview');
@@ -62,11 +68,11 @@ const ClientProfilePage = () => {
   };
 
   if (loading) {
-    return <div className="flex-1 flex items-center justify-center bg-[#f8f6f6]"><p className="text-slate-500">Loading...</p></div>;
+    return <div className="flex-1 flex items-center justify-center bg-[#f8f6f6]"><p className="text-slate-500">{t('Loading...')}</p></div>;
   }
 
   if (!client) {
-    return <div className="flex-1 flex items-center justify-center bg-[#f8f6f6]"><p className="text-slate-500">Client not found</p></div>;
+    return <div className="flex-1 flex items-center justify-center bg-[#f8f6f6]"><p className="text-slate-500">{t('Client not found')}</p></div>;
   }
 
   return (
@@ -99,8 +105,8 @@ const ClientProfilePage = () => {
             >
               <Icon name="refresh" className="text-[18px]" />
             </button>
-            <p className="text-xs text-slate-500 uppercase font-bold">Total Value</p>
-            <p className="text-2xl font-black text-primary">${client.totalValue.toLocaleString()}</p>
+            <p className="text-xs text-slate-500 uppercase font-bold">{t('Total Value')}</p>
+            <p className="text-2xl font-black text-primary">{formatCurrency(client.totalValue.toLocaleString())}</p>
           </div>
         </div>
         <div className="flex gap-6 mt-5 border-t border-slate-100 pt-4">
@@ -114,24 +120,24 @@ const ClientProfilePage = () => {
         {tab === 'overview' && (
           <div className="grid grid-cols-3 gap-6">
             <div className="col-span-2 bg-white rounded-xl border border-slate-200 p-6">
-              <h3 className="font-bold text-slate-900 mb-4">Client Details</h3>
+              <h3 className="font-bold text-slate-900 mb-4">{t('Client Details')}</h3>
               <dl className="grid grid-cols-2 gap-4 text-sm">
-                <div><dt className="text-slate-500 text-xs uppercase font-bold">Company</dt><dd className="font-medium mt-0.5">{client.name}</dd></div>
-                <div><dt className="text-slate-500 text-xs uppercase font-bold">Contact Person</dt><dd className="font-medium mt-0.5">{client.contactPerson}</dd></div>
-                <div><dt className="text-slate-500 text-xs uppercase font-bold">Email</dt><dd className="font-medium mt-0.5">{client.email}</dd></div>
-                <div><dt className="text-slate-500 text-xs uppercase font-bold">Phone</dt><dd className="font-medium mt-0.5">{client.phone}</dd></div>
-                <div><dt className="text-slate-500 text-xs uppercase font-bold">Client Since</dt><dd className="font-medium mt-0.5">{client.joinDate}</dd></div>
-                <div><dt className="text-slate-500 text-xs uppercase font-bold">Client ID</dt><dd className="font-medium mt-0.5">{client.id}</dd></div>
+                <div><dt className="text-slate-500 text-xs uppercase font-bold">{t('Company')}</dt><dd className="font-medium mt-0.5">{client.name}</dd></div>
+                <div><dt className="text-slate-500 text-xs uppercase font-bold">{t('Contact Person')}</dt><dd className="font-medium mt-0.5">{client.contactPerson}</dd></div>
+                <div><dt className="text-slate-500 text-xs uppercase font-bold">{t('Email')}</dt><dd className="font-medium mt-0.5">{client.email}</dd></div>
+                <div><dt className="text-slate-500 text-xs uppercase font-bold">{t('Phone')}</dt><dd className="font-medium mt-0.5">{client.phone}</dd></div>
+                <div><dt className="text-slate-500 text-xs uppercase font-bold">{t('Client Since')}</dt><dd className="font-medium mt-0.5">{client.joinDate}</dd></div>
+                <div><dt className="text-slate-500 text-xs uppercase font-bold">{t('Client ID')}</dt><dd className="font-medium mt-0.5">{client.id}</dd></div>
               </dl>
             </div>
             <div className="space-y-4">
               <div className="bg-white rounded-xl border border-slate-200 p-5">
-                <p className="text-xs text-slate-500 uppercase font-bold">Active Projects</p>
+                <p className="text-xs text-slate-500 uppercase font-bold">{t('Active Projects')}</p>
                 <p className="text-3xl font-black text-slate-900 mt-1">{client.totalProjects}</p>
               </div>
               <div className="bg-zinc-900 rounded-xl p-5 text-white">
-                <p className="text-xs text-zinc-400 uppercase font-bold">Lifetime Value</p>
-                <p className="text-2xl font-black text-primary mt-1">${client.totalValue.toLocaleString()}</p>
+                <p className="text-xs text-zinc-400 uppercase font-bold">{t('Lifetime Value')}</p>
+                <p className="text-2xl font-black text-primary mt-1">{formatCurrency(client.totalValue.toLocaleString())}</p>
               </div>
             </div>
           </div>
@@ -154,13 +160,13 @@ const ClientProfilePage = () => {
                 </div>
                 <div className="mt-3">
                   <div className="flex justify-between text-xs text-slate-500 mb-1">
-                    <span>Progress</span><span>{p.progress}%</span>
+                    <span>{t('Progress')}</span><span>{p.progress}%</span>
                   </div>
                   <div className="h-1.5 bg-slate-100 rounded-full"><div className="h-1.5 bg-primary rounded-full" style={{ width: `${p.progress}%` }} /></div>
                 </div>
               </div>
             ))}
-            {projects.length === 0 && <p className="text-slate-400 text-sm">No projects for this client.</p>}
+            {projects.length === 0 && <p className="text-slate-400 text-sm">{t('No projects for this client.')}</p>}
           </div>
         )}
 
@@ -176,7 +182,7 @@ const ClientProfilePage = () => {
                 {invoices.map(inv => (
                   <tr key={inv.id} className="hover:bg-slate-50">
                     <td className="px-6 py-4 text-sm font-semibold text-slate-900">{inv.id}</td>
-                    <td className="px-6 py-4 text-sm font-bold text-slate-900">${(inv.amount || inv.total || 0).toLocaleString()}</td>
+                    <td className="px-6 py-4 text-sm font-bold text-slate-900">{formatCurrency((inv.amount || inv.total || 0).toLocaleString())}</td>
                     <td className="px-6 py-4 text-sm text-slate-500">{inv.dueDate}</td>
                     <td className="px-6 py-4">
                       <span className={`px-2 py-0.5 text-[10px] font-bold rounded uppercase ${
@@ -186,7 +192,7 @@ const ClientProfilePage = () => {
                     </td>
                   </tr>
                 ))}
-                {invoices.length === 0 && <tr><td colSpan={4} className="px-6 py-8 text-center text-slate-400 text-sm">No invoices found.</td></tr>}
+                {invoices.length === 0 && <tr><td colSpan={4} className="px-6 py-8 text-center text-slate-400 text-sm">{t('No invoices found.')}</td></tr>}
               </tbody>
             </table>
           </div>

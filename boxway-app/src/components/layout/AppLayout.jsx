@@ -3,8 +3,14 @@ import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 import { useAuthStore } from '../../store/authStore';
+import { useTranslation } from '../../store/settingsStore';
+import { useFormatters } from '../../store/settingsStore';
 
 const AppLayout = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const { user } = useAuthStore();
   const location = useLocation();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -50,7 +56,7 @@ const AppLayout = () => {
   const mainOffsetClass = isSidebarCollapsed ? 'md:ml-[70px]' : 'md:ml-[250px]';
 
   return (
-    <div className="flex h-screen bg-[#fcfcfc] text-black overflow-hidden font-display">
+    <div className="flex h-screen bg-slate-50 text-slate-900 overflow-hidden font-display">
       {/* The sidebar is fixed so the main content can resize independently. */}
       <Sidebar
         isCollapsed={isSidebarCollapsed}
@@ -63,7 +69,7 @@ const AppLayout = () => {
       {isMobileSidebarOpen && (
         <button
           type="button"
-          aria-label="Close sidebar"
+          aria-label={t('Close sidebar')}
           onClick={() => setIsMobileSidebarOpen(false)}
           className="fixed inset-0 z-30 bg-black/40 md:hidden"
         />

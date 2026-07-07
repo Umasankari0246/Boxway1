@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
+import { useTranslation } from '../../store/settingsStore';
+import { useFormatters } from '../../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -40,6 +42,10 @@ const LABEL = 'text-[9px] uppercase tracking-[0.15em] font-black text-zinc-400';
 
 /* ── Upload Modal ─────────────────────────────────────────────────────────── */
 const UploadModal = ({ onClose, onUpload, projects, clients }) => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const [form, setForm] = useState({
     projectCode: '', projectId: '', project: '', clientId: '', client: '', folderType: 'Site',
     subFolder: '', version: '1.0', description: '', file: null,
@@ -90,8 +96,8 @@ const UploadModal = ({ onClose, onUpload, projects, clients }) => {
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-zinc-100 px-7 py-5 flex justify-between items-center">
           <div>
-            <h3 className="text-base font-black uppercase tracking-tight">Upload Document</h3>
-            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mt-0.5">Architecture file with full metadata</p>
+            <h3 className="text-base font-black uppercase tracking-tight">{t('Upload Document')}</h3>
+            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mt-0.5">{t('Architecture file with full metadata')}</p>
           </div>
           <button onClick={onClose} className="p-1.5 hover:bg-zinc-100 transition-colors">
             <Icon name="close" className="text-[20px]" />
@@ -101,28 +107,28 @@ const UploadModal = ({ onClose, onUpload, projects, clients }) => {
         <div className="p-7 space-y-6">
           {/* Project Info */}
           <div className="space-y-1">
-            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-3">Project Association</p>
+            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-3">{t('Project Association')}</p>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className={LABEL + ' mb-1.5 block'}>Project Code</label>
-                <input value={form.projectCode} onChange={e => set('projectCode', e.target.value)} placeholder="e.g. BW24-01BFN-DGL" className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm font-mono focus:outline-none focus:border-primary" />
+                <label className={LABEL + ' mb-1.5 block'}>{t('Project Code')}</label>
+                <input value={form.projectCode} onChange={e => set('projectCode', e.target.value)} placeholder={t('e.g. BW24-01BFN-DGL')} className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm font-mono focus:outline-none focus:border-primary" />
               </div>
               <div>
-                <label className={LABEL + ' mb-1.5 block'}>Project</label>
+                <label className={LABEL + ' mb-1.5 block'}>{t('Project')}</label>
                 <select value={form.projectId} onChange={e => handleProjectChange(e.target.value)} className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary">
-                  <option value="">Select project...</option>
+                  <option value="">{t('Select project...')}</option>
                   {projects.map(p => <option key={getEntityId(p)} value={getEntityId(p)}>{getProjectLabel(p)}</option>)}
                 </select>
               </div>
               <div>
-                <label className={LABEL + ' mb-1.5 block'}>Client</label>
+                <label className={LABEL + ' mb-1.5 block'}>{t('Client')}</label>
                 <select value={form.clientId} onChange={e => handleClientChange(e.target.value)} className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary">
-                  <option value="">Select client...</option>
+                  <option value="">{t('Select client...')}</option>
                   {clients.map(c => <option key={getEntityId(c)} value={getEntityId(c)}>{getClientLabel(c)}</option>)}
                 </select>
               </div>
               <div>
-                <label className={LABEL + ' mb-1.5 block'}>Year Folder</label>
+                <label className={LABEL + ' mb-1.5 block'}>{t('Year Folder')}</label>
                 <select className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary">
                   <option>2024</option><option>2025</option><option>2026</option>
                 </select>
@@ -150,7 +156,7 @@ const UploadModal = ({ onClose, onUpload, projects, clients }) => {
           {ft && (
             <div className={`p-3 ${ft.color} border border-current/10 text-[10px] font-semibold flex items-center gap-2`}>
               <Icon name={ft.icon} className="text-[16px]" />
-              <span>Will be saved under: <strong>2024 / {form.projectCode || 'PROJECT-CODE'} / {ft.label}</strong></span>
+              <span>{t('Will be saved under:')}<strong>2024 / {form.projectCode || 'PROJECT-CODE'} / {ft.label}</strong></span>
             </div>
           )}
 
@@ -160,11 +166,11 @@ const UploadModal = ({ onClose, onUpload, projects, clients }) => {
               <label className={LABEL + ' mb-1.5 block'}>
                 Version {['Scheme/CAD', 'Revit', 'SketchUp'].includes(form.folderType) && <span className="text-primary">*</span>}
               </label>
-              <input value={form.version} onChange={e => set('version', e.target.value)} placeholder="e.g. 1.0, 2.3, Final" className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+              <input value={form.version} onChange={e => set('version', e.target.value)} placeholder={t('e.g. 1.0, 2.3, Final')} className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary" />
             </div>
             {['Email Out', 'Email In'].includes(form.folderType) && (
               <div>
-                <label className={LABEL + ' mb-1.5 block'}>Date Reference</label>
+                <label className={LABEL + ' mb-1.5 block'}>{t('Date Reference')}</label>
                 <input type="date" className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary" defaultValue="2024-03-20" />
               </div>
             )}
@@ -172,11 +178,11 @@ const UploadModal = ({ onClose, onUpload, projects, clients }) => {
               <div>
                 <label className={LABEL + ' mb-1.5 block'}>Source (Sender)</label>
                 <select className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary">
-                  <option>Structural Engineer</option>
-                  <option>MEP Consultant</option>
-                  <option>Client</option>
-                  <option>Planning Authority</option>
-                  <option>Site Contractor</option>
+                  <option>{t('Structural Engineer')}</option>
+                  <option>{t('MEP Consultant')}</option>
+                  <option>{t('Client')}</option>
+                  <option>{t('Planning Authority')}</option>
+                  <option>{t('Site Contractor')}</option>
                 </select>
               </div>
             )}
@@ -184,7 +190,7 @@ const UploadModal = ({ onClose, onUpload, projects, clients }) => {
 
           <div>
             <label className={LABEL + ' mb-1.5 block'}>Description / Notes</label>
-            <textarea value={form.description} onChange={e => set('description', e.target.value)} rows={2} placeholder="Brief description of file contents..." className="w-full border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary resize-none" />
+            <textarea value={form.description} onChange={e => set('description', e.target.value)} rows={2} placeholder={t('Brief description of file contents...')} className="w-full border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary resize-none" />
           </div>
 
           {/* Drop Zone */}
@@ -192,8 +198,8 @@ const UploadModal = ({ onClose, onUpload, projects, clients }) => {
             <input type="file" onChange={handleFileSelect} className="hidden" id="file-upload" />
             <label htmlFor="file-upload" className="cursor-pointer w-full">
               <Icon name="cloud_upload" className="text-zinc-300 group-hover:text-primary text-[36px] transition-colors mx-auto" />
-              <p className="text-xs font-black uppercase tracking-widest text-zinc-700 mt-2">Drop file here or click to browse</p>
-              <p className="text-[9px] text-zinc-400">DWG · DXF · RVT · SKP · PDF · PNG · JPG · MP4 · AI · ZIP<br/>Max 1 GB per file</p>
+              <p className="text-xs font-black uppercase tracking-widest text-zinc-700 mt-2">{t('Drop file here or click to browse')}</p>
+              <p className="text-[9px] text-zinc-400">DWG · DXF · RVT · SKP · PDF · PNG · JPG · MP4 · AI · ZIP<br/>{t('Max 1 GB per file')}</p>
               {form.file && (
                 <p className="text-xs font-semibold text-primary mt-2">Selected: {form.file.name}</p>
               )}
@@ -202,10 +208,9 @@ const UploadModal = ({ onClose, onUpload, projects, clients }) => {
         </div>
 
         <div className="sticky bottom-0 bg-white border-t border-zinc-100 px-7 py-4 flex gap-3 justify-end">
-          <button onClick={onClose} className="px-5 py-2 border border-zinc-200 text-zinc-600 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors">Cancel</button>
+          <button onClick={onClose} className="px-5 py-2 border border-zinc-200 text-zinc-600 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors">{t('Cancel')}</button>
           <button onClick={handleUpload} className="px-6 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors flex items-center gap-2">
-            <Icon name="upload" className="text-[16px]" />Upload File
-          </button>
+            <Icon name="upload" className="text-[16px]" />{t('Upload File')}</button>
         </div>
       </div>
     </div>
@@ -214,6 +219,8 @@ const UploadModal = ({ onClose, onUpload, projects, clients }) => {
 
 /* ── Edit Modal ─────────────────────────────────────────────────────────── */
 const EditModal = ({ doc, onClose, onUpdate, projects, clients }) => {
+  const { t } = useTranslation();
+  const { formatCurrency, formatDate } = useFormatters();
   const [form, setForm] = useState({
     projectCode: doc.projectCode || '',
     project: doc.project || '',
@@ -263,7 +270,7 @@ const EditModal = ({ doc, onClose, onUpdate, projects, clients }) => {
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-zinc-100 px-7 py-5 flex justify-between items-center">
           <div>
-            <h3 className="text-base font-black uppercase tracking-tight">Edit Document</h3>
+            <h3 className="text-base font-black uppercase tracking-tight">{t('Edit Document')}</h3>
             <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mt-0.5">{doc.name}</p>
           </div>
           <button onClick={onClose} className="p-1.5 hover:bg-zinc-100 transition-colors">
@@ -274,23 +281,23 @@ const EditModal = ({ doc, onClose, onUpdate, projects, clients }) => {
         <div className="p-7 space-y-6">
           {/* Project Info */}
           <div className="space-y-1">
-            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-3">Project Association</p>
+            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-3">{t('Project Association')}</p>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className={LABEL + ' mb-1.5 block'}>Project Code</label>
-                <input value={form.projectCode} onChange={e => set('projectCode', e.target.value)} placeholder="e.g. BW24-01BFN-DGL" className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm font-mono focus:outline-none focus:border-primary" />
+                <label className={LABEL + ' mb-1.5 block'}>{t('Project Code')}</label>
+                <input value={form.projectCode} onChange={e => set('projectCode', e.target.value)} placeholder={t('e.g. BW24-01BFN-DGL')} className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm font-mono focus:outline-none focus:border-primary" />
               </div>
               <div>
-                <label className={LABEL + ' mb-1.5 block'}>Project</label>
+                <label className={LABEL + ' mb-1.5 block'}>{t('Project')}</label>
                 <select value={form.projectId} onChange={e => handleProjectChange(e.target.value)} className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary">
-                  <option value="">Select project...</option>
+                  <option value="">{t('Select project...')}</option>
                   {projects.map(p => <option key={getEntityId(p)} value={getEntityId(p)}>{getProjectLabel(p)}</option>)}
                 </select>
               </div>
               <div>
-                <label className={LABEL + ' mb-1.5 block'}>Client</label>
+                <label className={LABEL + ' mb-1.5 block'}>{t('Client')}</label>
                 <select value={form.clientId} onChange={e => handleClientChange(e.target.value)} className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary">
-                  <option value="">Select client...</option>
+                  <option value="">{t('Select client...')}</option>
                   {clients.map(c => <option key={getEntityId(c)} value={getEntityId(c)}>{getClientLabel(c)}</option>)}
                 </select>
               </div>
@@ -316,22 +323,21 @@ const EditModal = ({ doc, onClose, onUpdate, projects, clients }) => {
           {/* File metadata */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={LABEL + ' mb-1.5 block'}>Version</label>
-              <input value={form.version} onChange={e => set('version', e.target.value)} placeholder="e.g. 1.0, 2.3, Final" className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+              <label className={LABEL + ' mb-1.5 block'}>{t('Version')}</label>
+              <input value={form.version} onChange={e => set('version', e.target.value)} placeholder={t('e.g. 1.0, 2.3, Final')} className="w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary" />
             </div>
           </div>
 
           <div>
             <label className={LABEL + ' mb-1.5 block'}>Description / Notes</label>
-            <textarea value={form.description} onChange={e => set('description', e.target.value)} rows={2} placeholder="Brief description of file contents..." className="w-full border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary resize-none" />
+            <textarea value={form.description} onChange={e => set('description', e.target.value)} rows={2} placeholder={t('Brief description of file contents...')} className="w-full border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary resize-none" />
           </div>
         </div>
 
         <div className="sticky bottom-0 bg-white border-t border-zinc-100 px-7 py-4 flex gap-3 justify-end">
-          <button onClick={onClose} className="px-5 py-2 border border-zinc-200 text-zinc-600 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors">Cancel</button>
+          <button onClick={onClose} className="px-5 py-2 border border-zinc-200 text-zinc-600 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors">{t('Cancel')}</button>
           <button onClick={handleUpdate} className="px-6 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors flex items-center gap-2">
-            <Icon name="save" className="text-[16px]" />Save Changes
-          </button>
+            <Icon name="save" className="text-[16px]" />{t('Save Changes')}</button>
         </div>
       </div>
     </div>
@@ -340,6 +346,8 @@ const EditModal = ({ doc, onClose, onUpdate, projects, clients }) => {
 
 /* ── Document Detail Drawer ───────────────────────────────────────────────── */
 const DocDrawer = ({ doc, onClose }) => {
+  const { t } = useTranslation();
+  const { formatCurrency, formatDate } = useFormatters();
   const [comments, setComments] = useState(doc.comments || []);
   const [newText, setNewText] = useState('');
   const [likedIds, setLikedIds] = useState([]);
@@ -396,7 +404,7 @@ const DocDrawer = ({ doc, onClose }) => {
 
         {/* Metadata */}
         <div className="px-6 mt-5 space-y-4">
-          <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">File Information</p>
+          <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">{t('File Information')}</p>
           <div className="grid grid-cols-2 gap-3">
             {[
               { label: 'Project Code', val: doc.projectCode },
@@ -432,17 +440,17 @@ const DocDrawer = ({ doc, onClose }) => {
 
           {/* Compose */}
           <div className="flex gap-2.5 mb-5">
-            <div className="w-7 h-7 bg-primary text-white text-[10px] font-black flex items-center justify-center shrink-0">AC</div>
+            <div className="w-7 h-7 bg-primary text-white text-[10px] font-black flex items-center justify-center shrink-0">{t('AC')}</div>
             <div className="flex-1">
-              <textarea value={newText} onChange={e => setNewText(e.target.value)} rows={2} placeholder="Add a comment or note about this file..." className="w-full border border-zinc-200 bg-zinc-50 text-xs px-3 py-2 focus:outline-none focus:border-primary resize-none" />
-              <button onClick={post} disabled={!newText.trim()} className="mt-1.5 px-4 py-1.5 bg-primary text-white text-[9px] font-black uppercase tracking-widest hover:bg-black transition-colors disabled:opacity-40">Post</button>
+              <textarea value={newText} onChange={e => setNewText(e.target.value)} rows={2} placeholder={t('Add a comment or note about this file...')} className="w-full border border-zinc-200 bg-zinc-50 text-xs px-3 py-2 focus:outline-none focus:border-primary resize-none" />
+              <button onClick={post} disabled={!newText.trim()} className="mt-1.5 px-4 py-1.5 bg-primary text-white text-[9px] font-black uppercase tracking-widest hover:bg-black transition-colors disabled:opacity-40">{t('Post')}</button>
             </div>
           </div>
 
           {/* Comment list */}
           <div className="space-y-4">
             {comments.length === 0 && (
-              <p className="text-xs text-zinc-300 text-center py-4">No comments yet. Be the first to add a note.</p>
+              <p className="text-xs text-zinc-300 text-center py-4">{t('No comments yet. Be the first to add a note.')}</p>
             )}
             {comments.map(c => (
               <div key={c.id} className="flex gap-2.5">
@@ -475,6 +483,8 @@ const DocDrawer = ({ doc, onClose }) => {
 
 /* ── Main Page ────────────────────────────────────────────────────────────── */
 const DocumentsPage = () => {
+  const { t } = useTranslation();
+  const { formatCurrency, formatDate } = useFormatters();
   const [search, setSearch] = useState('');
   const [folderFilter, setFolderFilter] = useState('All');
   const [projectFilter, setProjectFilter] = useState('All');
@@ -687,7 +697,7 @@ const DocumentsPage = () => {
             className={`flex flex-col items-center justify-center p-6 border transition-all text-center col-span-1 ${folderFilter === 'All' ? 'bg-primary text-white border-primary shadow-sm' : 'bg-white border-zinc-100 hover:border-zinc-200'}`}
           >
             <Icon name="folder" className={`text-[32px] mb-1 ${folderFilter === 'All' ? 'text-white' : 'text-zinc-400'}`} />
-            <p className={`text-[11px] font-black uppercase tracking-wide leading-tight ${folderFilter === 'All' ? 'text-white' : 'text-zinc-500'}`}>All Projects</p>
+            <p className={`text-[11px] font-black uppercase tracking-wide leading-tight ${folderFilter === 'All' ? 'text-white' : 'text-zinc-500'}`}>{t('All Projects')}</p>
             <p className={`text-[12px] font-black mt-0.5 ${folderFilter === 'All' ? 'opacity-70' : 'text-zinc-400'}`}>{documents.length}</p>
           </button>
           {FOLDER_TYPES.map(f => {
@@ -713,7 +723,7 @@ const DocumentsPage = () => {
           {/* Search */}
           <div className="relative w-96">
             <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-[18px]" />
-            <input value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-3 py-2 bg-zinc-50 text-xs font-medium placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Search documents, clients..." />
+            <input value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-3 py-2 bg-zinc-50 text-xs font-medium placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-primary" placeholder={t('Search documents, clients...')} />
           </div>
           {/* Project filter */}
           <select value={projectFilter} onChange={e => setProjectFilter(e.target.value)} className="border border-zinc-200 text-[10px] font-black uppercase py-2 px-6 focus:ring-0 focus:border-primary bg-white">
@@ -721,19 +731,17 @@ const DocumentsPage = () => {
           </select>
           {/* Sort */}
           <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="border border-zinc-200 text-[10px] font-black uppercase py-2 px-6 focus:ring-0 focus:border-primary bg-white">
-            <option value="date">Sort: Date</option>
-            <option value="name">Sort: Name</option>
-            <option value="size">Sort: Size</option>
-            <option value="type">Sort: Type</option>
+            <option value="date">{t('Sort: Date')}</option>
+            <option value="name">{t('Sort: Name')}</option>
+            <option value="size">{t('Sort: Size')}</option>
+            <option value="type">{t('Sort: Type')}</option>
           </select>
           {/* Upload CTA */}
           <div className="ml-auto flex items-center gap-2">
             <button onClick={handleRefresh} disabled={loading} className="flex items-center gap-1.5 px-3 py-2 bg-white border border-zinc-200 text-zinc-700 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors">
-              <Icon name="refresh" className="text-[16px]" />Refresh
-            </button>
+              <Icon name="refresh" className="text-[16px]" />{t('Refresh')}</button>
             <button onClick={() => setShowUpload(true)} className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors shadow-sm shadow-primary/20">
-              <Icon name="upload" className="text-[16px]" />Upload File
-            </button>
+              <Icon name="upload" className="text-[16px]" />{t('Upload File')}</button>
           </div>
         </div>
       </div>
@@ -754,7 +762,7 @@ const DocumentsPage = () => {
                 <tr>
                   <td colSpan={8} className="py-16 text-center">
                     <Icon name="folder_open" className="text-zinc-200 text-4xl block mb-2" />
-                    <p className="text-zinc-400 text-sm">No documents match your filters.</p>
+                    <p className="text-zinc-400 text-sm">{t('No documents match your filters.')}</p>
                   </td>
                 </tr>
               )}
@@ -790,10 +798,10 @@ const DocumentsPage = () => {
                     <td className="px-5 py-3.5 text-xs text-zinc-400 whitespace-nowrap">{doc.uploadDate}</td>
                     <td className="px-5 py-3.5" onClick={e => e.stopPropagation()}>
                       <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => setSelectedDoc(doc)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700 transition-colors" title="View"><Icon name="visibility" className="text-[15px]" /></button>
-                        <button onClick={() => handleDownload(doc)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors" title="Download"><Icon name="download" className="text-[15px]" /></button>
-                        <button onClick={() => handleEdit(doc)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700 transition-colors" title="Edit"><Icon name="edit" className="text-[15px]" /></button>
-                        <button onClick={() => setDeletingId(doc.id)} className="p-1.5 hover:bg-red-50 text-zinc-400 hover:text-red-600 transition-colors" title="Delete"><Icon name="delete" className="text-[15px]" /></button>
+                        <button onClick={() => setSelectedDoc(doc)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700 transition-colors" title={t('View')}><Icon name="visibility" className="text-[15px]" /></button>
+                        <button onClick={() => handleDownload(doc)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors" title={t('Download')}><Icon name="download" className="text-[15px]" /></button>
+                        <button onClick={() => handleEdit(doc)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-700 transition-colors" title={t('Edit')}><Icon name="edit" className="text-[15px]" /></button>
+                        <button onClick={() => setDeletingId(doc.id)} className="p-1.5 hover:bg-red-50 text-zinc-400 hover:text-red-600 transition-colors" title={t('Delete')}><Icon name="delete" className="text-[15px]" /></button>
                       </div>
                     </td>
                   </tr>
@@ -810,17 +818,13 @@ const DocumentsPage = () => {
                 onClick={() => setCurrentPage(page => Math.max(1, page - 1))}
                 disabled={safeCurrentPage === 1}
                 className="px-3 py-1.5 border border-zinc-200 text-zinc-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-50"
-              >
-                Previous
-              </button>
+              >{t('Previous')}</button>
               <span className="text-zinc-500">Page {safeCurrentPage} of {totalPages}</span>
               <button
                 onClick={() => setCurrentPage(page => Math.min(totalPages, page + 1))}
                 disabled={safeCurrentPage === totalPages}
                 className="px-3 py-1.5 border border-zinc-200 text-zinc-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-50"
-              >
-                Next
-              </button>
+              >{t('Next')}</button>
             </div>
           </div>
         </div>
@@ -835,11 +839,11 @@ const DocumentsPage = () => {
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" onClick={() => setDeletingId(null)}>
           <div className="bg-white p-8 w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
             <Icon name="warning" className="text-red-500 text-3xl mb-3 block" />
-            <h3 className="text-lg font-black uppercase tracking-tight mb-2">Delete Document?</h3>
-            <p className="text-sm text-zinc-500 mb-6">This will permanently remove the file and all its associated metadata and comments.</p>
+            <h3 className="text-lg font-black uppercase tracking-tight mb-2">{t('Delete Document?')}</h3>
+            <p className="text-sm text-zinc-500 mb-6">{t('This will permanently remove the file and all its associated metadata and comments.')}</p>
             <div className="flex gap-3">
-              <button onClick={() => setDeletingId(null)} className="flex-1 py-2.5 border border-zinc-200 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50">Cancel</button>
-              <button onClick={handleDelete} className="flex-1 py-2.5 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-red-700">Delete</button>
+              <button onClick={() => setDeletingId(null)} className="flex-1 py-2.5 border border-zinc-200 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50">{t('Cancel')}</button>
+              <button onClick={handleDelete} className="flex-1 py-2.5 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-red-700">{t('Delete')}</button>
             </div>
           </div>
         </div>

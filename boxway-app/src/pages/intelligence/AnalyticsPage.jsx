@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { TrendingUp, Building, DollarSign, Receipt, Users, RefreshCw, Download, BarChart3 } from 'lucide-react';
 import axios from 'axios';
+import { useFormatters } from '../../hooks/useFormatters';
+import { useTranslation } from '../../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -16,6 +19,8 @@ const toNumber = (value) => {
 };
 
 const AnalyticsPage = () => {
+  const { t } = useTranslation();
+  const { formatCurrency, formatDate } = useFormatters();
   const [projects, setProjects] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [invoices, setInvoices] = useState([]);
@@ -24,6 +29,8 @@ const AnalyticsPage = () => {
   const [proposals, setProposals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState('3M');
+  const [timeframe, setTimeframe] = useState('Month');
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -265,8 +272,8 @@ const AnalyticsPage = () => {
         {data.map(d => (
         <div key={d[keyX]} className="flex-1 flex flex-col items-center gap-1">
           <div className="w-full flex gap-0.5 items-end" style={{ height: '120px' }}>
-            <div className="flex-1 bg-red-700 rounded-t transition-all" style={{ height: `${(d[keyA] / maxVal) * 100}%` }} title={`${labelA}: $${d[keyA].toLocaleString()}`} />
-            <div className="flex-1 bg-gray-600 rounded-t transition-all" style={{ height: `${(d[keyB] / maxVal) * 100}%` }} title={`${labelB}: $${d[keyB].toLocaleString()}`} />
+            <div className="flex-1 bg-red-700 rounded-t transition-all" style={{ height: `${(d[keyA] / maxVal) * 100}%` }} title={`${labelA}: $${formatCurrency(d[keyA])}`} />
+            <div className="flex-1 bg-gray-600 rounded-t transition-all" style={{ height: `${(d[keyB] / maxVal) * 100}%` }} title={`${labelB}: $${formatCurrency(d[keyB])}`} />
           </div>
           <span className="text-[10px] text-zinc-400 font-medium">{d[keyX]}</span>
         </div>
@@ -277,6 +284,8 @@ const AnalyticsPage = () => {
 
   // Pie chart component
   const PieChart = ({ data }) => {
+  const { t } = useTranslation();
+  const { formatCurrency, formatDate } = useFormatters();
     const total = data.reduce((sum, item) => sum + item.count, 0);
     let currentAngle = 0;
     
@@ -329,20 +338,18 @@ const AnalyticsPage = () => {
       <div className="bg-white border-b border-slate-200 px-8 py-6">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <p className="text-sm text-slate-500 mt-1">Business performance insights and metrics</p>
+            <p className="text-sm text-slate-500 mt-1">{t('Business performance insights and metrics')}</p>
           </div>
           <div className="flex gap-3">
             <button onClick={handleRefresh} disabled={loading} className="flex items-center gap-2 px-4 py-2 border border-slate-200 bg-white text-slate-700 text-sm font-bold rounded hover:bg-slate-50 shadow-sm disabled:opacity-50">
-              <RefreshCw className="h-4 w-4" /> Refresh
-            </button>
+              <RefreshCw className="h-4 w-4" />{t('Refresh')}</button>
             <div className="flex bg-white rounded border border-slate-200 overflow-hidden shadow-sm">
               {['3M', '6M', '1Y'].map(p => (
                 <button key={p} onClick={() => setPeriod(p)} className={`px-4 py-2 text-xs font-bold transition-colors ${period === p ? 'bg-primary text-white' : 'text-slate-600 hover:bg-slate-50'}`}>{p}</button>
               ))}
             </div>
             <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2 border border-slate-200 bg-white text-slate-700 text-sm font-bold rounded hover:bg-slate-50 shadow-sm">
-              <Download className="h-4 w-4" /> Export
-            </button>
+              <Download className="h-4 w-4" />{t('Export')}</button>
           </div>
         </div>
       </div>
@@ -352,29 +359,29 @@ const AnalyticsPage = () => {
         <div className="grid grid-cols-4 gap-4">
           <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
             <div>
-              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Total Revenue</p>
-              <h3 className="text-2xl font-black">${(analytics.kpis.totalRevenue / 1000).toFixed(0)}K</h3>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">{t('Total Revenue')}</p>
+              <h3 className="text-2xl font-black">{formatCurrency((analytics.kpis.totalRevenue / 1000).toFixed(0))}K</h3>
             </div>
             <div className="text-emerald-600"><DollarSign className="text-[28px]" /></div>
           </div>
           <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between border-l-2 border-l-primary">
             <div>
-              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Active Projects</p>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">{t('Active Projects')}</p>
               <h3 className="text-2xl font-black">{analytics.kpis.activeProjects}</h3>
             </div>
             <div className="text-primary"><Building className="text-[28px]" /></div>
           </div>
           <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
             <div>
-              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Avg Project Value</p>
-              <h3 className="text-2xl font-black">${(analytics.kpis.avgProjectValue / 1000).toFixed(0)}K</h3>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">{t('Avg Project Value')}</p>
+              <h3 className="text-2xl font-black">{formatCurrency((analytics.kpis.avgProjectValue / 1000).toFixed(0))}K</h3>
             </div>
             <div className="text-purple-600"><DollarSign className="text-[28px]" /></div>
           </div>
           <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
             <div>
-              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Total Expenses</p>
-              <h3 className="text-2xl font-black">${(analytics.kpis.totalExpenses / 1000).toFixed(0)}K</h3>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">{t('Total Expenses')}</p>
+              <h3 className="text-2xl font-black">{formatCurrency((analytics.kpis.totalExpenses / 1000).toFixed(0))}K</h3>
             </div>
             <div className="text-amber-600"><Receipt className="text-[28px]" /></div>
           </div>
@@ -386,10 +393,10 @@ const AnalyticsPage = () => {
           {/* Revenue Chart */}
           <div className="col-span-1 lg:col-span-8 bg-white rounded-xl border border-slate-200 shadow-sm p-6">
             <div className="flex justify-between items-center mb-5">
-              <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">Revenue vs Expenses</h3>
+              <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider">{t('Revenue vs Expenses')}</h3>
               <div className="flex items-center gap-4 text-[10px]">
-                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-primary" />Revenue</span>
-                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-slate-800" />Expenses</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-primary" />{t('Revenue')}</span>
+                <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-slate-800" />{t('Expenses')}</span>
               </div>
             </div>
             <div className="h-52 relative overflow-hidden rounded-3xl border border-zinc-100 bg-zinc-50 p-4">
@@ -400,7 +407,7 @@ const AnalyticsPage = () => {
               <div className="absolute inset-x-4 bottom-14 h-px bg-zinc-200" />
               <div className="relative h-full flex items-end gap-3 pt-2 pb-2">
                 {loading ? (
-                  <div className="w-full flex items-center justify-center text-zinc-400 text-[10px]">Loading financial data...</div>
+                  <div className="w-full flex items-center justify-center text-zinc-400 text-[10px]">{t('Loading financial data...')}</div>
                 ) : (
                   analytics.revenueByMonth.map((item) => {
                     const revenueHeightPercent = Math.max((item.revenue / revenueMaxValue) * 100, 2);
@@ -429,14 +436,14 @@ const AnalyticsPage = () => {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4 mt-4 text-[10px] font-bold text-zinc-400 uppercase">
-              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-primary" />Revenue</div>
-              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-slate-800" />Expenses</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-primary" />{t('Revenue')}</div>
+              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-slate-800" />{t('Expenses')}</div>
             </div>
           </div>
 
           {/* Project Status */}
           <div className="col-span-1 lg:col-span-4 bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-            <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider mb-4">Projects by Status</h3>
+            <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider mb-4">{t('Projects by Status')}</h3>
             <div className="space-y-4">
               {analytics.projectsByStatus.map(item => {
                 const max = analytics.projectsByStatus.length > 0 ? analytics.projectsByStatus[0].count : 1;
@@ -457,7 +464,7 @@ const AnalyticsPage = () => {
 
           {/* Top Clients */}
           <div className="col-span-1 lg:col-span-6 bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-            <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider mb-4">Top Clients by Revenue</h3>
+            <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider mb-4">{t('Top Clients by Revenue')}</h3>
             <div className="space-y-4">
               {analytics.topClients.map((c, i) => {
                 const max = analytics.topClients.length > 0 ? analytics.topClients[0].value : 1;
@@ -467,7 +474,7 @@ const AnalyticsPage = () => {
                     <div className="flex-1">
                       <div className="flex justify-between text-xs mb-1">
                         <span className="font-semibold text-slate-700">{c.name}</span>
-                        <span className="font-black text-xs text-slate-900">${(c.value / 1000).toFixed(0)}K</span>
+                        <span className="font-black text-xs text-slate-900">{formatCurrency((c.value / 1000).toFixed(0))}K</span>
                       </div>
                       <div className="h-1.5 bg-slate-100 rounded-full">
                         <div className="h-1.5 bg-primary rounded-full" style={{ width: `${(c.value / max) * 100}%` }} />
@@ -505,7 +512,7 @@ const AnalyticsPage = () => {
 
           {/* Employee Status - Pie Chart */}
           <div className="col-span-1 lg:col-span-6 bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-            <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider mb-4">Employees by Status</h3>
+            <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider mb-4">{t('Employees by Status')}</h3>
             <div className="flex flex-col items-center gap-4">
               <PieChart data={analytics.employeesByStatus} />
               <div className="flex flex-wrap justify-center gap-3">
@@ -522,7 +529,7 @@ const AnalyticsPage = () => {
 
           {/* Client Status - Pie Chart */}
           <div className="col-span-1 lg:col-span-6 bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-            <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider mb-4">Clients by Status</h3>
+            <h3 className="font-black text-slate-900 text-xs uppercase tracking-wider mb-4">{t('Clients by Status')}</h3>
             <div className="flex flex-col items-center gap-4">
               <PieChart data={analytics.clientsByStatus} />
               <div className="flex flex-wrap justify-center gap-3">

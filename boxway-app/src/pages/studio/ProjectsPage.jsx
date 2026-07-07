@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Search, Download, Plus, ChevronRight, RefreshCw, FolderOpen, Clock, CheckCircle, PauseCircle } from 'lucide-react';
+import { Plus, Search, Filter, ArrowUpRight, BarChart3, CheckCircle, Clock, Users, X, Download, ChevronRight, RefreshCw, FolderOpen, PauseCircle } from 'lucide-react';
+import { useFormatters } from '../../hooks/useFormatters.js';
+import { useTranslation } from '../../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -28,9 +30,14 @@ const TYPE_COLORS = {
 const STATUSES = ['All Status', 'In Progress', 'Planning', 'On Hold', 'Completed'];
 
 const ProjectsPage = () => {
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState(null);
+  const { formatCurrency } = useFormatters();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All Status');
   const [typeFilter, setTypeFilter] = useState('All Types');
@@ -92,6 +99,7 @@ const ProjectsPage = () => {
   );
 
   const totalBudget = projects.reduce((s, p) => s + (p.budget || 0), 0);
+  const activeCount = projects.filter(p => p.status === 'In Progress').length;
 
   const handleExport = () => {
     const escapeCSV = (value) => {
@@ -132,18 +140,15 @@ const ProjectsPage = () => {
       <div className="bg-white border-b border-slate-200 px-8 py-6">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <p className="text-sm text-slate-500 mt-1">Manage your projects and their progress</p>
+            <p className="text-sm text-slate-500 mt-1">{t('Manage your projects and their progress')}</p>
           </div>
           <div className="flex gap-3">
             <button onClick={handleRefresh} className="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-50 transition-colors flex items-center gap-2">
-              <RefreshCw className="h-4 w-4" /> Refresh
-            </button>
+              <RefreshCw className="h-4 w-4" />{t('Refresh')}</button>
             <button onClick={handleExport} className="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-50 transition-colors flex items-center gap-2">
-              <Download className="h-4 w-4" /> Export
-            </button>
+              <Download className="h-4 w-4" />{t('Export')}</button>
             <button onClick={() => navigate('/projects/new')} className="px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2">
-              <Plus className="h-4 w-4" /> New Project
-            </button>
+              <Plus className="h-4 w-4" />{t('New Project')}</button>
           </div>
         </div>
 
@@ -153,7 +158,7 @@ const ProjectsPage = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
             <input 
               type="text" 
-              placeholder="Search projects by name, client, or lead..." 
+              placeholder={t('Search projects by name, client, or lead...')} 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white transition-colors"
@@ -181,9 +186,9 @@ const ProjectsPage = () => {
         <div className="grid grid-cols-4 gap-4">
           {[
             { label: 'Total Projects', val: projects.length, icon: FolderOpen, color: 'text-slate-900' },
-            { label: 'In Progress', val: projects.filter(p => p.status === 'In Progress').length, icon: Clock, color: 'text-blue-600' },
-            { label: 'Total Budget', val: '$' + (totalBudget / 1000000).toFixed(1) + 'M', icon: CheckCircle, color: 'text-primary' },
-            { label: 'On Hold', val: projects.filter(p => p.status === 'On Hold').length, icon: PauseCircle, color: 'text-yellow-600' },
+            { label: 'Active Projects', val: activeCount, icon: BarChart3, color: 'text-emerald-600' },
+            { label: 'Total Budget', val: formatCurrency(totalBudget), icon: CheckCircle, color: 'text-primary' },
+            { label: 'Pending Approvals', val: '4', icon: Clock, color: 'text-amber-500' },
           ].map(k => {
             const Icon = k.icon;
             return (
@@ -203,26 +208,24 @@ const ProjectsPage = () => {
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
           {/* List Header */}
           <div className="grid grid-cols-[2fr_1.5fr_1.5fr_1fr_1.5fr_1fr_60px] gap-4 px-8 py-4 bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider items-center">
-            <div>Project</div>
-            <div>Type</div>
-            <div>Client</div>
-            <div>Budget</div>
-            <div>Progress</div>
-            <div>Status</div>
-            <div className="text-right">Action</div>
+            <div>{t('Project')}</div>
+            <div>{t('Type')}</div>
+            <div>{t('Client')}</div>
+            <div className="hidden lg:block">{t('Budget')}</div>
+            <div>{t('Progress')}</div>
+            <div>{t('Status')}</div>
+            <div className="text-right">{t('Action')}</div>
           </div>
 
           {/* List Body */}
           <div className="divide-y divide-slate-100">
             {loading ? (
               <div className="px-8 py-12 text-center text-slate-500 text-sm flex flex-col items-center">
-                 <RefreshCw className="animate-spin h-8 w-8 mb-2" />
-                 Loading projects...
-              </div>
+                 <RefreshCw className="animate-spin h-8 w-8 mb-2" />{t('Loading projects...')}</div>
             ) : projects.length === 0 ? (
               <div className="px-8 py-12 text-center text-slate-500 text-sm">
                  <FolderOpen className="h-10 w-10 mb-2 text-slate-300 mx-auto" />
-                 <p>No projects found.</p>
+                 <p>{t('No projects found.')}</p>
               </div>
             ) : (
               paginatedProjects.map((p, index) => (
@@ -244,9 +247,9 @@ const ProjectsPage = () => {
                     <p className="text-slate-900">{p.client}</p>
                     <p className="text-xs text-slate-500">{p.lead}</p>
                   </div>
-                  <div className="text-sm">
-                    <p className="font-bold text-slate-900">${(p.budget / 1000).toFixed(0)}K</p>
-                    <p className="text-xs text-slate-500">${(p.spent / 1000).toFixed(0)}K spent</p>
+                  <div className="hidden lg:block text-right">
+                    <p className="font-bold text-slate-900">{formatCurrency((p.budget / 1000).toFixed(0))}K</p>
+                    <p className="text-xs text-slate-500">{formatCurrency((p.spent / 1000).toFixed(0))}K spent</p>
                   </div>
                   <div className="text-sm">
                     <div className="flex items-center gap-2">
@@ -262,7 +265,7 @@ const ProjectsPage = () => {
                     </span>
                   </div>
                   <div className="flex justify-end items-center">
-                    <button onClick={(e) => { e.stopPropagation(); navigate(`/projects/${p.id}`); }} className="text-slate-400 hover:text-primary p-1.5 rounded hover:bg-primary/10 transition-colors" title="View Details">
+                    <button onClick={(e) => { e.stopPropagation(); navigate(`/projects/${p.id}`); }} className="text-slate-400 hover:text-primary p-1.5 rounded hover:bg-primary/10 transition-colors" title={t('View Details')}>
                       <ChevronRight className="h-5 w-5" />
                     </button>
                   </div>
@@ -282,9 +285,7 @@ const ProjectsPage = () => {
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
                   className="px-3 py-1.5 text-xs font-medium rounded border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Previous
-                </button>
+                >{t('Previous')}</button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                   <button
                     key={page}
@@ -302,9 +303,7 @@ const ProjectsPage = () => {
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
                   className="px-3 py-1.5 text-xs font-medium rounded border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Next
-                </button>
+                >{t('Next')}</button>
               </div>
             </div>
           )}

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
+import { useTranslation } from '../../store/settingsStore';
+import { useFormatters } from '../../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -40,6 +42,10 @@ const TABS = [
 ];
 
 const ProjectViewPage = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const { id } = useParams();
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
@@ -154,7 +160,7 @@ const ProjectViewPage = () => {
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <p className="text-zinc-500">Loading...</p>
+        <p className="text-zinc-500">{t('Loading...')}</p>
       </div>
     );
   }
@@ -162,7 +168,7 @@ const ProjectViewPage = () => {
   if (!project) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <p className="text-zinc-500">Project not found</p>
+        <p className="text-zinc-500">{t('Project not found')}</p>
       </div>
     );
   }
@@ -252,7 +258,7 @@ const ProjectViewPage = () => {
                   {Object.keys(STATUS_CFG).map(s => <option key={s}>{s}</option>)}
                 </select>
               ) : (
-                <button onClick={() => setEditingStatus(true)} className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest cursor-pointer hover:opacity-80 ${sc.cls}`} title="Click to change status">
+                <button onClick={() => setEditingStatus(true)} className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest cursor-pointer hover:opacity-80 ${sc.cls}`} title={t('Click to change status')}>
                   <span className={`w-1.5 h-1.5 rounded-full ${sc.dot}`} />
                   {projectStatus}
                   <Icon name="edit" className="text-[12px] ml-1" />
@@ -265,16 +271,12 @@ const ProjectViewPage = () => {
           </div>
           <div className="flex gap-2 shrink-0">
             <button onClick={() => setShowResourceModal(true)} className="flex items-center gap-1.5 px-4 py-2 border border-zinc-200 text-zinc-700 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors">
-              <Icon name="group_add" className="text-[16px]" />Resources
-            </button>
+              <Icon name="group_add" className="text-[16px]" />{t('Resources')}</button>
             <button onClick={() => navigate(`/projects/${id}/edit`)} className="flex items-center gap-1.5 px-4 py-2 bg-zinc-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors">
-              <Icon name="edit" className="text-[16px]" />Edit
-            </button>
+              <Icon name="edit" className="text-[16px]" />{t('Edit')}</button>
             {activePhaseIdx < phases.length - 1 && (
               <button onClick={() => setShowAdvanceModal(true)} className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors shadow-sm shadow-primary/20">
-                <Icon name="arrow_forward" className="text-[16px]" />
-                Advance Phase
-              </button>
+                <Icon name="arrow_forward" className="text-[16px]" />{t('Advance Phase')}</button>
             )}
           </div>
         </div>
@@ -297,27 +299,27 @@ const ProjectViewPage = () => {
             <div className="col-span-12 lg:col-span-8 space-y-5">
               {/* Description */}
               <div className="bg-white border border-zinc-100 shadow-sm p-6">
-                <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-3">Project Description</h3>
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-3">{t('Project Description')}</h3>
                 <p className="text-sm text-zinc-600 leading-relaxed">{project.description || "No description provided."}</p>
               </div>
               {/* Budget */}
               <div className="bg-white border border-zinc-100 shadow-sm p-6">
-                <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-4">Budget Utilisation</h3>
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-4">{t('Budget Utilisation')}</h3>
                 <div className="flex justify-between text-sm mb-3">
-                  <span className="text-zinc-500">Spent: <strong className="text-zinc-900">${project.spent?.toLocaleString() || 0}</strong></span>
-                  <span className="text-zinc-500">Budget: <strong className="text-zinc-900">${project.budget?.toLocaleString() || 0}</strong></span>
+                  <span className="text-zinc-500">{t('Spent:')}<strong className="text-zinc-900">{formatCurrency(project.spent?.toLocaleString() || 0)}</strong></span>
+                  <span className="text-zinc-500">{t('Budget:')}<strong className="text-zinc-900">{formatCurrency(project.budget?.toLocaleString() || 0)}</strong></span>
                 </div>
                 <div className="h-2 bg-zinc-100">
                   <div className={`h-2 transition-all ${budgetPct > 90 ? 'bg-red-500' : budgetPct > 70 ? 'bg-amber-500' : 'bg-primary'}`} style={{ width: `${budgetPct}%` }} />
                 </div>
                 <div className="flex justify-between mt-2">
                   <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">{budgetPct}% used</p>
-                  <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Remaining: ${(project.budget - project.spent)?.toLocaleString() || 0}</p>
+                  <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Remaining: {formatCurrency((project.budget - project.spent)?.toLocaleString() || 0)}</p>
                 </div>
               </div>
               {/* Phase quick view */}
               <div className="bg-white border border-zinc-100 shadow-sm p-6">
-                <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-3">Phase Progress</h3>
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-3">{t('Phase Progress')}</h3>
                 <div className="flex gap-0.5 mb-2">
                   {phases.map((ph, i) => (
                     <div key={i} title={ph} className={`flex-1 h-2 transition-all ${i < activePhaseIdx ? 'bg-primary' : i === activePhaseIdx ? 'bg-primary/40' : 'bg-zinc-100'}`} />
@@ -332,14 +334,14 @@ const ProjectViewPage = () => {
             <div className="col-span-12 lg:col-span-4 space-y-4">
               {/* Status card */}
               <div className="bg-zinc-900 text-white p-6">
-                <p className="text-[9px] text-white/40 uppercase tracking-widest mb-3">Overall Progress</p>
+                <p className="text-[9px] text-white/40 uppercase tracking-widest mb-3">{t('Overall Progress')}</p>
                 <p className="text-5xl font-black text-primary">{project.progress}%</p>
                 <p className="text-white/50 text-xs mt-2">Phase {activePhaseIdx + 1} of {phases.length}</p>
                 <p className="text-white/70 text-sm font-bold mt-3">{phases[activePhaseIdx]}</p>
               </div>
               {/* Key dates */}
               <div className="bg-white border border-zinc-100 shadow-sm p-5 space-y-3">
-                <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Key Dates</h3>
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{t('Key Dates')}</h3>
                 {[
                   { label: 'Start Date', val: project.startDate || '-' }, 
                   { label: 'End Date', val: project.endDate || '-' }, 
@@ -353,19 +355,15 @@ const ProjectViewPage = () => {
               </div>
               {/* Quick links */}
               <div className="bg-white border border-zinc-100 shadow-sm p-5 space-y-2">
-                <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-3">Quick Actions</h3>
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-3">{t('Quick Actions')}</h3>
                 <button onClick={() => { setTab('activity'); }} className="w-full flex items-center gap-2 px-3 py-2 bg-zinc-50 hover:bg-zinc-100 transition-colors text-[10px] font-black text-left">
-                  <Icon name="chat" className="text-[16px] text-zinc-400" />Add Comment
-                </button>
+                  <Icon name="chat" className="text-[16px] text-zinc-400" />{t('Add Comment')}</button>
                 <button onClick={() => navigate('/documents')} className="w-full flex items-center gap-2 px-3 py-2 bg-zinc-50 hover:bg-zinc-100 transition-colors text-[10px] font-black text-left">
-                  <Icon name="upload" className="text-[16px] text-zinc-400" />Upload Document
-                </button>
+                  <Icon name="upload" className="text-[16px] text-zinc-400" />{t('Upload Document')}</button>
                 <button onClick={() => navigate('/invoices/new')} className="w-full flex items-center gap-2 px-3 py-2 bg-zinc-50 hover:bg-zinc-100 transition-colors text-[10px] font-black text-left">
-                  <Icon name="receipt_long" className="text-[16px] text-zinc-400" />Create Invoice
-                </button>
+                  <Icon name="receipt_long" className="text-[16px] text-zinc-400" />{t('Create Invoice')}</button>
                 <button onClick={() => navigate('/proposals')} className="w-full flex items-center gap-2 px-3 py-2 bg-zinc-50 hover:bg-zinc-100 transition-colors text-[10px] font-black text-left">
-                  <Icon name="description" className="text-[16px] text-zinc-400" />View Parent Proposal
-                </button>
+                  <Icon name="description" className="text-[16px] text-zinc-400" />{t('View Parent Proposal')}</button>
               </div>
             </div>
           </div>
@@ -376,7 +374,7 @@ const ProjectViewPage = () => {
           <div className="space-y-3">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="font-black text-zinc-900">Workflow Phases</h3>
+                <h3 className="font-black text-zinc-900">{t('Workflow Phases')}</h3>
                 <p className="text-xs text-zinc-400 mt-0.5">Click "Advance Phase" in the header to move to the next stage. Each phase includes uploads and client review loops.</p>
               </div>
             </div>
@@ -399,7 +397,7 @@ const ProjectViewPage = () => {
                         <p className={`text-sm font-black ${isCurrent ? 'text-primary' : isDone ? 'text-zinc-900' : 'text-zinc-500'}`}>
                           Phase {i + 1}: {phase}
                         </p>
-                        {isCurrent && <span className="text-[8px] font-black uppercase tracking-widest bg-primary text-white px-2 py-0.5">In Progress</span>}
+                        {isCurrent && <span className="text-[8px] font-black uppercase tracking-widest bg-primary text-white px-2 py-0.5">{t('In Progress')}</span>}
                         {isDone && <span className="text-[8px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 px-2 py-0.5">✓ Complete</span>}
                       </div>
                       <p className="text-xs text-zinc-400 mt-0.5">
@@ -413,11 +411,9 @@ const ProjectViewPage = () => {
                       {isCurrent && (
                         <>
                           <button onClick={() => navigate('/documents')} className="px-3 py-1.5 bg-zinc-100 hover:bg-zinc-200 text-[9px] font-black uppercase tracking-widest transition-colors flex items-center gap-1">
-                            <Icon name="upload" className="text-[13px]" />Upload
-                          </button>
+                            <Icon name="upload" className="text-[13px]" />{t('Upload')}</button>
                           <button onClick={() => setShowAdvanceModal(true)} className="px-3 py-1.5 bg-primary text-white text-[9px] font-black uppercase tracking-widest hover:bg-black transition-colors flex items-center gap-1">
-                            <Icon name="check" className="text-[13px]" />Approve & Advance
-                          </button>
+                            <Icon name="check" className="text-[13px]" />{t('Approve & Advance')}</button>
                         </>
                       )}
                     </div>
@@ -425,7 +421,7 @@ const ProjectViewPage = () => {
                   {/* Review loop indicator for current phase */}
                   {isCurrent && (
                     <div className="border-t border-primary/20 px-5 py-3 bg-white/40 flex items-center gap-4 flex-wrap">
-                      <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Review loop:</span>
+                      <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">{t('Review loop:')}</span>
                       {['Create/Upload Design', 'Send to Client', 'Client Review', 'Revise if needed', 'Client Approval', 'Advance Phase'].map((step, si) => (
                         <React.Fragment key={step}>
                           <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-1 ${si < 2 ? 'bg-primary text-white' : si === 2 ? 'bg-primary/20 text-primary' : 'bg-zinc-100 text-zinc-400'}`}>{step}</span>
@@ -444,10 +440,9 @@ const ProjectViewPage = () => {
         {tab === 'team' && (
           <div className="space-y-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-black text-zinc-900">Assigned Team</h3>
+              <h3 className="font-black text-zinc-900">{t('Assigned Team')}</h3>
               <button onClick={() => setShowResourceModal(true)} className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors">
-                <Icon name="group_add" className="text-[16px]" />Assign Resources
-              </button>
+                <Icon name="group_add" className="text-[16px]" />{t('Assign Resources')}</button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {team.map(m => (
@@ -463,7 +458,7 @@ const ProjectViewPage = () => {
                 </div>
               ))}
             </div>
-            <p className="text-[10px] text-zinc-400 text-center pt-2">Resources can be added or changed at any phase of the project.</p>
+            <p className="text-[10px] text-zinc-400 text-center pt-2">{t('Resources can be added or changed at any phase of the project.')}</p>
           </div>
         )}
 
@@ -471,10 +466,9 @@ const ProjectViewPage = () => {
         {tab === 'documents' && (
           <div className="space-y-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-black text-zinc-900">Project Documents</h3>
+              <h3 className="font-black text-zinc-900">{t('Project Documents')}</h3>
               <button onClick={() => navigate('/documents')} className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors">
-                <Icon name="upload" className="text-[16px]" />Upload Document
-              </button>
+                <Icon name="upload" className="text-[16px]" />{t('Upload Document')}</button>
             </div>
             <div className="bg-white border border-zinc-100 shadow-sm overflow-hidden">
               <table className="w-full text-left">
@@ -487,7 +481,7 @@ const ProjectViewPage = () => {
                 </thead>
                 <tbody className="divide-y divide-zinc-50">
                   {documents.length === 0 ? (
-                    <tr><td colSpan={6} className="px-6 py-12 text-center text-zinc-400 text-sm">No documents found for this project.</td></tr>
+                    <tr><td colSpan={6} className="px-6 py-12 text-center text-zinc-400 text-sm">{t('No documents found for this project.')}</td></tr>
                   ) : documents.map(doc => (
                     <tr key={doc.name} className="hover:bg-zinc-50 group">
                       <td className="px-5 py-3.5">
@@ -513,7 +507,7 @@ const ProjectViewPage = () => {
         {/* ─── APPROVALS ─── */}
         {tab === 'approvals' && (
           <div className="space-y-4">
-            <h3 className="font-black text-zinc-900 mb-4">Approval History</h3>
+            <h3 className="font-black text-zinc-900 mb-4">{t('Approval History')}</h3>
             {phases.slice(0, activePhaseIdx + 1).map((ph, i) => {
               const isDone = i < activePhaseIdx;
               return (
@@ -532,7 +526,7 @@ const ProjectViewPage = () => {
                       {isDone ? (
                         <span className="text-[8px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 px-2 py-0.5">Approved ✓</span>
                       ) : (
-                        <span className="text-[8px] font-black uppercase tracking-widest bg-amber-100 text-amber-700 px-2 py-0.5">Pending</span>
+                        <span className="text-[8px] font-black uppercase tracking-widest bg-amber-100 text-amber-700 px-2 py-0.5">{t('Pending')}</span>
                       )}
                     </div>
                   </div>
@@ -546,20 +540,20 @@ const ProjectViewPage = () => {
         {tab === 'activity' && (
           <div>
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-black text-zinc-900">Activity & Comments</h3>
+              <h3 className="font-black text-zinc-900">{t('Activity & Comments')}</h3>
               <span className="text-[9px] font-black uppercase tracking-widest text-zinc-400">{comments.length} entries</span>
             </div>
 
             {/* Compose */}
             <div className="flex gap-3 mb-8">
-              <div className="w-8 h-8 bg-primary text-white text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">AC</div>
+              <div className="w-8 h-8 bg-primary text-white text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">{t('AC')}</div>
               <div className="flex-1">
                 <select className="w-full border border-zinc-200 bg-zinc-50 text-[10px] font-black uppercase px-3 py-2 focus:outline-none focus:border-primary mb-2">
                   {phases.map(ph => <option key={ph}>{ph}</option>)}
                 </select>
-                <textarea value={newComment} onChange={e => setNewComment(e.target.value)} rows={3} placeholder="Add a note, update, or action item for this project..." className="w-full border border-zinc-200 bg-zinc-50 text-sm px-4 py-3 focus:outline-none focus:border-primary resize-none" />
+                <textarea value={newComment} onChange={e => setNewComment(e.target.value)} rows={3} placeholder={t('Add a note, update, or action item for this project...')} className="w-full border border-zinc-200 bg-zinc-50 text-sm px-4 py-3 focus:outline-none focus:border-primary resize-none" />
                 <div className="flex justify-end mt-2">
-                  <button onClick={postComment} disabled={!newComment.trim()} className="px-5 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors disabled:opacity-40">Post Comment</button>
+                  <button onClick={postComment} disabled={!newComment.trim()} className="px-5 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors disabled:opacity-40">{t('Post Comment')}</button>
                 </div>
               </div>
             </div>
@@ -601,15 +595,15 @@ const ProjectViewPage = () => {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" onClick={() => setShowAdvanceModal(false)}>
           <div className="bg-white w-full max-w-md shadow-2xl p-8" onClick={e => e.stopPropagation()}>
             <Icon name="arrow_forward" className="text-primary text-3xl mb-3 block" />
-            <h3 className="text-lg font-black uppercase tracking-tight mb-2">Advance to Next Phase?</h3>
-            <p className="text-sm text-zinc-500 mb-2">Mark <strong className="text-zinc-900">"{phases[activePhaseIdx]}"</strong> as complete and advance to:</p>
+            <h3 className="text-lg font-black uppercase tracking-tight mb-2">{t('Advance to Next Phase?')}</h3>
+            <p className="text-sm text-zinc-500 mb-2">{t('Mark')}<strong className="text-zinc-900">"{phases[activePhaseIdx]}"</strong> as complete and advance to:</p>
             <div className="p-4 bg-primary/5 border border-primary/20 mb-6">
               <p className="text-sm font-black text-primary">{phases[activePhaseIdx + 1]}</p>
             </div>
-            <p className="text-[10px] text-zinc-400 mb-5">Ensure all documents have been uploaded and client approval has been received via email before advancing.</p>
+            <p className="text-[10px] text-zinc-400 mb-5">{t('Ensure all documents have been uploaded and client approval has been received via email before advancing.')}</p>
             <div className="flex gap-3">
-              <button onClick={() => setShowAdvanceModal(false)} className="flex-1 py-3 border border-zinc-200 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50">Cancel</button>
-              <button onClick={advancePhase} className="flex-1 py-3 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors">Confirm & Advance</button>
+              <button onClick={() => setShowAdvanceModal(false)} className="flex-1 py-3 border border-zinc-200 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50">{t('Cancel')}</button>
+              <button onClick={advancePhase} className="flex-1 py-3 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors">{t('Confirm & Advance')}</button>
             </div>
           </div>
         </div>
@@ -620,7 +614,7 @@ const ProjectViewPage = () => {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" onClick={() => setShowResourceModal(false)}>
           <div className="bg-white w-full max-w-md shadow-2xl p-8 max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <h3 className="text-lg font-black uppercase tracking-tight mb-5">Assign / Reassign Resources</h3>
-            <p className="text-xs text-zinc-400 mb-4">Resources can be changed at any phase of the project.</p>
+            <p className="text-xs text-zinc-400 mb-4">{t('Resources can be changed at any phase of the project.')}</p>
             <div className="space-y-2">
               {employees.map(e => {
                 const assigned = team.some(t => t.id === e.id || t.id === e.employeeId);
@@ -656,7 +650,7 @@ const ProjectViewPage = () => {
               })}
             </div>
             <div className="flex gap-3 mt-6">
-              <button onClick={() => setShowResourceModal(false)} className="flex-1 py-2.5 border border-zinc-200 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50">Cancel</button>
+              <button onClick={() => setShowResourceModal(false)} className="flex-1 py-2.5 border border-zinc-200 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50">{t('Cancel')}</button>
               <button 
                 onClick={async () => {
                   try {
@@ -667,9 +661,7 @@ const ProjectViewPage = () => {
                   }
                 }} 
                 className="flex-1 py-2.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors"
-              >
-                Save Team
-              </button>
+              >{t('Save Team')}</button>
             </div>
           </div>
         </div>

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useInvoiceStore } from '../store/invoiceStore';
 import axios from 'axios';
 import Icon from "../components/ui/Icon.jsx"
+import { useTranslation } from '../store/settingsStore';
+import { useFormatters } from '../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -11,6 +13,10 @@ const api = axios.create({
 });
 
 const ReviewInvoicePage = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const { invoiceData, resetInvoice } = useInvoiceStore();
 
@@ -100,17 +106,17 @@ const ReviewInvoicePage = () => {
               <div className="size-8 bg-slate-900 rounded flex items-center justify-center text-white">
                 <Icon name="box" className="!text-[18px]" />
               </div>
-              <span className="font-black text-xl tracking-tighter uppercase">Boxway Studio</span>
+              <span className="font-black text-xl tracking-tighter uppercase">{t('Boxway Studio')}</span>
             </div>
             <div className="text-sm text-slate-500 leading-relaxed">
               <p>123 Creative Avenue, Suite 400</p>
-              <p>New York, NY 10001</p>
+              <p>{t('New York, NY 10001')}</p>
               <p>billing@boxway.studio</p>
               <p>+1 (555) 000-1234</p>
             </div>
           </div>
           <div className="text-right">
-            <h1 className="text-4xl font-black text-slate-900 mb-2">INVOICE</h1>
+            <h1 className="text-4xl font-black text-slate-900 mb-2">{t('INVOICE')}</h1>
             <p className="text-slate-500 font-medium">{generateInvoiceNumber()}</p>
           </div>
         </div>
@@ -118,7 +124,7 @@ const ReviewInvoicePage = () => {
         {/* Invoice Meta */}
         <div className="grid grid-cols-2 gap-12 mb-16 pb-12 border-b border-slate-100">
           <div>
-            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Bill To:</h4>
+            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">{t('Bill To:')}</h4>
             <div className="text-slate-900">
               <p className="font-bold text-lg">{invoiceData.clientName || ''}</p>
               <div className="text-sm text-slate-500 mt-1 space-y-0.5">
@@ -130,11 +136,11 @@ const ReviewInvoicePage = () => {
           </div>
           <div className="flex flex-col justify-end items-end text-right">
             <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
-              <span className="text-slate-400 font-medium">Issue Date:</span>
+              <span className="text-slate-400 font-medium">{t('Issue Date:')}</span>
               <span className="text-slate-900 font-semibold">{invoiceData.issueDate || ''}</span>
-              <span className="text-slate-400 font-medium">Due Date:</span>
+              <span className="text-slate-400 font-medium">{t('Due Date:')}</span>
               <span className="text-slate-900 font-semibold">{invoiceData.dueDate || ''}</span>
-              <span className="text-slate-400 font-medium">Project ID:</span>
+              <span className="text-slate-400 font-medium">{t('Project ID:')}</span>
               <span className="text-slate-900 font-semibold">{invoiceData.projectLink || ''}</span>
             </div>
           </div>
@@ -145,10 +151,10 @@ const ReviewInvoicePage = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b-2 border-slate-900">
-                <th className="py-4 text-xs font-black uppercase tracking-wider text-slate-900 w-1/2">Description</th>
-                <th className="py-4 text-xs font-black uppercase tracking-wider text-slate-900 text-center">Qty</th>
-                <th className="py-4 text-xs font-black uppercase tracking-wider text-slate-900 text-right">Unit Price</th>
-                <th className="py-4 text-xs font-black uppercase tracking-wider text-slate-900 text-right">Amount</th>
+                <th className="py-4 text-xs font-black uppercase tracking-wider text-slate-900 w-1/2">{t('Description')}</th>
+                <th className="py-4 text-xs font-black uppercase tracking-wider text-slate-900 text-center">{t('Qty')}</th>
+                <th className="py-4 text-xs font-black uppercase tracking-wider text-slate-900 text-right">{t('Unit Price')}</th>
+                <th className="py-4 text-xs font-black uppercase tracking-wider text-slate-900 text-right">{t('Amount')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -161,8 +167,8 @@ const ReviewInvoicePage = () => {
                       <p className="font-bold text-slate-900">{item.description}</p>
                     </td>
                     <td className="py-6 text-center text-sm font-medium text-slate-700">{item.qty}</td>
-                    <td className="py-6 text-right text-sm font-medium text-slate-700">₹{item.rate.toFixed(2)}</td>
-                    <td className="py-6 text-right text-sm font-bold text-slate-900">₹{finalAmt.toFixed(2)}</td>
+                    <td className="py-6 text-right text-sm font-medium text-slate-700">{formatCurrency(item.rate.toFixed(2))}</td>
+                    <td className="py-6 text-right text-sm font-bold text-slate-900">{formatCurrency(finalAmt.toFixed(2))}</td>
                   </tr>
                 );
               })}
@@ -174,20 +180,20 @@ const ReviewInvoicePage = () => {
         <div className="mt-12 flex justify-end">
           <div className="w-64 space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-slate-500">Subtotal:</span>
-              <span className="text-slate-900 font-medium">₹{subtotal.toFixed(2)}</span>
+              <span className="text-slate-500">{t('Subtotal:')}</span>
+              <span className="text-slate-900 font-medium">{formatCurrency(subtotal.toFixed(2))}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-slate-500">CGST (9%):</span>
-              <span className="text-slate-900 font-medium">₹{cgst.toFixed(2)}</span>
+              <span className="text-slate-900 font-medium">{formatCurrency(cgst.toFixed(2))}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-slate-500">SGST (9%):</span>
-              <span className="text-slate-900 font-medium">₹{sgst.toFixed(2)}</span>
+              <span className="text-slate-900 font-medium">{formatCurrency(sgst.toFixed(2))}</span>
             </div>
             <div className="pt-3 border-t-2 border-slate-900 flex justify-between items-center">
-              <span className="text-sm font-black uppercase text-slate-900">Total Due:</span>
-              <span className="text-2xl font-black text-primary">₹{total.toFixed(2)}</span>
+              <span className="text-sm font-black uppercase text-slate-900">{t('Total Due:')}</span>
+              <span className="text-2xl font-black text-primary">{formatCurrency(total.toFixed(2))}</span>
             </div>
           </div>
         </div>
@@ -196,7 +202,7 @@ const ReviewInvoicePage = () => {
         <div className="mt-20 pt-12 border-t border-slate-100">
           <div className="grid grid-cols-2 gap-12">
             <div>
-              <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 mb-4">Payment Terms</h4>
+              <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 mb-4">{t('Payment Terms')}</h4>
               <textarea
                 className="w-full text-xs text-slate-500 leading-relaxed italic border-none p-0 resize-none focus:outline-none focus:ring-0"
                 rows="4"
@@ -209,7 +215,7 @@ const ReviewInvoicePage = () => {
               />
             </div>
             <div className="text-right">
-              <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 mb-4">Declaration</h4>
+              <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 mb-4">{t('Declaration')}</h4>
               <textarea
                 className="w-full text-xs text-slate-500 leading-relaxed italic border-none p-0 resize-none focus:outline-none focus:ring-0 text-right"
                 rows="4"
@@ -228,7 +234,7 @@ const ReviewInvoicePage = () => {
                   const { updateField } = useInvoiceStore.getState();
                   updateField('authorizedSignature', e.target.value);
                 }}
-                placeholder="Authorized Signature"
+                placeholder={t('Authorized Signature')}
               />
             </div>
           </div>
@@ -239,18 +245,12 @@ const ReviewInvoicePage = () => {
       <footer className="fixed bottom-0 left-60 right-0 h-24 bg-white border-t border-slate-200 px-8 flex items-center justify-between shadow-[0_-10px_30px_rgba(0,0,0,0.03)] z-50">
         <div className="flex items-center gap-4">
           <button onClick={handleBack} className="flex items-center gap-2 px-6 py-3 text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg font-bold text-sm transition-all cursor-pointer">
-            <Icon name="edit" />
-            Back to Edit
-          </button>
+            <Icon name="edit" />{t('Back to Edit')}</button>
         </div>
         <div className="flex items-center gap-3">
-          <button onClick={handleSaveDraft} className="px-6 py-3 text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg font-bold text-sm transition-all">
-            Save as Draft
-          </button>
+          <button onClick={handleSaveDraft} className="px-6 py-3 text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg font-bold text-sm transition-all">{t('Save as Draft')}</button>
           <button onClick={handleConfirm} className="flex items-center gap-2 px-8 py-3 bg-primary hover:bg-rose-700 text-white rounded-lg font-black text-sm uppercase tracking-wide shadow-lg shadow-rose-200 transition-all active:scale-95 cursor-pointer">
-            <Icon name="send" />
-            Confirm & Generate
-          </button>
+            <Icon name="send" />{t('Confirm & Generate')}</button>
         </div>
       </footer>
     </div>

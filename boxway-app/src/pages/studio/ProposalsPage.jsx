@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
 import { RefreshCw } from 'lucide-react';
+import { useTranslation } from '../../store/settingsStore';
+import { useFormatters } from '../../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -20,6 +22,10 @@ const statusConfig = {
 const STATUSES = ['All', 'Draft', 'Submitted', 'Under Review', 'Won', 'Lost'];
 
 const ProposalsPage = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const [proposals, setProposals] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -133,9 +139,7 @@ const ProposalsPage = () => {
             disabled={loading}
             className="flex items-center gap-2 px-4 py-2.5 bg-white border border-zinc-200 text-zinc-700 text-[11px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors disabled:opacity-50"
           >
-            <RefreshCw className={`text-[18px] ${loading ? 'animate-spin' : ''}`} />
-            Refresh
-          </button>
+            <RefreshCw className={`text-[18px] ${loading ? 'animate-spin' : ''}`} />{t('Refresh')}</button>
           <button
             onClick={() => navigate('/proposals/new')}
             className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-[11px] font-black uppercase tracking-widest hover:bg-black transition-colors shadow-lg shadow-primary/20"
@@ -152,7 +156,7 @@ const ProposalsPage = () => {
           {[
             { label: 'Total Proposals', val: proposals.length, icon: 'description', color: 'text-zinc-900' },
             { label: 'Win Rate', val: `${winRate}%`, icon: 'emoji_events', color: 'text-emerald-600', sub: `${won} of ${closed} closed` },
-            { label: 'Pipeline Value', val: `$${(pipelineValue / 1000).toFixed(0)}K`, icon: 'monetization_on', color: 'text-primary', sub: 'active proposals' },
+            { label: 'Pipeline Value', val: `$${formatCurrency((pipelineValue / 1000).toFixed(0))}K`, icon: 'monetization_on', color: 'text-primary', sub: 'active proposals' },
             { label: 'Awaiting Decision', val: pending, icon: 'pending_actions', color: 'text-amber-600', sub: 'submitted or under review' },
           ].map(k => (
             <div key={k.label} className="bg-white border border-zinc-100 shadow-sm p-5 flex items-center justify-between min-w-[200px]">
@@ -174,7 +178,7 @@ const ProposalsPage = () => {
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-zinc-50 border-none text-[12px] font-medium placeholder:text-zinc-400 focus:ring-1 focus:ring-primary"
-              placeholder="Search by title, client, or lead architect..."
+              placeholder={t('Search by title, client, or lead architect...')}
             />
           </div>
           <div className="flex gap-2 flex-wrap">
@@ -193,9 +197,9 @@ const ProposalsPage = () => {
             onChange={e => setSortBy(e.target.value)}
             className="bg-white border border-zinc-200 text-[11px] font-bold uppercase py-2 px-3 focus:ring-0 focus:border-primary flex-shrink-0"
           >
-            <option value="date">Sort: Date</option>
-            <option value="value">Sort: Value</option>
-            <option value="status">Sort: Status</option>
+            <option value="date">{t('Sort: Date')}</option>
+            <option value="value">{t('Sort: Value')}</option>
+            <option value="status">{t('Sort: Status')}</option>
           </select>
         </div>
 
@@ -214,7 +218,7 @@ const ProposalsPage = () => {
                 <tr>
                   <td colSpan={8} className="px-6 py-16 text-center">
                     <Icon name="description" className="text-zinc-200 text-4xl block mb-2" />
-                    <p className="text-zinc-400 text-sm">No proposals match your search.</p>
+                    <p className="text-zinc-400 text-sm">{t('No proposals match your search.')}</p>
                   </td>
                 </tr>
               )}
@@ -235,7 +239,7 @@ const ProposalsPage = () => {
                       <p className="text-[10px] text-zinc-400">{p.clientContact}</p>
                     </td>
                     <td className="px-5 py-4 text-xs text-zinc-600">{p.lead}</td>
-                    <td className="px-5 py-4 text-xs font-black text-zinc-900">${p.value.toLocaleString()}</td>
+                    <td className="px-5 py-4 text-xs font-black text-zinc-900">{formatCurrency(p.value.toLocaleString())}</td>
                     <td className="px-5 py-4 overflow-visible">
                       <div className="relative" onClick={e => e.stopPropagation()}>
                         <button
@@ -286,11 +290,11 @@ const ProposalsPage = () => {
                     <td className="px-5 py-4 text-xs text-zinc-400">{p.submittedDate || '—'}</td>
                     <td className="px-5 py-4" onClick={e => e.stopPropagation()}>
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => navigate(`/proposals/${p.id}`)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-900 transition-colors" title="View"><Icon name="visibility" className="text-[16px]" /></button>
-                        <button onClick={() => navigate(`/proposals/${p.id}/edit`)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors" title="Edit"><Icon name="edit" className="text-[16px]" /></button>
+                        <button onClick={() => navigate(`/proposals/${p.id}`)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-zinc-900 transition-colors" title={t('View')}><Icon name="visibility" className="text-[16px]" /></button>
+                        <button onClick={() => navigate(`/proposals/${p.id}/edit`)} className="p-1.5 hover:bg-zinc-100 text-zinc-400 hover:text-primary transition-colors" title={t('Edit')}><Icon name="edit" className="text-[16px]" /></button>
                         <button
                           onClick={() => setDeletingId(p.id)}
-                          className="p-1.5 hover:bg-red-50 text-zinc-400 hover:text-red-600 transition-colors" title="Delete"
+                          className="p-1.5 hover:bg-red-50 text-zinc-400 hover:text-red-600 transition-colors" title={t('Delete')}
                         >
                           <Icon name="delete" className="text-[16px]" />
                         </button>
@@ -309,9 +313,7 @@ const ProposalsPage = () => {
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
                   className="px-3 py-1.5 text-[10px] font-medium rounded border border-zinc-200 hover:bg-zinc-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Previous
-                </button>
+                >{t('Previous')}</button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                   <button
                     key={page}
@@ -329,9 +331,7 @@ const ProposalsPage = () => {
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
                   className="px-3 py-1.5 text-[10px] font-medium rounded border border-zinc-200 hover:bg-zinc-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Next
-                </button>
+                >{t('Next')}</button>
               </div>
             </div>
           )}
@@ -343,11 +343,11 @@ const ProposalsPage = () => {
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" onClick={() => setDeletingId(null)}>
           <div className="bg-white p-8 w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
             <Icon name="warning" className="text-red-500 text-3xl mb-3 block" />
-            <h3 className="text-lg font-black uppercase tracking-tight mb-2">Delete Proposal?</h3>
-            <p className="text-sm text-zinc-500 mb-6">This action cannot be undone. The proposal and all its data will be permanently removed.</p>
+            <h3 className="text-lg font-black uppercase tracking-tight mb-2">{t('Delete Proposal?')}</h3>
+            <p className="text-sm text-zinc-500 mb-6">{t('This action cannot be undone. The proposal and all its data will be permanently removed.')}</p>
             <div className="flex gap-3">
-              <button onClick={() => setDeletingId(null)} className="flex-1 py-2.5 border border-zinc-200 text-[11px] font-black uppercase tracking-widest hover:bg-zinc-50">Cancel</button>
-              <button onClick={handleDelete} className="flex-1 py-2.5 bg-red-600 text-white text-[11px] font-black uppercase tracking-widest hover:bg-red-700">Delete</button>
+              <button onClick={() => setDeletingId(null)} className="flex-1 py-2.5 border border-zinc-200 text-[11px] font-black uppercase tracking-widest hover:bg-zinc-50">{t('Cancel')}</button>
+              <button onClick={handleDelete} className="flex-1 py-2.5 bg-red-600 text-white text-[11px] font-black uppercase tracking-widest hover:bg-red-700">{t('Delete')}</button>
             </div>
           </div>
         </div>

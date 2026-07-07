@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import Icon from "../components/ui/Icon.jsx"
+import Icon from "../components/ui/Icon.jsx";
+import { useSettingsStore } from '../store/settingsStore';
+import { useFormatters } from '../hooks/useFormatters';
+import { useTranslation } from '../store/settingsStore';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -32,6 +35,30 @@ class ErrorBoundary extends React.Component {
 });
 
 const SettingsPage = () => {
+  const { t, language } = useTranslation();
+  const settings = useSettingsStore();
+  const [isSaving, setIsSaving] = useState(false);
+  const [apiError, setApiError] = useState(null);
+  
+  // We need local state for form before saving
+  const [appearance, setAppearance] = useState({
+    theme: settings.theme,
+    language: settings.language,
+    dateFormat: settings.dateFormat,
+    currency: settings.currency
+  });
+  
+  useEffect(() => {
+    // When store changes (e.g. initial load from API), update local state
+    setAppearance({
+      theme: settings.theme,
+      language: settings.language,
+      dateFormat: settings.dateFormat,
+      currency: settings.currency
+    });
+  }, [settings.theme, settings.language, settings.dateFormat, settings.currency]);
+
+
   const { section } = useParams();
   const navigate = useNavigate();
 
@@ -52,13 +79,12 @@ const SettingsPage = () => {
     navigate(`/settings/${route}`);
   };
   const [saved, setSaved] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [settings, setSettings] = useState(null);
+  const [apiSettings, setApiSettings] = useState(null);
   const [companyProfile, setCompanyProfile] = useState({});
   const [users, setUsers] = useState([]);
   const [notifications, setNotifications] = useState([]);
-  const [appearance, setAppearance] = useState({});
+  const { formatCurrency, formatDate } = useFormatters();
   const [integrations, setIntegrations] = useState([]);
   const [security, setSecurity] = useState({});
   const [billingInfo, setBillingInfo] = useState({});
@@ -74,12 +100,13 @@ const SettingsPage = () => {
   const [editingUser, setEditingUser] = useState(null);
 
   const availablePlans = [
-    { name: 'Starter', price: '$99/month', features: ['Basic Invoicing', 'Employee Database', 'Email Support'] },
-    { name: 'Professional', price: '$299/month', features: ['Unlimited Invoices', 'Payroll Management', 'Employee Database', 'Advanced Analytics', 'Priority Support'] },
-    { name: 'Enterprise', price: '$599/month', features: ['All Professional Features', 'Custom Integrations', 'Dedicated Support', 'Advanced Security'] }
+    { name: 'Starter', price: 99, features: ['Basic Invoicing', 'Employee Database', 'Email Support'] },
+    { name: 'Professional', price: 299, features: ['Unlimited Invoices', 'Payroll Management', 'Employee Database', 'Advanced Analytics', 'Priority Support'] },
+    { name: 'Enterprise', price: 599, features: ['All Professional Features', 'Custom Integrations', 'Dedicated Support', 'Advanced Security'] }
   ];
 
   const sections = ['Company', 'Users & Access', 'Notifications', 'Appearance', 'Integrations', 'Security', 'Billing'];
+  const displaySections = { 'Company': t('Company Profile'), 'Users & Access': t('Users & Access'), 'Notifications': t('Notifications'), 'Appearance': t('Appearance'), 'Integrations': t('Integrations'), 'Security': t('Security'), 'Billing': t('Billing') };
 
   // Fetch settings from API
   useEffect(() => {
@@ -123,21 +150,29 @@ const SettingsPage = () => {
         
         const defaultBilling = {
           plan: 'Professional',
-          price: '/month',
+          price: 299,
           status: 'Active',
-          nextBillingDate: 'Oct 1, 2024',
+          nextBillingDate: '2024-10-01',
           features: ['Unlimited Invoices', 'Payroll Management', 'Employee Database', 'Advanced Analytics', 'Priority Support'],
           invoices: [
-            { id: 'INV-2024-001', date: 'Sep 1, 2024', amount: '.00', status: 'Paid' },
-            { id: 'INV-2024-002', date: 'Aug 1, 2024', amount: '.00', status: 'Paid' }
+            { id: 'INV-2024-001', date: '2024-09-01', amount: 299, status: 'Paid' },
+            { id: 'INV-2024-002', date: '2024-08-01', amount: 299, status: 'Paid' }
           ]
         };
 
-        setSettings(data);
+        setApiSettings(data);
         setCompanyProfile(data.companyProfile || {});
         setUsers(data.users || []);
         setNotifications(data.notifications?.length ? data.notifications : defaultNotifications);
-        setAppearance(data.appearance || {});
+        if (data.appearance) {
+          // Sync backend appearance with local state if we want, or ignore since Zustand handles it
+          setAppearance({
+            theme: settings.theme,
+            language: settings.language,
+            dateFormat: settings.dateFormat,
+            currency: settings.currency
+          });
+        }
         setIntegrations(data.integrations?.length ? data.integrations : defaultIntegrations);
         setSecurity(data.security || {});
         setBillingInfo(Object.keys(data.billing || {}).length ? data.billing : defaultBilling);
@@ -151,14 +186,7 @@ const SettingsPage = () => {
     fetchSettings();
   }, []);
 
-  // Apply theme in real-time
-  useEffect(() => {
-    if (appearance.theme === 'Dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [appearance.theme]);
+  // Theme is applied globally in ThemeProvider now.
 
   const handleSave = async () => {
     if (isSaving) return;
@@ -168,18 +196,24 @@ const SettingsPage = () => {
         companyProfile,
         users,
         notifications,
-        appearance,
+        appearance, // Sent to backend, but client trusts Zustand
         integrations,
         security,
         billing: billingInfo
       };
-      await api.patch('/settings/', payload);
+      // Try to save to backend
+      const response = await api.patch('/settings/', payload);
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
       showToast('Settings saved successfully!');
     } catch (err) {
-      console.error("Error saving settings:", err);
-      showToast('Failed to save settings');
+      console.error("Error saving settings API:", err);
+      setSaved(false);
+      const isNetworkError = err.message === 'Network Error';
+      const exactReason = isNetworkError 
+        ? 'Backend API is unreachable. Please ensure the server is running on port 8000.' 
+        : err.response?.data?.message || err.message || 'Unknown error';
+      showToast(`Error: ${exactReason}`);
     } finally {
       setIsSaving(false);
     }
@@ -283,10 +317,16 @@ const SettingsPage = () => {
   };
 
   // Appearance handlers
+  const updateAppearanceField = (field, value) => {
+    const newAppearance = { ...appearance, [field]: value };
+    setAppearance(newAppearance);
+    settings.setPreviewSettings(newAppearance);
+  };
+
   const handleAppearanceChange = (field, value) => {
-    setAppearance({ ...appearance, [field]: value });
-    // Save immediately for real-time updates
-    handleSave();
+    updateAppearanceField(field, value);
+    // Trigger backend sync after state update
+    setTimeout(handleSave, 100);
   };
 
   const handleAppearanceSave = () => {
@@ -335,21 +375,21 @@ const SettingsPage = () => {
 
   if (loading) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-[#f8f6f6]">
+      <div className="flex-1 flex items-center justify-center bg-slate-50">
         <div className="text-center">
           <Icon name="refresh" className="text-4xl text-primary animate-spin" />
-          <p className="text-sm text-slate-500 mt-4">Loading settings...</p>
+          <p className="text-sm text-slate-500 mt-4">{t('Loading settings...')}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 overflow-y-auto bg-[#f8f6f6]">
+    <div className="flex-1 overflow-y-auto bg-slate-50">
       <div className="flex h-full">
         {/* Settings Sidebar */}
         <div className="w-64 shrink-0 border-r border-slate-200 bg-white p-6">
-          <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 px-4">Settings</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 px-4">{t('Settings')}</p>
           <nav className="space-y-1">
             {sections.map(s => (
               <button key={s} onClick={() => handleSectionChange(s)}
@@ -365,7 +405,7 @@ const SettingsPage = () => {
             <ErrorBoundary>
             <div className="max-w-3xl">
               <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-black text-slate-900">Company Profile</h2>
+                <h2 className="text-2xl font-black text-slate-900">{t('Company Profile')}</h2>
                 <button 
                   onClick={() => setIsEditingCompany(!isEditingCompany)}
                   className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 text-sm font-bold rounded hover:bg-slate-200 transition-colors"
@@ -382,7 +422,7 @@ const SettingsPage = () => {
                     <div className="w-20 h-20 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black text-3xl">{companyProfile.companyName?.charAt(0) || 'B'}</div>
                   )}
                   <div>
-                    <p className="font-bold text-slate-900 text-base">Company Logo</p>
+                    <p className="font-bold text-slate-900 text-base">{t('Company Logo')}</p>
                     <p className="text-sm text-slate-500 mt-1">Upload a PNG or SVG (recommended: 200x200px)</p>
                     {isEditingCompany && (
                       <div className="mt-3">
@@ -393,9 +433,7 @@ const SettingsPage = () => {
                           className="hidden"
                           id="logo-upload"
                         />
-                        <label htmlFor="logo-upload" className="inline-block px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 transition-colors cursor-pointer">
-                          Upload Logo
-                        </label>
+                        <label htmlFor="logo-upload" className="inline-block px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 transition-colors cursor-pointer">{t('Upload Logo')}</label>
                       </div>
                     )}
                   </div>
@@ -426,11 +464,9 @@ const SettingsPage = () => {
               </div>
               {isEditingCompany && (
                 <div className="mt-6 flex justify-end gap-3">
-                  <button onClick={() => setIsEditingCompany(false)} className="px-6 py-3 border border-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-50 transition-colors">
-                    Cancel
-                  </button>
+                  <button onClick={() => setIsEditingCompany(false)} className="px-6 py-3 border border-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-50 transition-colors">{t('Cancel')}</button>
                   <button onClick={() => { handleSave(); setIsEditingCompany(false); }} className="flex items-center gap-2 px-6 py-3 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-sm transition-all">
-                    {saved ? <><Icon name="check" className="text-lg" /> Saved!</> : 'Save Changes'}
+                    {saved ? <><Icon name="check" className="text-lg" />{t('Saved!')}</> : 'Save Changes'}
                   </button>
                 </div>
               )}
@@ -441,16 +477,18 @@ const SettingsPage = () => {
           {activeSection === 'Notifications' && (
             <ErrorBoundary>
             <div className="max-w-3xl">
-              <h2 className="text-2xl font-black text-slate-900 mb-8">Notification Preferences</h2>
+              <h2 className="text-2xl font-black text-slate-900 mb-8">{t('Notification Preferences')}</h2>
               {!(notifications && notifications.length > 0) ? (
                 <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm text-center">
-                  <p className="text-slate-900 font-bold">No notification preferences available.</p>
-                  <p className="text-slate-500 mt-2">Configure your notification settings to receive updates.</p>
+                  <p className="text-slate-900 font-bold">{t('No notification preferences available.')}</p>
+                  <p className="text-slate-500 mt-2">{t('Configure your notification settings to receive updates.')}</p>
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {['Financial', 'Projects', 'Employees', 'AI & Analytics', 'Security'].map(category => {
-                    const categoryNotifs = notifications.filter(n => n.category === category);
+                  {['Financial', 'Projects', 'Employees', 'AI & Analytics', 'Security', 'Other'].map(category => {
+                    const categoryNotifs = category === 'Other'
+                      ? notifications.filter(n => !n.category)
+                      : notifications.filter(n => n.category === category);
                     if (categoryNotifs.length === 0) return null;
                     return (
                       <div key={category} className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
@@ -467,20 +505,17 @@ const SettingsPage = () => {
                                     <p className="font-bold text-sm text-slate-900">{n.type}</p>
                                   </div>
                                   <button onClick={() => handleNotificationToggle(actualIndex)}
-                                    className={`relative w-11 h-6 rounded-full transition-colors focus:outline-none ${n.enabled ? 'bg-primary' : 'bg-slate-300'}`}>
-                                    <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform ${n.enabled ? 'translate-x-5 left-0.5' : 'translate-x-0 left-0.5'}`} style={{ transform: n.enabled ? 'translateX(20px)' : 'translateX(0)' }} />
+                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${n.enabled ? 'bg-primary' : 'bg-slate-300'}`}>
+                                    <span className={`inline-block w-5 h-5 rounded-full bg-white transition-transform duration-200 ease-in-out ${n.enabled ? 'translate-x-[22px]' : 'translate-x-[2px]'}`} />
                                   </button>
                                 </div>
                                 <div className="flex gap-6 ml-4">
                                   <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
-                                    <input type="checkbox" checked={n.email} onChange={() => handleNotificationDetailToggle(actualIndex, 'email')} disabled={!n.enabled} className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary disabled:opacity-50" /> Email
-                                  </label>
+                                    <input type="checkbox" checked={n.email} onChange={() => handleNotificationDetailToggle(actualIndex, 'email')} disabled={!n.enabled} className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary disabled:opacity-50" />{t('Email')}</label>
                                   <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
-                                    <input type="checkbox" checked={n.inApp} onChange={() => handleNotificationDetailToggle(actualIndex, 'inApp')} disabled={!n.enabled} className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary disabled:opacity-50" /> In-App
-                                  </label>
+                                    <input type="checkbox" checked={n.inApp} onChange={() => handleNotificationDetailToggle(actualIndex, 'inApp')} disabled={!n.enabled} className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary disabled:opacity-50" />{t('In-App')}</label>
                                   <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
-                                    <input type="checkbox" checked={n.sms || false} onChange={() => handleNotificationDetailToggle(actualIndex, 'sms')} disabled={!n.enabled} className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary disabled:opacity-50" /> SMS
-                                  </label>
+                                    <input type="checkbox" checked={n.sms || false} onChange={() => handleNotificationDetailToggle(actualIndex, 'sms')} disabled={!n.enabled} className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary disabled:opacity-50" />{t('SMS')}</label>
                                 </div>
                               </div>
                             );
@@ -493,7 +528,7 @@ const SettingsPage = () => {
               )}
               <div className="mt-6 flex justify-end">
                 <button onClick={handleSave} disabled={isSaving} className="flex items-center gap-2 px-6 py-3 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-sm transition-all disabled:opacity-50">
-                  {isSaving ? <><Icon name="refresh" className="text-lg animate-spin" /> Saving...</> : saved ? <><Icon name="check" className="text-lg" /> Saved!</> : 'Save Changes'}
+                  {isSaving ? <><Icon name="refresh" className="text-lg animate-spin" />{t('Saving...')}</> : saved ? <><Icon name="check" className="text-lg" />{t('Saved!')}</> : 'Save Changes'}
                 </button>
               </div>
             </div>
@@ -503,36 +538,36 @@ const SettingsPage = () => {
           {activeSection === 'Appearance' && (
             <ErrorBoundary>
             <div className="max-w-3xl">
-              <h2 className="text-2xl font-black text-slate-900 mb-8">Appearance & Localization</h2>
+              <h2 className="text-2xl font-black text-slate-900 mb-8">{t('Appearance & Localization')}</h2>
               <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Theme</label>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Theme')}</label>
                     <select value={appearance.theme || 'Light'} onChange={(e) => handleAppearanceChange('theme', e.target.value)} className="w-full border border-slate-200 rounded px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors">
-                      <option>Light</option>
-                      <option>Dark</option>
-                      <option>Auto</option>
+                      <option>{t('Light')}</option>
+                      <option>{t('Dark')}</option>
+                      <option>{t('Auto')}</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Language</label>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Language')}</label>
                     <select value={appearance.language || 'English'} onChange={(e) => handleAppearanceChange('language', e.target.value)} className="w-full border border-slate-200 rounded px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors">
-                      <option>English</option>
-                      <option>Spanish</option>
-                      <option>French</option>
-                      <option>German</option>
+                      <option>{t('English')}</option>
+                      <option>{t('Spanish')}</option>
+                      <option>{t('French')}</option>
+                      <option>{t('German')}</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Date Format</label>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Date Format')}</label>
                     <select value={appearance.dateFormat || 'MM/DD/YYYY'} onChange={(e) => handleAppearanceChange('dateFormat', e.target.value)} className="w-full border border-slate-200 rounded px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors">
                       <option>MM/DD/YYYY</option>
                       <option>DD/MM/YYYY</option>
-                      <option>YYYY-MM-DD</option>
+                      <option>{t('YYYY-MM-DD')}</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Currency</label>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Currency')}</label>
                     <select value={appearance.currency || 'USD ($)'} onChange={(e) => handleAppearanceChange('currency', e.target.value)} className="w-full border border-slate-200 rounded px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors">
                       <option>USD ($)</option>
                       <option>EUR (€)</option>
@@ -544,7 +579,7 @@ const SettingsPage = () => {
               </div>
               <div className="mt-6 flex justify-end">
                 <button onClick={handleAppearanceSave} className="flex items-center gap-2 px-6 py-3 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-sm transition-all">
-                  {saved ? <><Icon name="check" className="text-lg" /> Saved!</> : 'Save Changes'}
+                  {saved ? <><Icon name="check" className="text-lg" />{t('Saved!')}</> : 'Save Changes'}
                 </button>
               </div>
             </div>
@@ -554,13 +589,13 @@ const SettingsPage = () => {
           {activeSection === 'Security' && (
             <ErrorBoundary>
             <div className="max-w-3xl">
-              <h2 className="text-2xl font-black text-slate-900 mb-8">Security Settings</h2>
+              <h2 className="text-2xl font-black text-slate-900 mb-8">{t('Security Settings')}</h2>
               <div className="space-y-6">
                 <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm">
-                  <h3 className="font-black text-lg text-slate-900 mb-6">Change Password</h3>
+                  <h3 className="font-black text-lg text-slate-900 mb-6">{t('Change Password')}</h3>
                   <div className="space-y-5">
                     <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Current Password</label>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Current Password')}</label>
                       <input 
                         type="password" 
                         value={passwordForm.currentPassword}
@@ -569,7 +604,7 @@ const SettingsPage = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">New Password</label>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('New Password')}</label>
                       <input 
                         type="password" 
                         value={passwordForm.newPassword}
@@ -578,7 +613,7 @@ const SettingsPage = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Confirm New Password</label>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Confirm New Password')}</label>
                       <input 
                         type="password" 
                         value={passwordForm.confirmPassword}
@@ -587,10 +622,10 @@ const SettingsPage = () => {
                       />
                     </div>
                   </div>
-                  <button onClick={handlePasswordChange} className="mt-6 px-6 py-3 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 transition-colors shadow-sm">Update Password</button>
+                  <button onClick={handlePasswordChange} className="mt-6 px-6 py-3 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 transition-colors shadow-sm">{t('Update Password')}</button>
                 </div>
                 <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm">
-                  <h3 className="font-black text-lg text-slate-900 mb-4">Session Settings</h3>
+                  <h3 className="font-black text-lg text-slate-900 mb-4">{t('Session Settings')}</h3>
                   <div className="space-y-4">
                     <div>
                       <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Session Timeout (minutes)</label>
@@ -602,7 +637,7 @@ const SettingsPage = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Password Requirements</label>
+                      <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Password Requirements')}</label>
                       <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
                         <input 
                           type="checkbox" 
@@ -618,7 +653,7 @@ const SettingsPage = () => {
               </div>
               <div className="mt-6 flex justify-end">
                 <button onClick={handleSave} className="flex items-center gap-2 px-6 py-3 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-sm transition-all">
-                  {saved ? <><Icon name="check" className="text-lg" /> Saved!</> : 'Save Changes'}
+                  {saved ? <><Icon name="check" className="text-lg" />{t('Saved!')}</> : 'Save Changes'}
                 </button>
               </div>
             </div>
@@ -629,27 +664,26 @@ const SettingsPage = () => {
             <ErrorBoundary>
             <div className="max-w-5xl">
               <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-black text-slate-900">Users & Access</h2>
+                <h2 className="text-2xl font-black text-slate-900">{t('Users & Access')}</h2>
                 <button onClick={() => setShowAddUserModal(true)} className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 transition-colors shadow-sm">
-                  <Icon name="add" className="text-lg" /> Add User
-                </button>
+                  <Icon name="add" className="text-lg" />{t('Add User')}</button>
               </div>
               <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                 <table className="w-full text-left border-collapse">
                   <thead className="bg-slate-50 border-b border-slate-200">
                     <tr>
-                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Name</th>
-                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Email</th>
-                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Role</th>
-                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Joined</th>
-                      <th className="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">{t('Name')}</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">{t('Email')}</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">{t('Role')}</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">{t('Status')}</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">{t('Joined')}</th>
+                      <th className="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">{t('Actions')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {!(users && users.length > 0) ? (
                       <tr>
-                        <td colSpan={6} className="px-6 py-8 text-center text-sm text-slate-500">No users found. Add users to get started.</td>
+                        <td colSpan={6} className="px-6 py-8 text-center text-sm text-slate-500">{t('No users found. Add users to get started.')}</td>
                       </tr>
                     ) : (
                       users.map(user => (
@@ -660,8 +694,8 @@ const SettingsPage = () => {
                         <td className="px-6 py-4 text-sm"><span className={`px-3 py-1 text-xs font-bold rounded ${user.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}`}>{user.status}</span></td>
                         <td className="px-6 py-4 text-sm text-slate-500">{user.joinedDate}</td>
                         <td className="px-6 py-4 text-right">
-                          <button onClick={() => handleEditUser(user)} className="text-primary font-bold text-sm hover:underline mr-4 transition-colors">Edit</button>
-                          <button onClick={() => handleRemoveUser(user.id)} className="text-red-600 font-bold text-sm hover:underline transition-colors">Remove</button>
+                          <button onClick={() => handleEditUser(user)} className="text-primary font-bold text-sm hover:underline mr-4 transition-colors">{t('Edit')}</button>
+                          <button onClick={() => handleRemoveUser(user.id)} className="text-red-600 font-bold text-sm hover:underline transition-colors">{t('Remove')}</button>
                         </td>
                       </tr>
                     )))}
@@ -674,31 +708,31 @@ const SettingsPage = () => {
                 <div className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm flex items-center justify-center z-50">
                   <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4">
                     <div className="flex items-center justify-between mb-8">
-                      <h3 className="text-xl font-black text-slate-900">Add New User</h3>
+                      <h3 className="text-xl font-black text-slate-900">{t('Add New User')}</h3>
                       <button onClick={() => setShowAddUserModal(false)} className="text-slate-400 hover:text-slate-600 text-3xl leading-none">&times;</button>
                     </div>
                     <div className="space-y-5">
                       <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Full Name</label>
-                        <input type="text" value={newUserForm.name} onChange={(e) => setNewUserForm({...newUserForm, name: e.target.value})} className="w-full border border-slate-200 rounded px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="John Doe" />
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Full Name')}</label>
+                        <input type="text" value={newUserForm.name} onChange={(e) => setNewUserForm({...newUserForm, name: e.target.value})} className="w-full border border-slate-200 rounded px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder={t('John Doe')} />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email</label>
-                        <input type="email" value={newUserForm.email} onChange={(e) => setNewUserForm({...newUserForm, email: e.target.value})} className="w-full border border-slate-200 rounded px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="john@example.com" />
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Email')}</label>
+                        <input type="email" value={newUserForm.email} onChange={(e) => setNewUserForm({...newUserForm, email: e.target.value})} className="w-full border border-slate-200 rounded px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder={t('john@example.com')} />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Role</label>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Role')}</label>
                         <select value={newUserForm.role} onChange={(e) => setNewUserForm({...newUserForm, role: e.target.value})} className="w-full border border-slate-200 rounded px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors">
-                          <option>Admin</option>
-                          <option>Manager</option>
-                          <option>Employee</option>
-                          <option>Viewer</option>
+                          <option>{t('Admin')}</option>
+                          <option>{t('Manager')}</option>
+                          <option>{t('Employee')}</option>
+                          <option>{t('Viewer')}</option>
                         </select>
                       </div>
                     </div>
                     <div className="mt-8 flex gap-3 justify-end">
-                      <button onClick={() => setShowAddUserModal(false)} className="px-5 py-2.5 border border-slate-200 text-slate-700 font-bold text-sm rounded hover:bg-slate-50 transition-colors">Cancel</button>
-                      <button onClick={handleAddUser} className="px-5 py-2.5 bg-primary text-white font-bold text-sm rounded hover:bg-primary/90 transition-colors shadow-sm">Add User</button>
+                      <button onClick={() => setShowAddUserModal(false)} className="px-5 py-2.5 border border-slate-200 text-slate-700 font-bold text-sm rounded hover:bg-slate-50 transition-colors">{t('Cancel')}</button>
+                      <button onClick={handleAddUser} className="px-5 py-2.5 bg-primary text-white font-bold text-sm rounded hover:bg-primary/90 transition-colors shadow-sm">{t('Add User')}</button>
                     </div>
                   </div>
                 </div>
@@ -709,38 +743,38 @@ const SettingsPage = () => {
                 <div className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm flex items-center justify-center z-50">
                   <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4">
                     <div className="flex items-center justify-between mb-8">
-                      <h3 className="text-xl font-black text-slate-900">Edit User</h3>
+                      <h3 className="text-xl font-black text-slate-900">{t('Edit User')}</h3>
                       <button onClick={() => { setShowEditUserModal(false); setEditingUser(null); }} className="text-slate-400 hover:text-slate-600 text-3xl leading-none">&times;</button>
                     </div>
                     <div className="space-y-5">
                       <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Full Name</label>
-                        <input type="text" value={newUserForm.name} onChange={(e) => setNewUserForm({...newUserForm, name: e.target.value})} className="w-full border border-slate-200 rounded px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="John Doe" />
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Full Name')}</label>
+                        <input type="text" value={newUserForm.name} onChange={(e) => setNewUserForm({...newUserForm, name: e.target.value})} className="w-full border border-slate-200 rounded px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder={t('John Doe')} />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email</label>
-                        <input type="email" value={newUserForm.email} onChange={(e) => setNewUserForm({...newUserForm, email: e.target.value})} className="w-full border border-slate-200 rounded px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="john@example.com" />
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Email')}</label>
+                        <input type="email" value={newUserForm.email} onChange={(e) => setNewUserForm({...newUserForm, email: e.target.value})} className="w-full border border-slate-200 rounded px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder={t('john@example.com')} />
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Role</label>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Role')}</label>
                         <select value={newUserForm.role} onChange={(e) => setNewUserForm({...newUserForm, role: e.target.value})} className="w-full border border-slate-200 rounded px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors">
-                          <option>Admin</option>
-                          <option>Manager</option>
-                          <option>Employee</option>
-                          <option>Viewer</option>
+                          <option>{t('Admin')}</option>
+                          <option>{t('Manager')}</option>
+                          <option>{t('Employee')}</option>
+                          <option>{t('Viewer')}</option>
                         </select>
                       </div>
                     </div>
                     <div className="mt-8 flex gap-3 justify-end">
-                      <button onClick={() => { setShowEditUserModal(false); setEditingUser(null); }} className="px-5 py-2.5 border border-slate-200 text-slate-700 font-bold text-sm rounded hover:bg-slate-50 transition-colors">Cancel</button>
-                      <button onClick={handleUpdateUser} className="px-5 py-2.5 bg-primary text-white font-bold text-sm rounded hover:bg-primary/90 transition-colors shadow-sm">Update User</button>
+                      <button onClick={() => { setShowEditUserModal(false); setEditingUser(null); }} className="px-5 py-2.5 border border-slate-200 text-slate-700 font-bold text-sm rounded hover:bg-slate-50 transition-colors">{t('Cancel')}</button>
+                      <button onClick={handleUpdateUser} className="px-5 py-2.5 bg-primary text-white font-bold text-sm rounded hover:bg-primary/90 transition-colors shadow-sm">{t('Update User')}</button>
                     </div>
                   </div>
                 </div>
               )}
               <div className="mt-6 flex justify-end">
                 <button onClick={handleSave} className="flex items-center gap-2 px-6 py-3 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-sm transition-all">
-                  {saved ? <><Icon name="check" className="text-lg" /> Saved!</> : 'Save Changes'}
+                  {saved ? <><Icon name="check" className="text-lg" />{t('Saved!')}</> : 'Save Changes'}
                 </button>
               </div>
             </div>
@@ -750,11 +784,11 @@ const SettingsPage = () => {
           {activeSection === 'Integrations' && (
             <ErrorBoundary>
             <div className="max-w-4xl">
-              <h2 className="text-2xl font-black text-slate-900 mb-8">App Integrations</h2>
+              <h2 className="text-2xl font-black text-slate-900 mb-8">{t('App Integrations')}</h2>
               {!(integrations && integrations.length > 0) ? (
                 <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm text-center">
-                  <p className="text-slate-900 font-bold">No integrations available.</p>
-                  <p className="text-slate-500 mt-2">Check back later for new app integrations.</p>
+                  <p className="text-slate-900 font-bold">{t('No integrations available.')}</p>
+                  <p className="text-slate-500 mt-2">{t('Check back later for new app integrations.')}</p>
                 </div>
               ) : (
               <div className="grid grid-cols-1 gap-5">
@@ -765,13 +799,13 @@ const SettingsPage = () => {
                       <div>
                         <h3 className="font-bold text-base text-slate-900">{integration.name}</h3>
                         <p className="text-sm text-slate-500 mt-1">{integration.description}</p>
-                        {integration.workspaceName && <p className="text-xs text-slate-600 mt-1">Workspace: <strong>{integration.workspaceName}</strong></p>}
-                        {integration.connectedAccount && <p className="text-xs text-slate-600 mt-1">Account: <strong>{integration.connectedAccount}</strong></p>}
-                        {integration.webhookUrl && <p className="text-xs text-slate-600 mt-1">URL: <strong>{integration.webhookUrl}</strong></p>}
+                        {integration.workspaceName && <p className="text-xs text-slate-600 mt-1">{t('Workspace:')}<strong>{integration.workspaceName}</strong></p>}
+                        {integration.connectedAccount && <p className="text-xs text-slate-600 mt-1">{t('Account:')}<strong>{integration.connectedAccount}</strong></p>}
+                        {integration.webhookUrl && <p className="text-xs text-slate-600 mt-1">{t('URL:')}<strong>{integration.webhookUrl}</strong></p>}
                         {integration.apiKey && (
                           <div className="flex items-center gap-2 mt-1">
-                            <p className="text-xs text-slate-600">Secret: <strong>{integration.apiKey}</strong></p>
-                            <button onClick={() => handleIntegrationAction(integration.name, 'copy')} className="text-xs text-primary hover:underline">Copy</button>
+                            <p className="text-xs text-slate-600">{t('Secret:')}<strong>{integration.apiKey}</strong></p>
+                            <button onClick={() => handleIntegrationAction(integration.name, 'copy')} className="text-xs text-primary hover:underline">{t('Copy')}</button>
                           </div>
                         )}
                         {integration.status === 'Connected' && integration.lastSync && (
@@ -784,18 +818,18 @@ const SettingsPage = () => {
                       
                       {integration.status === 'Connected' && (
                         <>
-                          {integration.name !== 'Webhooks' && <button onClick={() => handleIntegrationAction(integration.name, 'sync')} className="px-4 py-2 text-sm font-bold border border-slate-200 rounded text-slate-700 hover:bg-slate-50 transition-colors">Sync Now</button>}
-                          <button onClick={() => handleIntegrationAction(integration.name, 'disconnect')} className="px-4 py-2 text-sm font-bold border border-red-200 rounded text-red-600 hover:bg-red-50 transition-colors">Disconnect</button>
+                          {integration.name !== 'Webhooks' && <button onClick={() => handleIntegrationAction(integration.name, 'sync')} className="px-4 py-2 text-sm font-bold border border-slate-200 rounded text-slate-700 hover:bg-slate-50 transition-colors">{t('Sync Now')}</button>}
+                          <button onClick={() => handleIntegrationAction(integration.name, 'disconnect')} className="px-4 py-2 text-sm font-bold border border-red-200 rounded text-red-600 hover:bg-red-50 transition-colors">{t('Disconnect')}</button>
                         </>
                       )}
                       
                       {integration.status === 'Disconnected' && (
                         <>
                           {integration.name === 'Razorpay' || integration.name === 'Webhooks' ? (
-                            <button onClick={() => handleIntegrationAction(integration.name, 'test')} className="px-4 py-2 text-sm font-bold border border-slate-200 rounded text-slate-700 hover:bg-slate-50 transition-colors">Test Connection</button>
+                            <button onClick={() => handleIntegrationAction(integration.name, 'test')} className="px-4 py-2 text-sm font-bold border border-slate-200 rounded text-slate-700 hover:bg-slate-50 transition-colors">{t('Test Connection')}</button>
                           ) : null}
                           {integration.name === 'Webhooks' ? (
-                            <button onClick={() => handleIntegrationAction(integration.name, 'generate')} className="px-4 py-2 text-sm font-bold border border-slate-200 rounded text-slate-700 hover:bg-slate-50 transition-colors">Generate Secret</button>
+                            <button onClick={() => handleIntegrationAction(integration.name, 'generate')} className="px-4 py-2 text-sm font-bold border border-slate-200 rounded text-slate-700 hover:bg-slate-50 transition-colors">{t('Generate Secret')}</button>
                           ) : null}
                           <button onClick={() => handleIntegrationAction(integration.name, integration.lastSync ? 'reconnect' : 'connect')} className="px-5 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-sm transition-colors min-w-[120px]">
                             {integration.lastSync ? 'Reconnect' : 'Connect'}
@@ -809,7 +843,7 @@ const SettingsPage = () => {
               )}
               <div className="mt-6 flex justify-end">
                 <button onClick={handleSave} disabled={isSaving} className="flex items-center gap-2 px-6 py-3 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-sm transition-all disabled:opacity-50">
-                  {isSaving ? <><Icon name="refresh" className="text-lg animate-spin" /> Saving...</> : saved ? <><Icon name="check" className="text-lg" /> Saved!</> : 'Save Changes'}
+                  {isSaving ? <><Icon name="refresh" className="text-lg animate-spin" />{t('Saving...')}</> : saved ? <><Icon name="check" className="text-lg" />{t('Saved!')}</> : 'Save Changes'}
                 </button>
               </div>
             </div>
@@ -819,20 +853,20 @@ const SettingsPage = () => {
           {activeSection === 'Billing' && (
             <ErrorBoundary>
             <div className="max-w-4xl">
-              <h2 className="text-2xl font-black text-slate-900 mb-8">Billing & Plan</h2>
+              <h2 className="text-2xl font-black text-slate-900 mb-8">{t('Billing & Plan')}</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm flex flex-col h-full">
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Current Plan</p>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">{t('Current Plan')}</p>
                   <h3 className="text-3xl font-black text-slate-900 mb-1">{billingInfo.plan}</h3>
-                  <p className="text-xl font-bold text-primary mb-6">{billingInfo.price}</p>
+                  <p className="text-xl font-bold text-primary mb-6">${billingInfo.price || 0}<span className="text-sm text-slate-500 font-medium">/month</span></p>
                   <div className="space-y-2 mb-8 flex-1">
-                    <p className="text-sm text-slate-600">Status: <span className="font-bold text-green-600">{billingInfo.status}</span></p>
-                    <p className="text-sm text-slate-600">Next billing date: <span className="font-semibold">{billingInfo.nextBillingDate || 'Not set'}</span></p>
+                    <p className="text-sm text-slate-600">{t('Status:')}<span className="font-bold text-green-600">{billingInfo.status}</span></p>
+                    <p className="text-sm text-slate-600">{t('Next billing date:')}<span className="font-bold">{formatDate(billingInfo.nextBillingDate) || 'Not set'}</span></p>
                   </div>
-                  <button onClick={() => setShowPlanModal(true)} className="w-full px-5 py-3 border border-slate-200 text-slate-800 font-bold text-sm rounded hover:bg-slate-50 transition-colors">Change Plan</button>
+                  <button onClick={() => setShowPlanModal(true)} className="w-full px-5 py-3 border border-slate-200 text-slate-800 font-bold text-sm rounded hover:bg-slate-50 transition-colors">{t('Change Plan')}</button>
                 </div>
                 <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm h-full">
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-5">Plan Features</p>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-5">{t('Plan Features')}</p>
                   <ul className="space-y-4">
                     {(billingInfo.features || []).map((feature, idx) => (
                       <li key={idx} className="flex items-center gap-3 text-sm font-medium text-slate-700">
@@ -847,31 +881,31 @@ const SettingsPage = () => {
               </div>
               <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                 <div className="px-6 py-5 border-b border-slate-200 bg-slate-50">
-                  <h3 className="font-bold text-base text-slate-900">Billing History</h3>
+                  <h3 className="font-bold text-base text-slate-900">{t('Billing History')}</h3>
                 </div>
                 <table className="w-full text-left border-collapse">
                   <thead className="border-b border-slate-200">
                     <tr>
-                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Invoice</th>
-                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
-                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Amount</th>
-                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Action</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">{t('Invoice')}</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">{t('Date')}</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">{t('Amount')}</th>
+                      <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">{t('Status')}</th>
+                      <th className="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">{t('Action')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {(billingInfo.invoices || []).length === 0 ? (
                       <tr>
-                        <td colSpan={5} className="px-6 py-8 text-center text-sm text-slate-500">No billing history available</td>
+                        <td colSpan={5} className="px-6 py-8 text-center text-sm text-slate-500">{t('No billing history available')}</td>
                       </tr>
                     ) : (
                       billingInfo.invoices.map(invoice => (
                         <tr key={invoice.id} className="hover:bg-slate-50 transition-colors">
-                          <td className="px-6 py-4 text-sm font-bold text-slate-900">{invoice.id}</td>
-                          <td className="px-6 py-4 text-sm text-slate-600">{invoice.date}</td>
-                          <td className="px-6 py-4 text-sm font-bold text-slate-900">{invoice.amount}</td>
+                          <td className="px-6 py-4 font-bold text-sm text-slate-900">{invoice.id}</td>
+                          <td className="px-6 py-4 text-sm text-slate-600">{formatDate(invoice.date)}</td>
+                          <td className="px-6 py-4 text-sm font-medium text-slate-900">{formatCurrency(invoice.amount)}</td>
                           <td className="px-6 py-4 text-sm"><span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded">{invoice.status}</span></td>
-                          <td className="px-6 py-4 text-right"><button onClick={() => showToast(`Downloading invoice ${invoice.id}...`)} className="text-primary font-bold text-sm hover:underline transition-colors">Download</button></td>
+                          <td className="px-6 py-4 text-right"><button onClick={() => showToast(`Downloading invoice ${invoice.id}...`)} className="text-primary font-bold text-sm hover:underline transition-colors">{t('Download')}</button></td>
                         </tr>
                       ))
                     )}
@@ -884,14 +918,14 @@ const SettingsPage = () => {
                 <div className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm flex items-center justify-center z-50">
                   <div className="bg-white rounded-xl shadow-2xl p-8 max-w-4xl w-full mx-4">
                     <div className="flex items-center justify-between mb-8">
-                      <h3 className="text-2xl font-black text-slate-900">Select a Plan</h3>
+                      <h3 className="text-2xl font-black text-slate-900">{t('Select a Plan')}</h3>
                       <button onClick={() => setShowPlanModal(false)} className="text-slate-400 hover:text-slate-600 text-3xl leading-none">&times;</button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                       {availablePlans.map(plan => (
                         <div key={plan.name} className={`border-2 rounded-xl p-6 cursor-pointer transition-all flex flex-col ${billingInfo.plan === plan.name ? 'border-primary bg-primary/5 shadow-sm' : 'border-slate-200 hover:border-slate-300'}`}>
                           <h4 className="font-bold text-xl text-slate-900 mb-2">{plan.name}</h4>
-                          <p className="text-2xl font-black text-primary mb-6">{plan.price}</p>
+                          <p className="text-2xl font-black mb-4">{formatCurrency(plan.price)}<span className="text-sm font-normal text-slate-500">/mo</span></p>
                           <ul className="space-y-3 mb-8 flex-1">
                             {plan.features.map(feature => (
                               <li key={feature} className="text-sm text-slate-700 flex items-start gap-3">
@@ -909,14 +943,14 @@ const SettingsPage = () => {
                       ))}
                     </div>
                     <div className="flex gap-3 justify-end">
-                      <button onClick={() => setShowPlanModal(false)} className="px-6 py-3 border border-slate-200 text-slate-700 font-bold text-sm rounded hover:bg-slate-50 transition-colors">Close</button>
+                      <button onClick={() => setShowPlanModal(false)} className="px-6 py-3 border border-slate-200 text-slate-700 font-bold text-sm rounded hover:bg-slate-50 transition-colors">{t('Close')}</button>
                     </div>
                   </div>
                 </div>
               )}
               <div className="mt-6 flex justify-end">
                 <button onClick={handleSave} className="flex items-center gap-2 px-6 py-3 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-sm transition-all">
-                  {saved ? <><Icon name="check" className="text-lg" /> Saved!</> : 'Save Changes'}
+                  {saved ? <><Icon name="check" className="text-lg" />{t('Saved!')}</> : 'Save Changes'}
                 </button>
               </div>
             </div>
@@ -927,7 +961,7 @@ const SettingsPage = () => {
             <div className="max-w-2xl text-center py-20">
               <Icon name="settings" className="text-slate-300 text-5xl" />
               <h2 className="text-xl font-bold text-slate-900 mt-4">{activeSection}</h2>
-              <p className="text-slate-400 text-sm mt-2">This settings section is coming soon.</p>
+              <p className="text-slate-400 text-sm mt-2">{t('This settings section is coming soon.')}</p>
             </div>
           )}
         </div>

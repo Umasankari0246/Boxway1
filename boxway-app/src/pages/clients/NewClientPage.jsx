@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Check } from 'lucide-react';
 import axios from 'axios';
+import { useTranslation } from '../../store/settingsStore';
+import { useFormatters } from '../../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -12,6 +14,10 @@ const api = axios.create({
 const STEPS = ['Basic Info', 'Project Requirements'];
 
 const NewClientPage = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const { id } = useParams();
   const isEditMode = !!id;
@@ -149,17 +155,17 @@ const NewClientPage = () => {
                 <input value={form.contactPerson} onChange={e => set('contactPerson', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" /></div>
               <div><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Email *</label>
                 <input type="email" value={form.email} onChange={e => set('email', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" /></div>
-              <div><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Phone</label>
+              <div><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{t('Phone')}</label>
                 <input
                   type="tel"
                   value={form.phone}
                   onChange={e => set('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
                   className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-                  placeholder="1234567890"
+                  placeholder={t('1234567890')}
                 /></div>
-              <div><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Client Type</label>
+              <div><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{t('Client Type')}</label>
                 <select value={form.type} onChange={e => set('type', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary">
-                  <option value="">Select Type</option>
+                  <option value="">{t('Select Type')}</option>
                   {['Corporate', 'Developer', 'SMB', 'Hospitality', 'Municipality', 'Individual'].map(t => <option key={t}>{t}</option>)}</select></div>
               <div className="col-span-2"><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">City / Location</label>
                 <input value={form.city} onChange={e => set('city', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" /></div>
@@ -167,18 +173,18 @@ const NewClientPage = () => {
           )}
           {step === 2 && (
             <div className="grid grid-cols-2 gap-5">
-              <div><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Project Type</label>
+              <div><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{t('Project Type')}</label>
                 <select value={form.projectType} onChange={e => set('projectType', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary">
-                  <option value="">Select Type</option>
+                  <option value="">{t('Select Type')}</option>
                   {['Commercial', 'Residential', 'Hospitality', 'Municipal', 'Industrial', 'Mixed-Use'].map(t => <option key={t}>{t}</option>)}</select></div>
-              <div><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Number of Projects</label>
-                <input type="number" value={form.numberOfProjects} onChange={e => set('numberOfProjects', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="e.g., 3" min="0" /></div>
+              <div><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{t('Number of Projects')}</label>
+                <input type="number" value={form.numberOfProjects} onChange={e => set('numberOfProjects', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder={t('e.g., 3')} min="0" /></div>
               <div><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Estimated Budget ($)</label>
-                <input type="number" value={form.estimatedBudget} onChange={e => set('estimatedBudget', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="e.g., 500000" /></div>
-              <div className="col-span-2"><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Expected Timeline</label>
-                <input value={form.timeline} onChange={e => set('timeline', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="e.g., 12-18 months" /></div>
-              <div className="col-span-2"><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Project Description</label>
-                <textarea rows={4} value={form.description} onChange={e => set('description', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary resize-none" placeholder="Describe the project requirements..." /></div>
+                <input type="number" value={form.estimatedBudget} onChange={e => set('estimatedBudget', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder={t('e.g., 500000')} /></div>
+              <div className="col-span-2"><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{t('Expected Timeline')}</label>
+                <input value={form.timeline} onChange={e => set('timeline', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder={t('e.g., 12-18 months')} /></div>
+              <div className="col-span-2"><label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{t('Project Description')}</label>
+                <textarea rows={4} value={form.description} onChange={e => set('description', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary resize-none" placeholder={t('Describe the project requirements...')} /></div>
             </div>
           )}
         </div>

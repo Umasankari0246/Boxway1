@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
+import { useTranslation } from '../../store/settingsStore';
+import { useFormatters } from '../../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -17,6 +19,10 @@ const typeConfig = {
 };
 
 const AIInsightsPage = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const [filter, setFilter] = useState('All');
   const [chat, setChat] = useState([{ role: 'ai', text: 'Hello! I\'m your Boxway AI assistant. I can analyze your project data, financials, and team performance. What would you like to explore today?' }]);
   const [input, setInput] = useState('');
@@ -66,20 +72,18 @@ const AIInsightsPage = () => {
     <div className="flex-1 overflow-y-auto p-8 bg-[#f8f6f6]">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-black text-slate-900">AI Insights</h2>
-          <p className="text-sm text-slate-500">Powered by intelligent analysis of your business data</p>
+          <h2 className="text-2xl font-black text-slate-900">{t('AI Insights')}</h2>
+          <p className="text-sm text-slate-500">{t('Powered by intelligent analysis of your business data')}</p>
         </div>
         <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-bold">
-          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          AI Active
-        </div>
+          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />{t('AI Active')}</div>
       </div>
 
       <div className="grid grid-cols-12 gap-6">
         {/* Insights Feed */}
         <div className="col-span-7">
           <div className="flex items-center gap-3 mb-4">
-            <h3 className="font-bold text-slate-900">Smart Alerts & Recommendations</h3>
+            <h3 className="font-bold text-slate-900">{t('Smart Alerts & Recommendations')}</h3>
             <span className="bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{insights.length}</span>
           </div>
           <div className="flex gap-2 mb-4">
@@ -128,8 +132,8 @@ const AIInsightsPage = () => {
                   <Icon name="psychology" className="text-white text-lg" />
                 </div>
                 <div>
-                  <p className="font-bold text-white text-sm">Boxway AI</p>
-                  <p className="text-zinc-400 text-xs">Business Intelligence Assistant</p>
+                  <p className="font-bold text-white text-sm">{t('Boxway AI')}</p>
+                  <p className="text-zinc-400 text-xs">{t('Business Intelligence Assistant')}</p>
                 </div>
               </div>
             </div>
@@ -159,7 +163,7 @@ const AIInsightsPage = () => {
                   value={input}
                   onChange={e => setInput(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && sendMessage(input)}
-                  placeholder="Ask anything about your business..."
+                  placeholder={t('Ask anything about your business...')}
                   className="flex-1 bg-white/10 text-white placeholder-zinc-500 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary border border-white/10"
                 />
                 <button onClick={() => sendMessage(input)} disabled={!input.trim()} className="p-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-40 transition-colors">

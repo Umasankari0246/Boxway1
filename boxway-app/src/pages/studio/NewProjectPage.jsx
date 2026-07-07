@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { ArrowLeft, ArrowRight, Building2, Users, Calendar, DollarSign, CheckSquare, Info, Check, Plus } from 'lucide-react';
+import { useTranslation } from '../../store/settingsStore';
+import { useFormatters } from '../../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -31,6 +33,10 @@ const LABEL = 'block text-sm font-bold text-slate-700 mb-1.5';
 const INPUT = 'w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors';
 
 const NewProjectPage = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const loc = useLocation();
   const { id } = useParams();
@@ -190,7 +196,7 @@ const NewProjectPage = () => {
             </div>
           </div>
           <div className="flex gap-3">
-            <button className="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-50 transition-colors">Save Draft</button>
+            <button className="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-50 transition-colors">{t('Save Draft')}</button>
             <button onClick={handleNext} className="px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2">
               {step < STEPS.length - 1 ? 'Continue' : 'Create Project'}
               {step < STEPS.length - 1 && <ArrowRight className="h-4 w-4" />}
@@ -224,42 +230,41 @@ const NewProjectPage = () => {
                   <Building2 className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900">Project Details</h3>
-                  <p className="text-sm text-slate-500">Enter the basic information for this project.</p>
+                  <h3 className="text-lg font-bold text-slate-900">{t('Project Details')}</h3>
+                  <p className="text-sm text-slate-500">{t('Enter the basic information for this project.')}</p>
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="md:col-span-2">
                   <label className={LABEL}>Project Name / Title</label>
-                  <input value={form.name} onChange={e => set('name', e.target.value)} placeholder="e.g. Meridian Tower Renovation" className={INPUT} />
+                  <input value={form.name} onChange={e => set('name', e.target.value)} placeholder={t('e.g. Meridian Tower Renovation')} className={INPUT} />
                 </div>
                 <div>
-                  <label className={LABEL}>Project Type</label>
+                  <label className={LABEL}>{t('Project Type')}</label>
                   <select value={form.type} onChange={e => updateType(e.target.value)} className={INPUT}>
                     {Object.keys(PROJECT_PHASES).filter(k => k !== 'Default').map(t => <option key={t}>{t}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className={LABEL}>Project Code (Auto)</label>
-                  <input value={form.clientProjectCode} onChange={e => set('clientProjectCode', e.target.value)} placeholder="BW24-01BFN-DGL" className={INPUT} />
+                  <input value={form.clientProjectCode} onChange={e => set('clientProjectCode', e.target.value)} placeholder={t('BW24-01BFN-DGL')} className={INPUT} />
                 </div>
                 <div>
-                  <label className={LABEL}>Start Date</label>
+                  <label className={LABEL}>{t('Start Date')}</label>
                   <input type="date" value={form.startDate} onChange={e => set('startDate', e.target.value)} className={INPUT} />
                 </div>
                 <div>
-                  <label className={LABEL}>Expected End Date</label>
+                  <label className={LABEL}>{t('Expected End Date')}</label>
                   <input type="date" value={form.endDate} onChange={e => set('endDate', e.target.value)} className={INPUT} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className={LABEL}>Project Description</label>
-                  <textarea value={form.description} onChange={e => set('description', e.target.value)} rows={4} placeholder="Brief scope of the project..." className={INPUT + ' resize-none'} />
+                  <label className={LABEL}>{t('Project Description')}</label>
+                  <textarea value={form.description} onChange={e => set('description', e.target.value)} rows={4} placeholder={t('Brief scope of the project...')} className={INPUT + ' resize-none'} />
                 </div>
                 {fromProposal && (
                   <div className="md:col-span-2 flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                     <Info className="text-blue-600 h-5 w-5" />
-                    <p className="text-sm text-blue-800">
-                      Linked to Proposal <strong>{fromProposal.id || 'PRP001'}</strong> — details pre-filled from approved enquiry.
+                    <p className="text-sm text-blue-800">{t('Linked to Proposal')}<strong>{fromProposal.id || 'PRP001'}</strong> — details pre-filled from approved enquiry.
                     </p>
                   </div>
                 )}
@@ -275,29 +280,29 @@ const NewProjectPage = () => {
                   <Users className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900">Client Information</h3>
-                  <p className="text-sm text-slate-500">Link a client to this project and set contact details.</p>
+                  <h3 className="text-lg font-bold text-slate-900">{t('Client Information')}</h3>
+                  <p className="text-sm text-slate-500">{t('Link a client to this project and set contact details.')}</p>
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className={LABEL}>Client / Company</label>
                   <select value={form.client} onChange={e => set('client', e.target.value)} className={INPUT}>
-                    <option value="">Select client...</option>
+                    <option value="">{t('Select client...')}</option>
                     {clients.map(c => <option key={c.id || c.clientId} value={c.id || c.clientId}>{c.name}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className={LABEL}>Client Contact Name</label>
-                  <input value={form.clientContact} onChange={e => set('clientContact', e.target.value)} placeholder="Robert Chen" className={INPUT} />
+                  <label className={LABEL}>{t('Client Contact Name')}</label>
+                  <input value={form.clientContact} onChange={e => set('clientContact', e.target.value)} placeholder={t('Robert Chen')} className={INPUT} />
                 </div>
                 <div>
-                  <label className={LABEL}>Client Email</label>
-                  <input value={form.clientEmail} onChange={e => set('clientEmail', e.target.value)} placeholder="robert@meridian.com" className={INPUT} />
+                  <label className={LABEL}>{t('Client Email')}</label>
+                  <input value={form.clientEmail} onChange={e => set('clientEmail', e.target.value)} placeholder={t('robert@meridian.com')} className={INPUT} />
                 </div>
                 <div>
-                  <label className={LABEL}>Client Phone</label>
-                  <input placeholder="+1 555-2001" className={INPUT} />
+                  <label className={LABEL}>{t('Client Phone')}</label>
+                  <input placeholder={t('+1 555-2001')} className={INPUT} />
                 </div>
               </div>
             </div>
@@ -311,19 +316,19 @@ const NewProjectPage = () => {
                   <Users className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900">Resource Assignment</h3>
-                  <p className="text-sm text-slate-500">Assign a lead architect and project team members.</p>
+                  <h3 className="text-lg font-bold text-slate-900">{t('Resource Assignment')}</h3>
+                  <p className="text-sm text-slate-500">{t('Assign a lead architect and project team members.')}</p>
                 </div>
               </div>
               <div>
-                <label className={LABEL}>Lead Architect</label>
+                <label className={LABEL}>{t('Lead Architect')}</label>
                 <select value={form.leadArchitect} onChange={e => set('leadArchitect', e.target.value)} className={INPUT + ' mb-6'}>
                   {employees.map(e => <option key={e.id || e.employeeId} value={e.id || e.employeeId}>{e.name} — {e.role}</option>)}
                 </select>
               </div>
               <div>
-                <label className={LABEL}>Team Members</label>
-                <p className="text-sm text-slate-500 mb-4">Select all that apply. Resources can also be changed mid-project.</p>
+                <label className={LABEL}>{t('Team Members')}</label>
+                <p className="text-sm text-slate-500 mb-4">{t('Select all that apply. Resources can also be changed mid-project.')}</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {employees.map(e => {
                     const empId = e.id || e.employeeId;
@@ -356,13 +361,13 @@ const NewProjectPage = () => {
                   <Calendar className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900">Project Phases</h3>
-                  <p className="text-sm text-slate-500">Auto-generated from project type. Toggle phases as needed.</p>
+                  <h3 className="text-lg font-bold text-slate-900">{t('Project Phases')}</h3>
+                  <p className="text-sm text-slate-500">{t('Auto-generated from project type. Toggle phases as needed.')}</p>
                 </div>
               </div>
               <div className="p-4 bg-blue-50 rounded-lg flex items-center gap-3 mb-4">
                 <Info className="text-blue-600 h-5 w-5" />
-                <p className="text-sm text-blue-800">Phases for type: <strong className="font-bold">{form.type}</strong>. Resources can be reassigned at any phase.</p>
+                <p className="text-sm text-blue-800">{t('Phases for type:')}<strong className="font-bold">{form.type}</strong>. Resources can be reassigned at any phase.</p>
               </div>
               <div className="space-y-3">
                 {form.phases.map((ph, i) => (
@@ -394,39 +399,39 @@ const NewProjectPage = () => {
                   <DollarSign className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900">Budget & Financials</h3>
-                  <p className="text-sm text-slate-500">Configure the budget, currency, and payment schedule.</p>
+                  <h3 className="text-lg font-bold text-slate-900">{t('Budget & Financials')}</h3>
+                  <p className="text-sm text-slate-500">{t('Configure the budget, currency, and payment schedule.')}</p>
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className={LABEL}>Total Project Budget ($)</label>
-                  <input type="number" value={form.budget} onChange={e => set('budget', e.target.value)} placeholder="e.g. 450000" className={INPUT + ' text-lg'} />
+                  <input type="number" value={form.budget} onChange={e => set('budget', e.target.value)} placeholder={t('e.g. 450000')} className={INPUT + ' text-lg'} />
                 </div>
                 <div>
-                  <label className={LABEL}>Currency</label>
+                  <label className={LABEL}>{t('Currency')}</label>
                   <select className={INPUT}><option>USD ($)</option><option>GBP (£)</option><option>EUR (€)</option></select>
                 </div>
                 <div>
-                  <label className={LABEL}>Fee Type</label>
+                  <label className={LABEL}>{t('Fee Type')}</label>
                   <select className={INPUT}>
-                    <option>Lump Sum Fixed Fee</option>
-                    <option>Percentage of Construction Cost</option>
-                    <option>Hourly Rate</option>
-                    <option>RIBA Stage-Based Payments</option>
+                    <option>{t('Lump Sum Fixed Fee')}</option>
+                    <option>{t('Percentage of Construction Cost')}</option>
+                    <option>{t('Hourly Rate')}</option>
+                    <option>{t('RIBA Stage-Based Payments')}</option>
                   </select>
                 </div>
                 <div>
-                  <label className={LABEL}>Payment Schedule</label>
+                  <label className={LABEL}>{t('Payment Schedule')}</label>
                   <select className={INPUT}>
-                    <option>Milestone-Based</option>
-                    <option>Monthly Retainer</option>
+                    <option>{t('Milestone-Based')}</option>
+                    <option>{t('Monthly Retainer')}</option>
                     <option>50/50 (Deposit + Completion)</option>
                   </select>
                 </div>
                 <div className="md:col-span-2">
-                  <label className={LABEL}>Budget Notes</label>
-                  <textarea rows={3} placeholder="Any budget constraints, contingency notes..." className={INPUT + ' resize-none'} />
+                  <label className={LABEL}>{t('Budget Notes')}</label>
+                  <textarea rows={3} placeholder={t('Any budget constraints, contingency notes...')} className={INPUT + ' resize-none'} />
                 </div>
               </div>
             </div>
@@ -440,8 +445,8 @@ const NewProjectPage = () => {
                   <CheckSquare className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900">Review & Create</h3>
-                  <p className="text-sm text-slate-500">Double check all project information before creating.</p>
+                  <h3 className="text-lg font-bold text-slate-900">{t('Review & Create')}</h3>
+                  <p className="text-sm text-slate-500">{t('Double check all project information before creating.')}</p>
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -451,7 +456,7 @@ const NewProjectPage = () => {
                     { label: 'Type', val: form.type },
                     { label: 'Client', val: form.client || '—' },
                     { label: 'Contact', val: form.clientContact || '—' },
-                    { label: 'Budget', val: form.budget ? `$${Number(form.budget).toLocaleString()}` : '—' },
+                    { label: 'Budget', val: form.budget ? `$${formatCurrency(Number(form.budget).toLocaleString())}` : '—' },
                     { label: 'Start Date', val: form.startDate || '—' },
                     { label: 'End Date', val: form.endDate || '—' },
                     { label: 'Project Code', val: form.clientProjectCode || '—' },
@@ -483,17 +488,16 @@ const NewProjectPage = () => {
 
                 <div>
                   <div className="bg-slate-50 rounded-xl p-6 border border-slate-200 text-center">
-                    <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-6">Summary</h4>
+                    <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-6">{t('Summary')}</h4>
                     <div className="mb-6">
                       <p className="text-3xl font-black text-slate-900">{form.name || 'Untitled'}</p>
                     </div>
                     <div className="mb-8">
-                      <p className="text-sm text-slate-500 mb-1">Total Budget</p>
-                      <p className="text-3xl font-black text-primary">{form.budget ? `$${Number(form.budget).toLocaleString()}` : '—'}</p>
+                      <p className="text-sm text-slate-500 mb-1">{t('Total Budget')}</p>
+                      <p className="text-3xl font-black text-primary">{form.budget ? `$${formatCurrency(Number(form.budget).toLocaleString())}` : '—'}</p>
                     </div>
                     <button onClick={handleNext} className="w-full py-3 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
-                      <Check className="h-5 w-5" /> Create Project
-                    </button>
+                      <Check className="h-5 w-5" />{t('Create Project')}</button>
                   </div>
                 </div>
               </div>

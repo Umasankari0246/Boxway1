@@ -3,6 +3,8 @@ import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { Menu } from 'lucide-react';
 import Icon from '../ui/Icon.jsx';
+import { useTranslation } from '../../store/settingsStore';
+import { useFormatters } from '../../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -33,6 +35,10 @@ const ROUTE_TITLES = {
 const NOTIFICATION_READ_KEY = 'boxway.topbar.readNotifications';
 
 const TopBar = ({ onToggleSidebar, isSidebarCollapsed, isMobileSidebarOpen }) => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const location = useLocation();
 
   const getPageTitle = (pathname) => {
@@ -95,7 +101,7 @@ const TopBar = ({ onToggleSidebar, isSidebarCollapsed, isMobileSidebarOpen }) =>
           newNotifications.push({
             id: `project-${project.id}`,
             title: `Project "${project.name}" updated`,
-            content: `Status: ${project.status || 'Unknown'} · Budget: ${project.budget ?? '—'}`,
+            content: `Status: ${project.status || 'Unknown'} · Budget: ${project.budget ? formatCurrency(project.budget) : '—'}`,
             time: 'Recently'
             , unread: !readNotificationIds.has(`project-${project.id}`)
           });
@@ -117,7 +123,7 @@ const TopBar = ({ onToggleSidebar, isSidebarCollapsed, isMobileSidebarOpen }) =>
           newNotifications.push({
             id: `expense-${expense.id}`,
             title: `Expense report "${expense.title || 'Expense'}" ${expense.status === 'Approved' ? 'approved' : 'pending approval'}`,
-            content: `Amount: ${expense.amount ?? '—'} · Submitted by: ${expense.submittedBy || 'User'}`,
+            content: `Amount: ${expense.amount ? formatCurrency(expense.amount) : '—'} · Submitted by: ${expense.submittedBy || 'User'}`,
             time: 'Recently'
             , unread: !readNotificationIds.has(`expense-${expense.id}`)
           });
@@ -195,7 +201,7 @@ const TopBar = ({ onToggleSidebar, isSidebarCollapsed, isMobileSidebarOpen }) =>
         <button
           onClick={() => setShowNotifications((prev) => !prev)}
           className="relative p-1 text-black hover:bg-zinc-50 transition-colors"
-          aria-label="Toggle notifications"
+          aria-label={t('Toggle notifications')}
         >
           <Icon name="notifications" className="h-6 w-6" />
           {unreadCount > 0 && (
@@ -207,7 +213,7 @@ const TopBar = ({ onToggleSidebar, isSidebarCollapsed, isMobileSidebarOpen }) =>
         {showNotifications && (
           <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-zinc-200 shadow-2xl shadow-black/10 rounded-2xl overflow-hidden z-50">
             <div className="px-4 py-3 border-b border-zinc-100 flex items-center justify-between">
-              <p className="text-xs font-bold uppercase text-zinc-500 tracking-[0.24em]">Notifications</p>
+              <p className="text-xs font-bold uppercase text-zinc-500 tracking-[0.24em]">{t('Notifications')}</p>
               <span className="min-w-6 h-6 px-2 rounded-full bg-primary text-white text-[10px] font-black flex items-center justify-center">
                 {unreadCount}
               </span>
@@ -237,9 +243,7 @@ const TopBar = ({ onToggleSidebar, isSidebarCollapsed, isMobileSidebarOpen }) =>
             <button
               onClick={() => setShowNotifications(false)}
               className="w-full text-[11px] text-center py-3 text-primary font-bold uppercase border-t border-zinc-100 hover:bg-zinc-50 transition-colors"
-            >
-              Close
-            </button>
+            >{t('Close')}</button>
           </div>
         )}
       </div>

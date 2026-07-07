@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { usePayrollStore } from '../../../store/payrollStore';
 import Icon from "../../../components/ui/Icon.jsx"
+import { useTranslation } from '../../../store/settingsStore';
+import { useFormatters } from '../../../store/settingsStore';
 
 const api = axios.create({
   baseURL: 'http://localhost:8000/api'
@@ -11,6 +13,10 @@ const api = axios.create({
 const STEPS = ['Select Employee', 'Setup Salary', 'Review & Confirm'];
 
 const Step3 = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const { singleRun, confirmSingleRun, resetSingleRun } = usePayrollStore();
   const { selectedEmployee: emp, salarySetup: s } = singleRun;
@@ -58,8 +64,8 @@ const Step3 = () => {
             <Icon name="arrow_back" />
           </button>
           <div>
-            <h2 className="text-2xl font-black text-slate-900">Review & Confirm</h2>
-            <p className="text-sm text-slate-500">Double-check before processing</p>
+            <h2 className="text-2xl font-black text-slate-900">{t('Review & Confirm')}</h2>
+            <p className="text-sm text-slate-500">{t('Double-check before processing')}</p>
           </div>
         </div>
 
@@ -80,12 +86,12 @@ const Step3 = () => {
         {/* Notice Banner */}
         <div className="flex items-start gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg mb-6">
           <Icon name="warning" className="text-yellow-600 shrink-0" />
-          <p className="text-sm text-yellow-800">Please review all details carefully. Once submitted, this payroll run will be queued for processing and may require approval.</p>
+          <p className="text-sm text-yellow-800">{t('Please review all details carefully. Once submitted, this payroll run will be queued for processing and may require approval.')}</p>
         </div>
 
         {/* Employee Card */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm mb-4 p-6">
-          <h3 className="font-bold text-slate-900 mb-4">Employee Details</h3>
+          <h3 className="font-bold text-slate-900 mb-4">{t('Employee Details')}</h3>
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">{emp.name.charAt(0)}</div>
             <div>
@@ -97,13 +103,13 @@ const Step3 = () => {
 
         {/* Pay Breakdown */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm mb-4 p-6">
-          <h3 className="font-bold text-slate-900 mb-4">Pay Breakdown</h3>
+          <h3 className="font-bold text-slate-900 mb-4">{t('Pay Breakdown')}</h3>
           <div className="space-y-3">
             {[
-              { label: 'Base Salary', val: `$${Number(s.baseSalary).toLocaleString()}` },
-              { label: 'Bonus', val: `+$${Number(s.bonus).toLocaleString()}`, cls: 'text-green-600' },
+              { label: 'Base Salary', val: `$${formatCurrency(Number(s.baseSalary).toLocaleString())}` },
+              { label: 'Bonus', val: `+$${formatCurrency(Number(s.bonus).toLocaleString())}`, cls: 'text-green-600' },
               { label: `Tax (${s.taxRate}%)`, val: `-$${s.taxAmount?.toLocaleString()}`, cls: 'text-red-600' },
-              { label: 'Deductions', val: `-$${Number(s.deductions).toLocaleString()}`, cls: 'text-red-600' },
+              { label: 'Deductions', val: `-$${formatCurrency(Number(s.deductions).toLocaleString())}`, cls: 'text-red-600' },
             ].map(row => (
               <div key={row.label} className="flex justify-between text-sm">
                 <span className="text-slate-500">{row.label}</span>
@@ -111,30 +117,29 @@ const Step3 = () => {
               </div>
             ))}
             <div className="border-t border-slate-200 pt-3 flex justify-between">
-              <span className="font-bold text-slate-900">NET PAY</span>
-              <span className="text-2xl font-black text-primary">${s.net?.toLocaleString()}</span>
+              <span className="font-bold text-slate-900">{t('NET PAY')}</span>
+              <span className="text-2xl font-black text-primary">{formatCurrency(s.net?.toLocaleString())}</span>
             </div>
           </div>
           <div className="mt-4 pt-4 border-t border-slate-100">
             <div className="flex justify-between text-xs text-slate-500">
-              <span>Pay Period: <strong className="text-slate-700">{s.payPeriod}</strong></span>
-              <span>Method: Direct Deposit</span>
+              <span>{t('Pay Period:')}<strong className="text-slate-700">{s.payPeriod}</strong></span>
+              <span>{t('Method: Direct Deposit')}</span>
             </div>
           </div>
         </div>
 
         {s.notes && (
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm mb-6 p-4">
-            <p className="text-xs font-bold text-slate-500 uppercase mb-1">Notes</p>
+            <p className="text-xs font-bold text-slate-500 uppercase mb-1">{t('Notes')}</p>
             <p className="text-sm text-slate-700">{s.notes}</p>
           </div>
         )}
 
         <div className="flex justify-between">
-          <button onClick={() => navigate('/payroll/run/single/step2')} className="px-6 py-2.5 border border-slate-200 bg-white text-slate-700 text-sm font-semibold rounded hover:bg-slate-50">Back to Edit</button>
+          <button onClick={() => navigate('/payroll/run/single/step2')} className="px-6 py-2.5 border border-slate-200 bg-white text-slate-700 text-sm font-semibold rounded hover:bg-slate-50">{t('Back to Edit')}</button>
           <button onClick={handleSubmit} className="px-6 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20 flex items-center gap-2">
-            <Icon name="check_circle" className="text-lg" /> Confirm & Process
-          </button>
+            <Icon name="check_circle" className="text-lg" />{t('Confirm & Process')}</button>
         </div>
       </div>
     </div>

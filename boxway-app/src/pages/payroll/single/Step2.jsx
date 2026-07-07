@@ -2,10 +2,16 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePayrollStore } from '../../../store/payrollStore';
 import Icon from "../../../components/ui/Icon.jsx"
+import { useTranslation } from '../../../store/settingsStore';
+import { useFormatters } from '../../../store/settingsStore';
 
 const STEPS = ['Select Employee', 'Setup Salary', 'Review & Confirm'];
 
 const Step2 = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const { singleRun, setSingleSalarySetup, setSingleStep } = usePayrollStore();
   const emp = singleRun.selectedEmployee;
@@ -35,7 +41,7 @@ const Step2 = () => {
             <Icon name="arrow_back" />
           </button>
           <div>
-            <h2 className="text-2xl font-black text-slate-900">Single Payroll Run</h2>
+            <h2 className="text-2xl font-black text-slate-900">{t('Single Payroll Run')}</h2>
             <p className="text-sm text-slate-500">for {emp.name}</p>
           </div>
         </div>
@@ -56,7 +62,7 @@ const Step2 = () => {
 
         <div className="grid grid-cols-5 gap-6">
           <div className="col-span-3 bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-            <h3 className="text-lg font-bold text-slate-900 mb-5">Setup Salary</h3>
+            <h3 className="text-lg font-bold text-slate-900 mb-5">{t('Setup Salary')}</h3>
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Base Salary ($)</label>
@@ -75,33 +81,33 @@ const Step2 = () => {
                 <input type="number" value={form.taxRate} onChange={e => set('taxRate', e.target.value)} min="0" max="50" className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Pay Period</label>
+                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{t('Pay Period')}</label>
                 <select value={form.payPeriod} onChange={e => set('payPeriod', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary">
-                  <option>Monthly</option><option>Bi-weekly</option><option>Weekly</option>
+                  <option>{t('Monthly')}</option><option>{t('Bi-weekly')}</option><option>{t('Weekly')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Notes</label>
-                <textarea rows={3} value={form.notes} onChange={e => set('notes', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary resize-none" placeholder="Optional notes..." />
+                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{t('Notes')}</label>
+                <textarea rows={3} value={form.notes} onChange={e => set('notes', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary resize-none" placeholder={t('Optional notes...')} />
               </div>
             </div>
           </div>
 
           <div className="col-span-2">
             <div className="bg-zinc-900 rounded-xl p-6 text-white sticky top-0">
-              <h4 className="font-bold mb-5">Pay Summary</h4>
+              <h4 className="font-bold mb-5">{t('Pay Summary')}</h4>
               <div className="space-y-3 text-sm">
-                <div className="flex justify-between"><span className="text-zinc-400">Base Salary</span><span className="font-medium">${Number(form.baseSalary).toLocaleString()}</span></div>
-                <div className="flex justify-between"><span className="text-zinc-400">Bonus</span><span className="font-medium text-green-400">+${Number(form.bonus).toLocaleString()}</span></div>
-                <div className="flex justify-between"><span className="text-zinc-400">Deductions</span><span className="font-medium text-red-400">-${Number(form.deductions).toLocaleString()}</span></div>
-                <div className="flex justify-between"><span className="text-zinc-400">Tax ({form.taxRate}%)</span><span className="font-medium text-red-400">-${taxAmount.toLocaleString()}</span></div>
+                <div className="flex justify-between"><span className="text-zinc-400">{t('Base Salary')}</span><span className="font-medium">{formatCurrency(Number(form.baseSalary).toLocaleString())}</span></div>
+                <div className="flex justify-between"><span className="text-zinc-400">{t('Bonus')}</span><span className="font-medium text-green-400">+{formatCurrency(Number(form.bonus).toLocaleString())}</span></div>
+                <div className="flex justify-between"><span className="text-zinc-400">{t('Deductions')}</span><span className="font-medium text-red-400">-{formatCurrency(Number(form.deductions).toLocaleString())}</span></div>
+                <div className="flex justify-between"><span className="text-zinc-400">Tax ({form.taxRate}%)</span><span className="font-medium text-red-400">-{formatCurrency(taxAmount.toLocaleString())}</span></div>
                 <div className="border-t border-white/10 pt-3 flex justify-between">
-                  <span className="font-bold">NET PAY</span>
-                  <span className="text-xl font-black text-primary">${net.toLocaleString()}</span>
+                  <span className="font-bold">{t('NET PAY')}</span>
+                  <span className="text-xl font-black text-primary">{formatCurrency(net.toLocaleString())}</span>
                 </div>
               </div>
               <div className="mt-5 pt-4 border-t border-white/10">
-                <p className="text-zinc-400 text-xs">Employee</p>
+                <p className="text-zinc-400 text-xs">{t('Employee')}</p>
                 <p className="font-semibold mt-0.5">{emp.name}</p>
                 <p className="text-zinc-400 text-xs mt-2">{emp.role} · {emp.department}</p>
               </div>
@@ -110,8 +116,8 @@ const Step2 = () => {
         </div>
 
         <div className="flex justify-between mt-6">
-          <button onClick={() => navigate('/payroll/run/single/step1')} className="px-6 py-2.5 border border-slate-200 bg-white text-slate-700 text-sm font-semibold rounded hover:bg-slate-50">Back</button>
-          <button onClick={() => { setSingleSalarySetup({ ...form, gross, taxAmount, net }); navigate('/payroll/run/single/step3'); }} className="px-6 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20">Review & Confirm</button>
+          <button onClick={() => navigate('/payroll/run/single/step1')} className="px-6 py-2.5 border border-slate-200 bg-white text-slate-700 text-sm font-semibold rounded hover:bg-slate-50">{t('Back')}</button>
+          <button onClick={() => { setSingleSalarySetup({ ...form, gross, taxAmount, net }); navigate('/payroll/run/single/step3'); }} className="px-6 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20">{t('Review & Confirm')}</button>
         </div>
       </div>
     </div>

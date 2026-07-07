@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
+import { useTranslation } from '../../store/settingsStore';
+import { useFormatters } from '../../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -10,6 +12,10 @@ const api = axios.create({
 });
 
 const EmployeeProfilePage = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const { id } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = React.useState('overview');
@@ -220,14 +226,14 @@ const EmployeeProfilePage = () => {
   };
 
   if (loading) {
-    return <div className="flex-1 flex items-center justify-center bg-[#f8f6f6]"><p className="text-slate-500">Loading...</p></div>;
+    return <div className="flex-1 flex items-center justify-center bg-[#f8f6f6]"><p className="text-slate-500">{t('Loading...')}</p></div>;
   }
 
   if (error || !emp) {
      return (
        <div className="flex-1 flex flex-col items-center justify-center bg-[#f8f6f6]">
          <p className="text-slate-500 mb-4">{error || "Employee not found."}</p>
-         <button onClick={() => navigate('/employees')} className="px-4 py-2 bg-primary text-white rounded">Back to Employees</button>
+         <button onClick={() => navigate('/employees')} className="px-4 py-2 bg-primary text-white rounded">{t('Back to Employees')}</button>
        </div>
      );
   }
@@ -273,7 +279,7 @@ const EmployeeProfilePage = () => {
             </div>
           </div>
           <div className="text-right">
-            <p className="text-xs text-slate-500 uppercase font-bold tracking-wide">Employee ID</p>
+            <p className="text-xs text-slate-500 uppercase font-bold tracking-wide">{t('Employee ID')}</p>
             <p className="text-lg font-black text-slate-900 mt-0.5">{emp.id}</p>
           </div>
         </div>
@@ -293,41 +299,41 @@ const EmployeeProfilePage = () => {
           <div className="grid grid-cols-3 gap-6">
             <div className="col-span-2 space-y-6">
               <div className="bg-white rounded-xl border border-slate-200 p-6">
-                <h3 className="font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">Personal Information</h3>
+                <h3 className="font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">{t('Personal Information')}</h3>
                 <dl className="grid grid-cols-2 gap-4 text-sm">
-                  <div><dt className="text-slate-500 text-xs uppercase font-bold">Full Name</dt><dd className="font-medium mt-0.5">
+                  <div><dt className="text-slate-500 text-xs uppercase font-bold">{t('Full Name')}</dt><dd className="font-medium mt-0.5">
                     {isEditing ? (
                       <input name="name" value={editForm.name || ''} onChange={handleInputChange} className="w-full px-2 py-1 border border-slate-300 rounded" />
                     ) : (
                       emp.name
                     )}
                   </dd></div>
-                  <div><dt className="text-slate-500 text-xs uppercase font-bold">Email</dt><dd className="font-medium mt-0.5">
+                  <div><dt className="text-slate-500 text-xs uppercase font-bold">{t('Email')}</dt><dd className="font-medium mt-0.5">
                     {isEditing ? (
                       <input name="email" value={editForm.email || ''} onChange={handleInputChange} className="w-full px-2 py-1 border border-slate-300 rounded" />
                     ) : (
                       emp.email
                     )}
                   </dd></div>
-                  <div><dt className="text-slate-500 text-xs uppercase font-bold">Phone</dt><dd className="font-medium mt-0.5">
+                  <div><dt className="text-slate-500 text-xs uppercase font-bold">{t('Phone')}</dt><dd className="font-medium mt-0.5">
                     {isEditing ? (
                       <input name="phone" value={editForm.phone || ''} onChange={handleInputChange} className="w-full px-2 py-1 border border-slate-300 rounded" />
                     ) : (
                       emp.phone
                     )}
                   </dd></div>
-                  <div><dt className="text-slate-500 text-xs uppercase font-bold">Gender</dt><dd className="font-medium mt-0.5">
+                  <div><dt className="text-slate-500 text-xs uppercase font-bold">{t('Gender')}</dt><dd className="font-medium mt-0.5">
                     {isEditing ? (
                       <select name="gender" value={editForm.gender || 'Male'} onChange={handleInputChange} className="w-full px-2 py-1 border border-slate-300 rounded">
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
+                        <option value="Male">{t('Male')}</option>
+                        <option value="Female">{t('Female')}</option>
+                        <option value="Other">{t('Other')}</option>
                       </select>
                     ) : (
                       emp.gender || 'Male'
                     )}
                   </dd></div>
-                  <div><dt className="text-slate-500 text-xs uppercase font-bold">Join Date</dt><dd className="font-medium mt-0.5">
+                  <div><dt className="text-slate-500 text-xs uppercase font-bold">{t('Join Date')}</dt><dd className="font-medium mt-0.5">
                     {isEditing ? (
                       <input name="startDate" type="date" value={editForm.startDate || ''} onChange={handleInputChange} className="w-full px-2 py-1 border border-slate-300 rounded" />
                     ) : (
@@ -339,12 +345,12 @@ const EmployeeProfilePage = () => {
                        <dd className="font-medium mt-1 text-slate-700">
                          {isEditing ? (
                            <div className="space-y-2">
-                             <input name="familyMembers" placeholder="Family Members" value={editForm.familyMembers || ''} onChange={handleInputChange} className="w-full px-2 py-1 border border-slate-300 rounded" />
-                             <input name="emergencyContactName" placeholder="Emergency Contact Name" value={editForm.emergencyContactName || ''} onChange={handleInputChange} className="w-full px-2 py-1 border border-slate-300 rounded" />
-                             <input name="emergencyContactRelation" placeholder="Relation" value={editForm.emergencyContactRelation || ''} onChange={handleInputChange} className="w-full px-2 py-1 border border-slate-300 rounded" />
+                             <input name="familyMembers" placeholder={t('Family Members')} value={editForm.familyMembers || ''} onChange={handleInputChange} className="w-full px-2 py-1 border border-slate-300 rounded" />
+                             <input name="emergencyContactName" placeholder={t('Emergency Contact Name')} value={editForm.emergencyContactName || ''} onChange={handleInputChange} className="w-full px-2 py-1 border border-slate-300 rounded" />
+                             <input name="emergencyContactRelation" placeholder={t('Relation')} value={editForm.emergencyContactRelation || ''} onChange={handleInputChange} className="w-full px-2 py-1 border border-slate-300 rounded" />
                              <input 
                                name="emergencyPhone" 
-                               placeholder="Emergency Phone (10 digits)" 
+                               placeholder={t('Emergency Phone (10 digits)')} 
                                value={editForm.emergencyPhone || ''} 
                                onChange={e => {
                                  const value = e.target.value.replace(/\D/g, '').slice(0, 10);
@@ -366,9 +372,9 @@ const EmployeeProfilePage = () => {
                 </dl>
               </div>
               <div className="bg-white rounded-xl border border-slate-200 p-6">
-                <h3 className="font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">Academic Information & Skills</h3>
+                <h3 className="font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">{t('Academic Information & Skills')}</h3>
                 <div className="mb-4">
-                     <p className="text-sm font-medium text-slate-700"><span className="text-slate-500 w-24 inline-block">Education:</span> 
+                     <p className="text-sm font-medium text-slate-700"><span className="text-slate-500 w-24 inline-block">{t('Education:')}</span> 
                      {isEditing ? (
                        <input name="highestQualification" value={editForm.highestQualification || ''} onChange={handleInputChange} className="w-32 px-2 py-1 border border-slate-300 rounded mr-2" />
                      ) : (
@@ -387,9 +393,9 @@ const EmployeeProfilePage = () => {
                      </p>
                 </div>
                 <div className="mb-4">
-                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Architecture Skills</h4>
+                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Architecture Skills')}</h4>
                   {isEditing ? (
-                    <input name="architectureSkills" value={editForm.architectureSkills?.join(', ') || ''} onChange={(e) => setEditForm({...editForm, architectureSkills: e.target.value.split(', ')})} className="w-full px-2 py-1 border border-slate-300 rounded" placeholder="Skills separated by commas" />
+                    <input name="architectureSkills" value={editForm.architectureSkills?.join(', ') || ''} onChange={(e) => setEditForm({...editForm, architectureSkills: e.target.value.split(', ')})} className="w-full px-2 py-1 border border-slate-300 rounded" placeholder={t('Skills separated by commas')} />
                   ) : (
                     <div className="flex flex-wrap gap-2">
                       {(emp.architectureSkills && emp.architectureSkills.length > 0 ? emp.architectureSkills : ['Conceptual Design', '3D Modeling', 'Urban Planning']).map(s => (
@@ -399,9 +405,9 @@ const EmployeeProfilePage = () => {
                   )}
                 </div>
                  <div>
-                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Tools</h4>
+                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Tools')}</h4>
                   {isEditing ? (
-                    <input name="toolsSelection" value={editForm.toolsSelection?.join(', ') || ''} onChange={(e) => setEditForm({...editForm, toolsSelection: e.target.value.split(', ')})} className="w-full px-2 py-1 border border-slate-300 rounded" placeholder="Tools separated by commas" />
+                    <input name="toolsSelection" value={editForm.toolsSelection?.join(', ') || ''} onChange={(e) => setEditForm({...editForm, toolsSelection: e.target.value.split(', ')})} className="w-full px-2 py-1 border border-slate-300 rounded" placeholder={t('Tools separated by commas')} />
                   ) : (
                     <div className="flex flex-wrap gap-2">
                       {(emp.toolsSelection && emp.toolsSelection.length > 0 ? emp.toolsSelection : ['AutoCAD', 'Revit', 'SketchUp']).map(s => (
@@ -414,21 +420,21 @@ const EmployeeProfilePage = () => {
             </div>
             <div className="space-y-6">
               <div className="bg-white rounded-xl border border-slate-200 p-6">
-                <h3 className="font-bold text-slate-900 mb-4">Role Details</h3>
+                <h3 className="font-bold text-slate-900 mb-4">{t('Role Details')}</h3>
                 <dl className="space-y-3 text-sm">
-                  <div><dt className="text-slate-500 text-xs uppercase font-bold">Role</dt><dd className="font-medium mt-0.5">
+                  <div><dt className="text-slate-500 text-xs uppercase font-bold">{t('Role')}</dt><dd className="font-medium mt-0.5">
                     {isEditing ? (
                       <input name="role" value={editForm.role || ''} onChange={handleInputChange} className="w-full px-2 py-1 border border-slate-300 rounded" />
                     ) : (
                       emp.role
                     )}
                   </dd></div>
-                  <div><dt className="text-slate-500 text-xs uppercase font-bold">Department</dt><dd className="font-medium mt-0.5">
+                  <div><dt className="text-slate-500 text-xs uppercase font-bold">{t('Department')}</dt><dd className="font-medium mt-0.5">
                     {isEditing ? (
                       <select name="department" value={editForm.department || ''} onChange={handleInputChange} className="w-full px-2 py-1 border border-slate-300 rounded">
-                        <option value="Design">Design</option>
-                        <option value="Engineering">Engineering</option>
-                        <option value="Management">Management</option>
+                        <option value="Design">{t('Design')}</option>
+                        <option value="Engineering">{t('Engineering')}</option>
+                        <option value="Management">{t('Management')}</option>
                       </select>
                     ) : (
                       emp.department
@@ -437,11 +443,11 @@ const EmployeeProfilePage = () => {
                 </dl>
               </div>
               <div className="bg-zinc-900 rounded-xl p-6 text-white">
-                <h3 className="font-bold mb-2">Annual Salary</h3>
+                <h3 className="font-bold mb-2">{t('Annual Salary')}</h3>
                 {isEditing ? (
                   <input name="salary" type="number" value={editForm.salary || ''} onChange={handleInputChange} className="w-full px-2 py-1 border border-slate-300 rounded text-black" />
                 ) : (
-                  <p className="text-3xl font-black text-primary">${(emp.salary || 75000).toLocaleString()}</p>
+                  <p className="text-3xl font-black text-primary">{formatCurrency((emp.salary || 75000).toLocaleString())}</p>
                 )}
                 <p className="text-slate-400 text-xs mt-1">per year</p>
               </div>
@@ -452,17 +458,17 @@ const EmployeeProfilePage = () => {
         {activeTab === 'leaves & timesheet' && (
              <div className="bg-white rounded-xl border border-slate-200 p-8 text-center">
                 <Icon name="calendar_month" className="text-5xl text-slate-300" />
-                <p className="text-slate-500 text-sm mt-3">No upcoming leaves scheduled. Timesheet is up to date.</p>
+                <p className="text-slate-500 text-sm mt-3">{t('No upcoming leaves scheduled. Timesheet is up to date.')}</p>
             </div>
         )}
 
          {activeTab === 'projects' && (
              <div className="bg-white rounded-xl border border-slate-200 p-6">
-                <h3 className="font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">Project Assignment History</h3>
+                <h3 className="font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">{t('Project Assignment History')}</h3>
                 {projects.length === 0 ? (
                   <div className="text-center py-12">
                     <Icon name="folder_open" className="text-5xl text-slate-300 mx-auto" />
-                    <p className="text-slate-500 text-sm mt-3">No projects assigned to this employee.</p>
+                    <p className="text-slate-500 text-sm mt-3">{t('No projects assigned to this employee.')}</p>
                   </div>
                 ) : (
                   <div className="relative border-l-2 border-slate-200 ml-3 mt-6 space-y-8">
@@ -484,7 +490,7 @@ const EmployeeProfilePage = () => {
         {activeTab === 'payslips' && (
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
             <div className="p-6 border-b border-slate-100">
-              <h3 className="font-bold text-slate-900">Payslip History</h3>
+              <h3 className="font-bold text-slate-900">{t('Payslip History')}</h3>
             </div>
             <table className="w-full text-left">
               <thead className="bg-slate-50">
@@ -496,14 +502,14 @@ const EmployeeProfilePage = () => {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {payslips.length === 0 && (
-                  <tr><td colSpan={6} className="px-6 py-12 text-center text-slate-400 text-sm">No payslips found for this employee.</td></tr>
+                  <tr><td colSpan={6} className="px-6 py-12 text-center text-slate-400 text-sm">{t('No payslips found for this employee.')}</td></tr>
                 )}
                 {payslips.map(p => (
                   <tr key={p.id} className="hover:bg-slate-50">
                     <td className="px-6 py-4 text-sm font-semibold text-slate-700">{p.period}</td>
-                    <td className="px-6 py-4 text-sm text-slate-600">${p.grossSalary?.toLocaleString()}</td>
-                    <td className="px-6 py-4 text-sm text-red-600">-${p.deductions?.toLocaleString()}</td>
-                    <td className="px-6 py-4 text-sm font-bold text-slate-900">${p.net?.toLocaleString()}</td>
+                    <td className="px-6 py-4 text-sm text-slate-600">{formatCurrency(p.grossSalary?.toLocaleString())}</td>
+                    <td className="px-6 py-4 text-sm text-red-600">-{formatCurrency(p.deductions?.toLocaleString())}</td>
+                    <td className="px-6 py-4 text-sm font-bold text-slate-900">{formatCurrency(p.net?.toLocaleString())}</td>
                     <td className="px-6 py-4"><span className="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold rounded uppercase">{p.status}</span></td>
                     <td className="px-6 py-4">
                       <button className="text-slate-400 hover:text-primary transition-colors"><Icon name="download" className="text-lg" /></button>
@@ -518,7 +524,7 @@ const EmployeeProfilePage = () => {
         {activeTab === 'documents' && (
           <div className="bg-white rounded-xl border border-slate-200 p-6">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="font-bold text-slate-900">Documents</h3>
+              <h3 className="font-bold text-slate-900">{t('Documents')}</h3>
               <label className="px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 transition-colors cursor-pointer">
                 {uploadingDoc ? 'Uploading...' : 'Upload Document'}
                 <input type="file" onChange={handleDocumentUpload} className="hidden" disabled={uploadingDoc} />
@@ -527,7 +533,7 @@ const EmployeeProfilePage = () => {
             {documents.length === 0 ? (
               <div className="text-center py-12">
                 <Icon name="folder_open" className="text-5xl text-slate-300 mx-auto" />
-                <p className="text-slate-500 text-sm mt-3">No documents uploaded for this employee yet.</p>
+                <p className="text-slate-500 text-sm mt-3">{t('No documents uploaded for this employee yet.')}</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -541,10 +547,10 @@ const EmployeeProfilePage = () => {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={() => handleViewDocument(doc)} className="text-slate-400 hover:text-primary transition-colors p-1" title="View">
+                      <button onClick={() => handleViewDocument(doc)} className="text-slate-400 hover:text-primary transition-colors p-1" title={t('View')}>
                         <Icon name="visibility" />
                       </button>
-                      <button onClick={() => handleDeleteDocument(doc.id)} className="text-slate-400 hover:text-red-500 transition-colors p-1" title="Delete">
+                      <button onClick={() => handleDeleteDocument(doc.id)} className="text-slate-400 hover:text-red-500 transition-colors p-1" title={t('Delete')}>
                         <Icon name="delete" />
                       </button>
                     </div>

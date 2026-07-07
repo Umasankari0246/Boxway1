@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import { Search, Download, Plus, ChevronRight, MapPin, RefreshCw, Users, Edit3, Trash2, UserCheck, UserX, Clock } from 'lucide-react';
+import { useTranslation } from '../store/settingsStore';
+import { useFormatters } from '../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -11,6 +13,10 @@ const api = axios.create({
 });
 
 const EmployeesPage = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -162,10 +168,10 @@ const EmployeesPage = () => {
 
       // Salary Details
       addSection('Salary Details');
-      addField('Salary', emp.salary ? `$${emp.salary}` : 'N/A');
-      addField('Basic Pay', emp.basicPay ? `$${emp.basicPay}` : 'N/A');
-      addField('HRA', emp.hra ? `$${emp.hra}` : 'N/A');
-      addField('Allowances', emp.allowances ? `$${emp.allowances}` : 'N/A');
+      addField('Salary', emp.salary ? `$${formatCurrency(emp.salary)}` : 'N/A');
+      addField('Basic Pay', emp.basicPay ? `$${formatCurrency(emp.basicPay)}` : 'N/A');
+      addField('HRA', emp.hra ? `$${formatCurrency(emp.hra)}` : 'N/A');
+      addField('Allowances', emp.allowances ? `$${formatCurrency(emp.allowances)}` : 'N/A');
       addField('Tax ID', emp.taxId);
 
       // Add footer to each page
@@ -272,18 +278,15 @@ const EmployeesPage = () => {
       <div className="bg-white border-b border-slate-200 px-8 py-6">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <p className="text-sm text-slate-500 mt-1">Manage your team members and their roles</p>
+            <p className="text-sm text-slate-500 mt-1">{t('Manage your team members and their roles')}</p>
           </div>
           <div className="flex gap-3">
             <button onClick={handleRefresh} className="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-50 transition-colors flex items-center gap-2">
-              <RefreshCw className="h-4 w-4" /> Refresh
-            </button>
+              <RefreshCw className="h-4 w-4" />{t('Refresh')}</button>
             <button onClick={handleExport} className="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-50 transition-colors flex items-center gap-2">
-              <Download className="h-4 w-4" /> Export
-            </button>
+              <Download className="h-4 w-4" />{t('Export')}</button>
             <button onClick={() => navigate('/employees/new')} className="px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2">
-              <Plus className="h-4 w-4" /> New Employee
-            </button>
+              <Plus className="h-4 w-4" />{t('New Employee')}</button>
           </div>
         </div>
 
@@ -293,7 +296,7 @@ const EmployeesPage = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
             <input 
               type="text" 
-              placeholder="Search employees by name, role, or department..." 
+              placeholder={t('Search employees by name, role, or department...')} 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white transition-colors"
@@ -304,20 +307,20 @@ const EmployeesPage = () => {
             onChange={(e) => setDepartmentFilter(e.target.value)}
             className="min-w-[180px] px-4 py-2 bg-white border border-slate-200 rounded text-sm text-slate-600 focus:outline-none focus:border-primary"
           >
-            <option>All Departments</option>
-            <option>Design</option>
-            <option>Engineering</option>
-            <option>Management</option>
+            <option>{t('All Departments')}</option>
+            <option>{t('Design')}</option>
+            <option>{t('Engineering')}</option>
+            <option>{t('Management')}</option>
           </select>
           <select 
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             className="min-w-[150px] px-4 py-2 bg-white border border-slate-200 rounded text-sm text-slate-600 focus:outline-none focus:border-primary"
           >
-            <option>All Status</option>
-            <option>Active</option>
-            <option>On Leave</option>
-            <option>Inactive</option>
+            <option>{t('All Status')}</option>
+            <option>{t('Active')}</option>
+            <option>{t('On Leave')}</option>
+            <option>{t('Inactive')}</option>
           </select>
         </div>
       </div>
@@ -349,25 +352,23 @@ const EmployeesPage = () => {
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
           {/* List Header */}
           <div className="grid grid-cols-[auto_2fr_1.5fr_1.5fr_1fr_120px] gap-4 px-8 py-4 bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider items-center">
-            <div className="w-10">Image</div>
-            <div>Employee</div>
-            <div>Role</div>
-            <div>Status</div>
-            <div>Location</div>
-            <div className="text-right">Actions</div>
+            <div className="w-10">{t('Image')}</div>
+            <div>{t('Employee')}</div>
+            <div>{t('Role')}</div>
+            <div>{t('Status')}</div>
+            <div>{t('Location')}</div>
+            <div className="text-right">{t('Actions')}</div>
           </div>
 
           {/* List Body */}
           <div className="divide-y divide-slate-100">
             {loading ? (
               <div className="px-8 py-12 text-center text-slate-500 text-sm flex flex-col items-center">
-                 <RefreshCw className="animate-spin h-8 w-8 mb-2" />
-                 Loading employees...
-              </div>
+                 <RefreshCw className="animate-spin h-8 w-8 mb-2" />{t('Loading employees...')}</div>
             ) : employees.length === 0 ? (
               <div className="px-8 py-12 text-center text-slate-500 text-sm">
                  <Users className="h-10 w-10 mb-2 text-slate-300" />
-                 <p>No employees found.</p>
+                 <p>{t('No employees found.')}</p>
               </div>
             ) : (
               paginatedEmployees.map((emp, index) => (
@@ -407,9 +408,9 @@ const EmployeesPage = () => {
                         emp.status === 'On Leave' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'
                       }`}
                     >
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
-                      <option value="On Leave">On Leave</option>
+                      <option value="Active">{t('Active')}</option>
+                      <option value="Inactive">{t('Inactive')}</option>
+                      <option value="On Leave">{t('On Leave')}</option>
                     </select>
                   </div>
                   <div className="text-sm text-slate-600 flex items-center gap-1.5">
@@ -417,13 +418,13 @@ const EmployeesPage = () => {
                     {emp.city || emp.location || 'N/A'}
                   </div>
                   <div className="flex justify-end gap-1 items-center">
-                    <button onClick={(e) => { e.stopPropagation(); handleDownloadPDF(emp); }} className="text-slate-400 hover:text-blue-500 p-1.5 rounded hover:bg-blue-50 transition-colors" title="Download PDF">
+                    <button onClick={(e) => { e.stopPropagation(); handleDownloadPDF(emp); }} className="text-slate-400 hover:text-blue-500 p-1.5 rounded hover:bg-blue-50 transition-colors" title={t('Download PDF')}>
                       <Download className="h-4 w-4" />
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); handleDelete(emp._id || emp.id); }} className="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition-colors" title="Delete">
+                    <button onClick={(e) => { e.stopPropagation(); handleDelete(emp._id || emp.id); }} className="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition-colors" title={t('Delete')}>
                       <Trash2 className="h-4 w-4" />
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); navigate(`/employees/${emp._id || emp.id}`); }} className="text-slate-400 hover:text-primary p-1.5 rounded hover:bg-primary/10 transition-colors" title="View Details">
+                    <button onClick={(e) => { e.stopPropagation(); navigate(`/employees/${emp._id || emp.id}`); }} className="text-slate-400 hover:text-primary p-1.5 rounded hover:bg-primary/10 transition-colors" title={t('View Details')}>
                       <ChevronRight className="h-5 w-5" />
                     </button>
                   </div>
@@ -443,9 +444,7 @@ const EmployeesPage = () => {
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
                   className="px-3 py-1.5 text-xs font-medium rounded border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Previous
-                </button>
+                >{t('Previous')}</button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                   <button
                     key={page}
@@ -463,9 +462,7 @@ const EmployeesPage = () => {
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
                   className="px-3 py-1.5 text-xs font-medium rounded border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Next
-                </button>
+                >{t('Next')}</button>
               </div>
             </div>
           )}

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { usePayrollStore } from '../../../store/payrollStore';
 import Icon from "../../../components/ui/Icon.jsx"
+import { useTranslation } from '../../../store/settingsStore';
+import { useFormatters } from '../../../store/settingsStore';
 
 const api = axios.create({
   baseURL: 'http://localhost:8000/api'
@@ -11,6 +13,10 @@ const api = axios.create({
 const RECENT_EMPLOYEES_KEY = 'payrollRecentEmployees';
 
 const Step1 = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const { singleRun, setSingleEmployee } = usePayrollStore();
   const [selected, setSelected] = React.useState(singleRun.selectedEmployee?.id || null);
@@ -89,8 +95,8 @@ const Step1 = () => {
             <Icon name="arrow_back" />
           </button>
           <div>
-            <h2 className="text-2xl font-black text-slate-900">Single Payroll Run</h2>
-            <p className="text-sm text-slate-500 mt-0.5">Process payroll for a specific employee</p>
+            <h2 className="text-2xl font-black text-slate-900">{t('Single Payroll Run')}</h2>
+            <p className="text-sm text-slate-500 mt-0.5">{t('Process payroll for a specific employee')}</p>
           </div>
         </div>
 
@@ -108,9 +114,9 @@ const Step1 = () => {
         </div>
 
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-          <h3 className="text-lg font-bold text-slate-900 mb-4">Select Employee</h3>
+          <h3 className="text-lg font-bold text-slate-900 mb-4">{t('Select Employee')}</h3>
           {loading ? (
-            <p className="text-sm text-slate-500">Loading employees...</p>
+            <p className="text-sm text-slate-500">{t('Loading employees...')}</p>
           ) : (
             <div className="space-y-3">
               {employees.map(e => (
@@ -122,7 +128,7 @@ const Step1 = () => {
                     <p className="text-xs text-slate-400">{e.role} · {e.department}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-slate-900">${(e.salary / 12).toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+                    <p className="text-sm font-bold text-slate-900">{formatCurrency(e.salary / 12)}</p>
                     <p className="text-xs text-slate-400">/ mo</p>
                   </div>
                   {selected === e.id && <Icon name="check_circle" className="text-primary" />}
@@ -133,13 +139,11 @@ const Step1 = () => {
         </div>
 
         <div className="flex justify-between mt-6">
-          <button onClick={() => navigate('/payroll')} className="px-6 py-2.5 border border-slate-200 bg-white text-slate-700 text-sm font-semibold rounded hover:bg-slate-50">Cancel</button>
+          <button onClick={() => navigate('/payroll')} className="px-6 py-2.5 border border-slate-200 bg-white text-slate-700 text-sm font-semibold rounded hover:bg-slate-50">{t('Cancel')}</button>
           <button
             disabled={!selected}
             onClick={() => { setSingleEmployee(employees.find(e => e.id === selected)); navigate('/payroll/run/single/step2'); }}
-            className="px-6 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20 disabled:opacity-40 disabled:cursor-not-allowed">
-            Continue
-          </button>
+            className="px-6 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20 disabled:opacity-40 disabled:cursor-not-allowed">{t('Continue')}</button>
         </div>
       </div>
     </div>
