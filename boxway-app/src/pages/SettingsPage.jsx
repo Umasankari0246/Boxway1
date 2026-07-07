@@ -343,8 +343,6 @@ const SettingsPage = () => {
 
   const handleAppearanceChange = (field, value) => {
     updateAppearanceField(field, value);
-    // Trigger backend sync after state update
-    setTimeout(handleSave, 100);
   };
 
   const handleAppearanceSave = () => {
