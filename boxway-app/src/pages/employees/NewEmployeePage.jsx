@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
+import { useTranslation } from '../../store/settingsStore';
+import { useFormatters } from '../../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -13,6 +15,10 @@ const STEPS = ['Basic Info', 'Academic & Tools', 'Documents', 'Payroll (Opt)', '
 const RECENT_EMPLOYEES_KEY = 'payrollRecentEmployees';
 
 const NewEmployeePage = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const { id } = useParams();
   const [step, setStep] = useState(1);
@@ -305,11 +311,11 @@ const NewEmployeePage = () => {
     if (step === 1) return (
       <div className="space-y-6">
         <div>
-          <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2">Personal Information</h3>
+          <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2">{t('Personal Information')}</h3>
           <div className="grid grid-cols-2 gap-5">
             <div className="col-span-2">
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Full Name *</label>
-              <input value={form.name} onChange={e => set('name', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="e.g., Marcus Johnson" />
+              <input value={form.name} onChange={e => set('name', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder={t('e.g., Marcus Johnson')} />
             </div>
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Email Address *</label>
@@ -319,7 +325,7 @@ const NewEmployeePage = () => {
                 value={form.email}
                 onChange={e => set('email', e.target.value)}
                 className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-                placeholder="email@boxway.com"
+                placeholder={t('email@boxway.com')}
               />
             </div>
             <div>
@@ -333,54 +339,54 @@ const NewEmployeePage = () => {
                   set('phone', digits);
                 }}
                 className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-                placeholder="e.g., 5551234567"
+                placeholder={t('e.g., 5551234567')}
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Date of Birth</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{t('Date of Birth')}</label>
               <input type="date" value={form.dob} onChange={e => set('dob', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Gender</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{t('Gender')}</label>
               <select value={form.gender} onChange={e => set('gender', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
-                <option value="">Select Gender</option>
-                <option>Male</option><option>Female</option><option>Other</option>
+                <option value="">{t('Select Gender')}</option>
+                <option>{t('Male')}</option><option>{t('Female')}</option><option>{t('Other')}</option>
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Blood Group</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{t('Blood Group')}</label>
               <select value={form.bloodGroup} onChange={e => set('bloodGroup', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
-                <option value="">Select Blood Group</option>
-                <option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+                <option value="">{t('Select Blood Group')}</option>
+                <option>A+</option><option>{t('A-')}</option><option>B+</option><option>{t('B-')}</option><option>O+</option><option>{t('O-')}</option><option>AB+</option><option>{t('AB-')}</option>
               </select>
             </div>
              <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">City</label>
-              <input value={form.city} onChange={e => set('city', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="e.g., London" />
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{t('City')}</label>
+              <input value={form.city} onChange={e => set('city', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder={t('e.g., London')} />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Employee ID</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{t('Employee ID')}</label>
               <input value={employeeId} disabled className="w-full border border-slate-100 bg-slate-50 rounded px-3 py-2.5 text-sm text-slate-400 cursor-not-allowed" />
             </div>
           </div>
         </div>
         <div>
-           <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2 mt-6">Family & Emergency Information</h3>
+           <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2 mt-6">{t('Family & Emergency Information')}</h3>
            <div className="grid grid-cols-2 gap-5">
             <div className="col-span-2">
                <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Family Members (Brief)</label>
-               <textarea value={form.familyMembers} onChange={e => set('familyMembers', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" rows="2" placeholder="e.g., Spouse (Jane Doe), Child (John Doe)"></textarea>
+               <textarea value={form.familyMembers} onChange={e => set('familyMembers', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" rows="2" placeholder={t('e.g., Spouse (Jane Doe), Child (John Doe)')}></textarea>
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Emergency Contact Name</label>
-              <input value={form.emergencyContactName} onChange={e => set('emergencyContactName', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Contact name" />
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{t('Emergency Contact Name')}</label>
+              <input value={form.emergencyContactName} onChange={e => set('emergencyContactName', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder={t('Contact name')} />
             </div>
              <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Relation</label>
-              <input value={form.emergencyContactRelation} onChange={e => set('emergencyContactRelation', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="e.g., Spouse, Parent" />
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{t('Relation')}</label>
+              <input value={form.emergencyContactRelation} onChange={e => set('emergencyContactRelation', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder={t('e.g., Spouse, Parent')} />
             </div>
             <div className="col-span-2">
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Emergency Phone</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{t('Emergency Phone')}</label>
               <input 
                 value={form.emergencyPhone} 
                 onChange={e => {
@@ -388,7 +394,7 @@ const NewEmployeePage = () => {
                   set('emergencyPhone', value);
                 }} 
                 className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" 
-                placeholder="10-digit phone number" 
+                placeholder={t('10-digit phone number')} 
                 maxLength={10}
               />
             </div>
@@ -400,26 +406,26 @@ const NewEmployeePage = () => {
     if (step === 2) return (
       <div className="space-y-6">
         <div>
-          <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2">Academic Information</h3>
+          <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2">{t('Academic Information')}</h3>
           <div className="grid grid-cols-2 gap-5">
             <div className="col-span-2">
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Highest Qualification *</label>
-              <input value={form.highestQualification} onChange={e => set('highestQualification', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="e.g., M.Arch" required />
+              <input value={form.highestQualification} onChange={e => set('highestQualification', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder={t('e.g., M.Arch')} required />
             </div>
              <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">University/Institution *</label>
-              <input value={form.university} onChange={e => set('university', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"  placeholder="e.g., MIT" required />
+              <input value={form.university} onChange={e => set('university', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"  placeholder={t('e.g., MIT')} required />
             </div>
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Graduation Year *</label>
-              <input type="number" value={form.graduationYear} onChange={e => set('graduationYear', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="2020" required />
+              <input type="number" value={form.graduationYear} onChange={e => set('graduationYear', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder={t('2020')} required />
             </div>
           </div>
         </div>
         <div>
-          <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2 mt-6">Architecture Skills & Tools</h3>
+          <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2 mt-6">{t('Architecture Skills & Tools')}</h3>
           <div className="mb-4">
-             <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Skills</label>
+             <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">{t('Skills')}</label>
              <div className="flex flex-wrap gap-2">
                {skillsList.map(skill => (
                  <label key={skill} className={`px-3 py-1.5 rounded-full text-xs cursor-pointer border ${form.architectureSkills.includes(skill) ? 'bg-primary text-white border-primary' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}>
@@ -430,7 +436,7 @@ const NewEmployeePage = () => {
              </div>
           </div>
           <div>
-             <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Software Tools</label>
+             <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">{t('Software Tools')}</label>
              <div className="flex flex-wrap gap-2">
                {toolsList.map(tool => (
                  <label key={tool} className={`px-3 py-1.5 rounded-full text-xs cursor-pointer border ${form.toolsSelection.includes(tool) ? 'bg-primary text-white border-primary' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}>
@@ -442,31 +448,31 @@ const NewEmployeePage = () => {
           </div>
         </div>
         <div>
-          <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2 mt-6">Role & Department</h3>
+          <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2 mt-6">{t('Role & Department')}</h3>
            <div className="grid grid-cols-2 gap-5">
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Job Role *</label>
               <select value={form.role} onChange={handleRoleChange} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
-                <option value="">Select Role</option>
+                <option value="">{t('Select Role')}</option>
                 {roles.map(r => <option key={r}>{r}</option>)}
               </select>
             </div>
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Department *</label>
               <select value={form.department} onChange={e => set('department', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
-                <option value="">Select Department</option>
+                <option value="">{t('Select Department')}</option>
                 {departments.map(d => <option key={d}>{d}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Employment Type</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{t('Employment Type')}</label>
               <select value={form.employeeType} onChange={e => set('employeeType', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
-                <option value="">Select Type</option>
-                <option>Full-time</option><option>Part-time</option><option>Contract</option><option>Intern</option>
+                <option value="">{t('Select Type')}</option>
+                <option>{t('Full-time')}</option><option>{t('Part-time')}</option><option>{t('Contract')}</option><option>{t('Intern')}</option>
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Start Date</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{t('Start Date')}</label>
               <input type="date" value={form.startDate} onChange={e => set('startDate', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
             </div>
           </div>
@@ -477,7 +483,7 @@ const NewEmployeePage = () => {
     if (step === 3) return (
       <div className="grid grid-cols-2 gap-5">
         <div className="col-span-2">
-            <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2">Employee Photo</h3>
+            <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2">{t('Employee Photo')}</h3>
             <div className="flex items-center gap-4 mb-6">
                 <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center border-2 border-dashed border-slate-300 overflow-hidden text-slate-400">
                     {form.photoUrl ? (
@@ -503,13 +509,13 @@ const NewEmployeePage = () => {
                         }
                       }} 
                     />
-                    <button type="button" onClick={() => document.getElementById('photo-upload').click()} className="px-4 py-2 bg-white border border-slate-200 rounded text-sm font-medium text-slate-700 hover:bg-slate-50">Upload Photo</button>
-                    <p className="text-xs text-slate-500 mt-2">JPG, GIF or PNG. Max size of 800K</p>
+                    <button type="button" onClick={() => document.getElementById('photo-upload').click()} className="px-4 py-2 bg-white border border-slate-200 rounded text-sm font-medium text-slate-700 hover:bg-slate-50">{t('Upload Photo')}</button>
+                    <p className="text-xs text-slate-500 mt-2">{t('JPG, GIF or PNG. Max size of 800K')}</p>
                 </div>
             </div>
         </div>
         <div className="col-span-2">
-          <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2">College & Onboarding Documents</h3>
+          <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2">{t('College & Onboarding Documents')}</h3>
           <input 
             type="file" 
             id="doc-upload" 
@@ -544,7 +550,7 @@ const NewEmployeePage = () => {
             <p className="text-sm text-slate-500 mt-2">
               {form.collegeDocs && form.collegeDocs.length > 0 
                 ? <span className="text-primary font-semibold">{form.collegeDocs.length} document(s) selected</span>
-                : <>Drop documents here or <span className="text-primary font-semibold">browse</span></>
+                : <>{t('Drop documents here or')}<span className="text-primary font-semibold">browse</span></>
               }
             </p>
             <p className="text-xs text-slate-400 mt-1">ID Card, Degree Certificates, Offer Letter (Max 10MB each)</p>
@@ -557,7 +563,7 @@ const NewEmployeePage = () => {
       <div className="space-y-6">
          <div>
           <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2">Payroll Setup (Optional)</h3>
-          <p className="text-xs text-slate-500 mb-4">Values are pre-populated based on standard structures for the selected role but can be customized.</p>
+          <p className="text-xs text-slate-500 mb-4">{t('Values are pre-populated based on standard structures for the selected role but can be customized.')}</p>
           <div className="grid grid-cols-2 gap-5">
             <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Annual Total Salary ($)</label>
@@ -577,20 +583,20 @@ const NewEmployeePage = () => {
             </div>
              <div>
               <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Tax ID / SSN</label>
-              <input value={form.taxId} onChange={e => set('taxId', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="XXX-XX-XXXX" />
+              <input value={form.taxId} onChange={e => set('taxId', e.target.value)} className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder={t('XXX-XX-XXXX')} />
             </div>
           </div>
         </div>
         <div>
           <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2 mt-6">Project Assignment (Optional)</h3>
            <div className="col-span-2">
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Assign to initial project</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">{t('Assign to initial project')}</label>
               <select
                 value={form.projects && form.projects.length > 0 ? form.projects[0] : ''}
                 onChange={(e) => set('projects', e.target.value ? [e.target.value] : [])}
                 className="w-full border border-slate-200 rounded px-3 py-2.5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
               >
-                <option value="">Select Project</option>
+                <option value="">{t('Select Project')}</option>
                 {projects.map(p => (
                   <option key={p.id} value={p.id}>{p.name}</option>
                 ))}
@@ -615,32 +621,32 @@ const NewEmployeePage = () => {
            
            <div className="grid grid-cols-2 gap-y-4 gap-x-8">
                <div>
-                   <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Personal & Contact</h4>
+                   <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Personal & Contact')}</h4>
                    <div className="space-y-1 text-sm">
-                       <p><span className="text-slate-500 inline-block w-24">Email:</span> {form.email || '—'}</p>
-                       <p><span className="text-slate-500 inline-block w-24">Phone:</span> {form.phone || '—'}</p>
-                       <p><span className="text-slate-500 inline-block w-24">Gender:</span> {form.gender || '—'}</p>
-                       <p><span className="text-slate-500 inline-block w-24">Blood Grp:</span> {form.bloodGroup || '—'}</p>
+                       <p><span className="text-slate-500 inline-block w-24">{t('Email:')}</span> {form.email || '—'}</p>
+                       <p><span className="text-slate-500 inline-block w-24">{t('Phone:')}</span> {form.phone || '—'}</p>
+                       <p><span className="text-slate-500 inline-block w-24">{t('Gender:')}</span> {form.gender || '—'}</p>
+                       <p><span className="text-slate-500 inline-block w-24">{t('Blood Grp:')}</span> {form.bloodGroup || '—'}</p>
                    </div>
                </div>
                <div>
-                   <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Academic & Skills</h4>
+                   <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Academic & Skills')}</h4>
                    <div className="space-y-1 text-sm">
-                       <p><span className="text-slate-500 inline-block w-24">Education:</span> {form.highestQualification ? `${form.highestQualification} from ${form.university}` : '—'}</p>
-                       <p><span className="text-slate-500 inline-block w-24">Skills:</span> {form.architectureSkills.length > 0 ? form.architectureSkills.join(', ') : '—'}</p>
-                       <p><span className="text-slate-500 inline-block w-24">Tools:</span> {form.toolsSelection.length > 0 ? form.toolsSelection.join(', ') : '—'}</p>
+                       <p><span className="text-slate-500 inline-block w-24">{t('Education:')}</span> {form.highestQualification ? `${form.highestQualification} from ${form.university}` : '—'}</p>
+                       <p><span className="text-slate-500 inline-block w-24">{t('Skills:')}</span> {form.architectureSkills.length > 0 ? form.architectureSkills.join(', ') : '—'}</p>
+                       <p><span className="text-slate-500 inline-block w-24">{t('Tools:')}</span> {form.toolsSelection.length > 0 ? form.toolsSelection.join(', ') : '—'}</p>
                    </div>
                </div>
                <div className="col-span-2 mt-4 pt-4 border-t border-slate-200">
-                   <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Payroll Overview</h4>
+                   <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Payroll Overview')}</h4>
                    <div className="grid grid-cols-4 gap-4">
                        <div className="bg-white p-3 rounded border border-slate-200 text-center">
-                            <p className="text-xs text-slate-500 mb-1">Total Salary</p>
-                            <p className="font-bold text-slate-800">${form.salary ? Number(form.salary).toLocaleString() : '0'}</p>
+                            <p className="text-xs text-slate-500 mb-1">{t('Total Salary')}</p>
+                            <p className="font-bold text-slate-800">{formatCurrency(form.salary ? Number(form.salary).toLocaleString() : '0')}</p>
                        </div>
                        <div className="bg-white p-3 rounded border border-slate-200 text-center">
-                            <p className="text-xs text-slate-500 mb-1">Basic Pay</p>
-                            <p className="font-bold text-slate-800">${form.basicPay ? Number(form.basicPay).toLocaleString() : '0'}</p>
+                            <p className="text-xs text-slate-500 mb-1">{t('Basic Pay')}</p>
+                            <p className="font-bold text-slate-800">{formatCurrency(form.basicPay ? Number(form.basicPay).toLocaleString() : '0')}</p>
                        </div>
                    </div>
                </div>
@@ -692,14 +698,10 @@ const NewEmployeePage = () => {
         {/* Navigation */}
         <div className="flex gap-3 mt-6">
           {step > 1 && (
-            <button type="button" onClick={() => setStep(s => s - 1)} disabled={isSubmitting} className="px-6 py-2.5 border border-slate-200 text-slate-600 font-medium rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50">
-              Back
-            </button>
+            <button type="button" onClick={() => setStep(s => s - 1)} disabled={isSubmitting} className="px-6 py-2.5 border border-slate-200 text-slate-600 font-medium rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50">{t('Back')}</button>
           )}
           {step < 5 ? (
-            <button type="button" onClick={() => setStep(s => s + 1)} className="px-6 py-2.5 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-colors shadow-sm">
-              Continue
-            </button>
+            <button type="button" onClick={() => setStep(s => s + 1)} className="px-6 py-2.5 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-colors shadow-sm">{t('Continue')}</button>
           ) : (
             <button type="button" onClick={handleSubmit} disabled={isSubmitting} className="px-6 py-2.5 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
               {isSubmitting ? (

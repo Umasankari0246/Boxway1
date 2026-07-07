@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Search, Plus, RefreshCw, DollarSign, Clock, AlertCircle, CheckCircle, Trash2, Edit3, Download, X, AlertTriangle, Eye } from 'lucide-react';
 import axios from 'axios';
 import jsPDF from 'jspdf';
+import { useFormatters } from '../hooks/useFormatters.js';
+import { useTranslation } from '../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -11,6 +13,8 @@ const api = axios.create({
 });
 
 const InvoicesPage = () => {
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,6 +26,7 @@ const InvoicesPage = () => {
   const [showEdit, setShowEdit] = useState(false);
   const [editForm, setEditForm] = useState({ client: '', project: '', amount: '', date: '', status: '', notes: '' });
   const [currentPage, setCurrentPage] = useState(1);
+  const { formatCurrency, formatDate } = useFormatters();
   const itemsPerPage = 5;
 
   useEffect(() => {
@@ -158,7 +163,7 @@ const InvoicesPage = () => {
       doc.setFont('helvetica', 'normal');
       doc.text(`Invoice ID: ${invoice.id}`, margin, y);
       y += 8;
-      doc.text(`Date: ${invoice.date}`, margin, y);
+      doc.text(`Date: ${formatDate(invoice.date)}`, margin, y);
       y += 8;
       doc.text(`Status: ${invoice.status}`, margin, y);
       y += 15;
@@ -181,7 +186,8 @@ const InvoicesPage = () => {
       doc.text('Total Amount:', margin, y);
       y += 8;
       doc.setFontSize(16);
-      doc.text(`$${invoice.amount.toLocaleString()}`, margin, y);
+      doc.text('Amount', margin, y);
+      doc.text(formatCurrency(invoice.amount), margin, y);
       y += 15;
 
       // Notes if available
@@ -233,15 +239,13 @@ const InvoicesPage = () => {
       <div className="bg-white border-b border-slate-200 px-8 py-6">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <p className="text-sm text-slate-500 mt-1">Track and manage client billing and incoming revenue</p>
+            <p className="text-sm text-slate-500 mt-1">{t('Track and manage client billing and incoming revenue')}</p>
           </div>
           <div className="flex gap-3">
             <button onClick={handleRefresh} disabled={loading} className="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-50 transition-colors flex items-center gap-2 disabled:opacity-50">
-              <RefreshCw className="h-4 w-4" /> Refresh
-            </button>
+              <RefreshCw className="h-4 w-4" />{t('Refresh')}</button>
             <Link to="/invoices/new" className="px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2">
-              <Plus className="h-4 w-4" /> New Invoice
-            </Link>
+              <Plus className="h-4 w-4" />{t('New Invoice')}</Link>
           </div>
         </div>
 
@@ -251,7 +255,7 @@ const InvoicesPage = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
             <input 
               type="text" 
-              placeholder="Search invoices by ID, client or project..." 
+              placeholder={t('Search invoices by ID, client or project...')} 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white transition-colors"
@@ -262,10 +266,10 @@ const InvoicesPage = () => {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="min-w-[150px] px-4 py-2 bg-white border border-slate-200 rounded text-sm text-slate-600 focus:outline-none focus:border-primary"
           >
-            <option value="All Statuses">All Statuses</option>
-            <option value="Paid">Paid</option>
-            <option value="Pending">Pending</option>
-            <option value="Overdue">Overdue</option>
+            <option value="All Statuses">{t('All Statuses')}</option>
+            <option value="Paid">{t('Paid')}</option>
+            <option value="Pending">{t('Pending')}</option>
+            <option value="Overdue">{t('Overdue')}</option>
           </select>
         </div>
       </div>
@@ -275,29 +279,29 @@ const InvoicesPage = () => {
         <div className="grid grid-cols-4 gap-4">
           <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
             <div>
-              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Total Billed</p>
-              <h3 className="text-2xl font-black">${totalBilled.toLocaleString()}</h3>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">{t('Total Billed')}</p>
+              <h3 className="text-2xl font-black">{formatCurrency(totalBilled)}</h3>
             </div>
             <div className="text-primary"><DollarSign className="text-[28px]" /></div>
           </div>
           <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between border-l-2 border-l-primary">
             <div>
-              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Pending</p>
-              <h3 className="text-2xl font-black">${pending.toLocaleString()}</h3>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">{t('Pending Approval')}</p>
+              <h3 className="text-2xl font-black">{formatCurrency(pending)}</h3>
             </div>
             <div className="text-black"><Clock className="text-[28px]" /></div>
           </div>
           <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
             <div>
-              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Overdue</p>
-              <h3 className="text-2xl font-black text-primary">${overdue.toLocaleString()}</h3>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">{t('Overdue')}</p>
+              <h3 className="text-2xl font-black text-primary">{formatCurrency(overdue)}</h3>
             </div>
             <div className="text-primary"><AlertCircle className="text-[28px]" /></div>
           </div>
           <div className="bg-white p-4 border border-zinc-100 shadow-sm flex items-center justify-between">
             <div>
-              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">Paid this Month</p>
-              <h3 className="text-2xl font-black">${paidThisMonth.toLocaleString()}</h3>
+              <p className="text-[10px] text-zinc-400 font-black uppercase mb-1">{t('Paid this Month')}</p>
+              <h3 className="text-2xl font-black">${paidThisMonth}</h3>
             </div>
             <div className="text-black"><CheckCircle className="text-[28px]" /></div>
           </div>
@@ -308,25 +312,23 @@ const InvoicesPage = () => {
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
           {/* List Header */}
           <div className="grid grid-cols-[1.5fr_2fr_1fr_1fr_1fr_120px] gap-4 px-8 py-4 bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider items-center">
-            <div>Invoice ID</div>
-            <div>Client</div>
-            <div>Issue Date</div>
-            <div>Amount</div>
-            <div>Status</div>
-            <div className="text-right">Actions</div>
+            <div>{t('Invoice ID')}</div>
+            <div>{t('Client')}</div>
+            <div>{t('Issue Date')}</div>
+            <div>{t('Amount')}</div>
+            <div>{t('Status')}</div>
+            <div className="text-right">{t('Actions')}</div>
           </div>
 
           {/* List Body */}
           <div className="divide-y divide-slate-100">
             {loading ? (
               <div className="px-8 py-12 text-center text-slate-500 text-sm flex flex-col items-center">
-                 <RefreshCw className="animate-spin h-8 w-8 mb-2" />
-                 Loading invoices...
-              </div>
+                 <RefreshCw className="animate-spin h-8 w-8 mb-2" />{t('Loading invoices...')}</div>
             ) : invoices.length === 0 ? (
               <div className="px-8 py-12 text-center text-slate-500 text-sm">
                  <DollarSign className="h-10 w-10 mb-2 text-slate-300" />
-                 <p>No invoices found.</p>
+                 <p>{t('No invoices found.')}</p>
               </div>
             ) : (
               paginated.map((inv, index) => (
@@ -334,13 +336,13 @@ const InvoicesPage = () => {
                   key={`${inv.id}-${index}`}
                   className="grid grid-cols-[1.5fr_2fr_1fr_1fr_1fr_120px] gap-4 px-8 py-4 items-center hover:bg-slate-50 transition-colors group"
                 >
-                  <div className="text-xs font-black">{inv.id}</div>
+                  <div className="text-[11px] font-bold">{inv.id}</div>
                   <div>
-                    <p className="text-xs font-black">{inv.client}</p>
+                    <p className="text-[11px] font-bold">{inv.client}</p>
                     <p className="text-[10px] text-zinc-500 uppercase">{inv.project}</p>
                   </div>
-                  <div className="text-[11px] font-medium uppercase text-zinc-600">{inv.date}</div>
-                  <div className="text-[11px] font-black text-right">${inv.amount.toLocaleString()}</div>
+                  <div className="text-[11px] text-zinc-500">{formatDate(inv.date)}</div>
+                  <div className="text-[11px] font-black text-right">{formatCurrency(inv.amount)}</div>
                   <div>
                     <select
                       value={inv.status}
@@ -349,22 +351,22 @@ const InvoicesPage = () => {
                       onMouseDown={(e) => e.stopPropagation()}
                       className={`px-4 py-0.5 text-[9px] font-black uppercase border-0 cursor-pointer min-w-[100px] ${getStatusColor(inv.status)}`}
                     >
-                      <option value="Paid">Paid</option>
-                      <option value="Pending">Pending</option>
-                      <option value="Overdue">Overdue</option>
+                      <option value="Paid">{t('Paid')}</option>
+                      <option value="Pending">{t('Pending')}</option>
+                      <option value="Overdue">{t('Overdue')}</option>
                     </select>
                   </div>
                   <div className="flex justify-end gap-1 items-center">
-                    <button onClick={() => handleDownload(inv)} className="text-slate-400 hover:text-black p-1.5 rounded hover:bg-slate-50 transition-colors" title="Download">
+                    <button onClick={() => handleDownload(inv)} className="text-slate-400 hover:text-black p-1.5 rounded hover:bg-slate-50 transition-colors" title={t('Download')}>
                       <Download className="h-4 w-4" />
                     </button>
-                    <button onClick={() => openViewModal(inv)} className="text-slate-400 hover:text-primary p-1.5 rounded hover:bg-primary/10 transition-colors" title="View">
+                    <button onClick={() => openViewModal(inv)} className="text-slate-400 hover:text-primary p-1.5 rounded hover:bg-primary/10 transition-colors" title={t('View')}>
                       <Eye className="h-4 w-4" />
                     </button>
-                    <button onClick={() => openEditModal(inv)} className="text-slate-400 hover:text-primary p-1.5 rounded hover:bg-primary/10 transition-colors" title="Edit">
+                    <button onClick={() => openEditModal(inv)} className="text-slate-400 hover:text-primary p-1.5 rounded hover:bg-primary/10 transition-colors" title={t('Edit')}>
                       <Edit3 className="h-4 w-4" />
                     </button>
-                    <button onClick={() => setDeletingId(inv.id)} className="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition-colors" title="Delete">
+                    <button onClick={() => setDeletingId(inv.id)} className="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition-colors" title={t('Delete')}>
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
@@ -384,9 +386,7 @@ const InvoicesPage = () => {
                   onClick={() => setCurrentPage(Math.max(1, safeCurrentPage - 1))}
                   disabled={safeCurrentPage === 1}
                   className="px-3 py-1.5 text-xs font-medium rounded border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Previous
-                </button>
+                >{t('Previous')}</button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                   <button
                     key={page}
@@ -404,9 +404,7 @@ const InvoicesPage = () => {
                   onClick={() => setCurrentPage(Math.min(totalPages, safeCurrentPage + 1))}
                   disabled={safeCurrentPage === totalPages}
                   className="px-3 py-1.5 text-xs font-medium rounded border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Next
-                </button>
+                >{t('Next')}</button>
               </div>
             </div>
           )}
@@ -418,14 +416,14 @@ const InvoicesPage = () => {
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" onClick={() => setShowEdit(false)}>
           <div className="bg-white p-8 w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-black uppercase tracking-tight">Edit Invoice</h3>
+              <h3 className="text-lg font-black uppercase tracking-tight">{t('Edit Invoice')}</h3>
               <button onClick={() => setShowEdit(false)} className="p-1.5 hover:bg-zinc-100 transition-colors">
                 <X className="text-[20px]" />
               </button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">Client</label>
+                <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">{t('Client')}</label>
                 <input
                   className="w-full text-sm border-zinc-200 rounded focus:ring-primary focus:border-primary"
                   type="text"
@@ -434,7 +432,7 @@ const InvoicesPage = () => {
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">Project</label>
+                <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">{t('Project')}</label>
                 <input
                   className="w-full text-sm border-zinc-200 rounded focus:ring-primary focus:border-primary"
                   type="text"
@@ -444,7 +442,7 @@ const InvoicesPage = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">Amount</label>
+                  <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">{t('Amount')}</label>
                   <input
                     className="w-full text-sm border-zinc-200 rounded focus:ring-primary focus:border-primary"
                     type="number"
@@ -453,7 +451,7 @@ const InvoicesPage = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">Date</label>
+                  <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">{t('Date')}</label>
                   <input
                     className="w-full text-sm border-zinc-200 rounded focus:ring-primary focus:border-primary"
                     type="date"
@@ -463,19 +461,19 @@ const InvoicesPage = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">Status</label>
+                <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">{t('Status')}</label>
                 <select
                   className="w-full text-sm border-zinc-200 rounded focus:ring-primary focus:border-primary"
                   value={editForm.status}
                   onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
                 >
-                  <option value="Paid">Paid</option>
-                  <option value="Pending">Pending</option>
-                  <option value="Overdue">Overdue</option>
+                  <option value="Paid">{t('Paid')}</option>
+                  <option value="Pending">{t('Pending')}</option>
+                  <option value="Overdue">{t('Overdue')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">Notes</label>
+                <label className="block text-[10px] font-bold text-zinc-400 uppercase mb-1">{t('Notes')}</label>
                 <textarea
                   className="w-full text-sm border-zinc-200 rounded focus:ring-primary focus:border-primary"
                   rows="3"
@@ -485,8 +483,8 @@ const InvoicesPage = () => {
               </div>
             </div>
             <div className="flex gap-3 mt-6">
-              <button onClick={() => setShowEdit(false)} className="flex-1 py-2.5 border border-zinc-200 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50">Cancel</button>
-              <button onClick={handleEditInvoice} className="flex-1 py-2.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-primary/90">Update Invoice</button>
+              <button onClick={() => setShowEdit(false)} className="flex-1 py-2.5 border border-zinc-200 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50">{t('Cancel')}</button>
+              <button onClick={handleEditInvoice} className="flex-1 py-2.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-primary/90">{t('Update Invoice')}</button>
             </div>
           </div>
         </div>
@@ -497,11 +495,11 @@ const InvoicesPage = () => {
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" onClick={() => setDeletingId(null)}>
           <div className="bg-white p-8 w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
             <AlertTriangle className="text-red-500 text-3xl mb-3 block" />
-            <h3 className="text-lg font-black uppercase tracking-tight mb-2">Delete Invoice?</h3>
-            <p className="text-sm text-zinc-500 mb-6">This will permanently remove the invoice and all its associated data.</p>
+            <h3 className="text-lg font-black uppercase tracking-tight mb-2">{t('Delete Invoice?')}</h3>
+            <p className="text-sm text-zinc-500 mb-6">{t('This will permanently remove the invoice and all its associated data.')}</p>
             <div className="flex gap-3">
-              <button onClick={() => setDeletingId(null)} className="flex-1 py-2.5 border border-zinc-200 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50">Cancel</button>
-              <button onClick={handleDelete} className="flex-1 py-2.5 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-red-700">Delete</button>
+              <button onClick={() => setDeletingId(null)} className="flex-1 py-2.5 border border-zinc-200 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50">{t('Cancel')}</button>
+              <button onClick={handleDelete} className="flex-1 py-2.5 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-red-700">{t('Delete')}</button>
             </div>
           </div>
         </div>
@@ -512,7 +510,7 @@ const InvoicesPage = () => {
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" onClick={() => setShowViewModal(false)}>
           <div className="bg-white w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="p-6 border-b border-zinc-100 flex justify-between items-center">
-              <h3 className="text-lg font-black uppercase tracking-tight">Invoice Details</h3>
+              <h3 className="text-lg font-black uppercase tracking-tight">{t('Invoice Details')}</h3>
               <button onClick={() => setShowViewModal(false)} className="p-1.5 hover:bg-zinc-100 transition-colors">
                 <X className="text-[20px]" />
               </button>
@@ -520,27 +518,27 @@ const InvoicesPage = () => {
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-[10px] font-black uppercase text-zinc-400 mb-1">Invoice ID</p>
+                  <p className="text-[10px] font-black uppercase text-zinc-400 mb-1">{t('Invoice ID')}</p>
                   <p className="text-sm font-semibold">{selectedInvoice.id}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-black uppercase text-zinc-400 mb-1">Issue Date</p>
+                  <p className="text-[10px] font-black uppercase text-zinc-400 mb-1">{t('Issue Date')}</p>
                   <p className="text-sm font-semibold">{selectedInvoice.date}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-black uppercase text-zinc-400 mb-1">Client</p>
+                  <p className="text-[10px] font-black uppercase text-zinc-400 mb-1">{t('Client')}</p>
                   <p className="text-sm font-semibold">{selectedInvoice.client}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-black uppercase text-zinc-400 mb-1">Project</p>
+                  <p className="text-[10px] font-black uppercase text-zinc-400 mb-1">{t('Project')}</p>
                   <p className="text-sm font-semibold">{selectedInvoice.project}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-black uppercase text-zinc-400 mb-1">Amount</p>
-                  <p className="text-sm font-black text-lg">${selectedInvoice.amount.toLocaleString()}</p>
+                  <p className="text-[10px] font-black uppercase text-zinc-500 mb-1">{t('Amount')}</p>
+                  <p className="text-sm font-black text-lg">{formatCurrency(selectedInvoice.amount)}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-black uppercase text-zinc-400 mb-1">Status</p>
+                  <p className="text-[10px] font-black uppercase text-zinc-400 mb-1">{t('Status')}</p>
                   <span className={`px-2 py-0.5 text-[9px] font-black uppercase ${getStatusColor(selectedInvoice.status)}`}>{selectedInvoice.status}</span>
                 </div>
               </div>

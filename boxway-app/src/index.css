@@ -194,3 +194,97 @@ input:focus {
 .page-subheading::first-letter {
   text-transform: uppercase;
 }
+
+/* Dark Mode Overrides - True Black Enterprise Theme */
+html.dark body, 
+html.dark #root {
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
+html.dark .bg-slate-50, 
+html.dark .bg-\[\#f8f6f6\], 
+html.dark .bg-\[\#fcfcfc\],
+html.dark .bg-\[\#fcf9f8\],
+html.dark .bg-\[\#fcf9f8\]\/90,
+html.dark .bg-zinc-50 {
+  background-color: #000000 !important;
+}
+
+html.dark .bg-white,
+html.dark .bg-white\/90,
+html.dark .bg-white\/50 {
+  background-color: #111111 !important;
+  color: #FFFFFF !important;
+  border-color: #2A2A2A !important;
+}
+
+html.dark aside,
+html.dark nav.sidebar,
+html.dark .bg-\[\#141414\] {
+  background-color: #151515 !important;
+}
+
+html.dark nav,
+html.dark header.topbar {
+  background-color: #121212 !important;
+  border-color: #2A2A2A !important;
+}
+
+html.dark .bg-slate-100,
+html.dark .bg-zinc-100,
+html.dark .bg-zinc-50\/60 {
+  background-color: #0B0B0B !important; /* Secondary */
+}
+
+html.dark .text-slate-900,
+html.dark .text-black,
+html.dark .text-slate-800,
+html.dark .text-zinc-900,
+html.dark .text-zinc-800 {
+  color: #FFFFFF !important; /* Primary Text */
+}
+
+html.dark .text-slate-700,
+html.dark .text-slate-600,
+html.dark .text-slate-500,
+html.dark .text-gray-500,
+html.dark .text-zinc-700,
+html.dark .text-zinc-600,
+html.dark .text-zinc-500,
+html.dark .text-zinc-400 {
+  color: #A1A1AA !important; /* Secondary Text */
+}
+
+html.dark .border-slate-200, 
+html.dark .border-slate-100,
+html.dark .border-slate-300,
+html.dark .border-gray-200,
+html.dark .border-zinc-100,
+html.dark .border-zinc-200,
+html.dark .border-zinc-300 {
+  border-color: #2A2A2A !important;
+}
+
+html.dark select, 
+html.dark input, 
+html.dark textarea {
+  background-color: #111111 !important;
+  color: #FFFFFF !important;
+  border-color: #2A2A2A !important;
+}
+
+html.dark .text-red-500,
+html.dark .bg-red-500 {
+  color: #DC2626 !important;
+  background-color: #DC2626 !important;
+}
+
+/* Fix hovered items */
+html.dark .hover\:bg-slate-50:hover,
+html.dark .hover\:bg-slate-100:hover,
+html.dark .hover\:bg-zinc-50:hover,
+html.dark .hover\:bg-zinc-100:hover,
+html.dark .hover\:bg-zinc-50\/70:hover {
+  background-color: #0B0B0B !important;
+}

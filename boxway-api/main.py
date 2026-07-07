@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -40,7 +41,7 @@ app.add_middleware(
 
     allow_origins=["*"],
 
-    allow_credentials=True,
+    allow_credentials=False,
 
     allow_methods=["*"],
 
@@ -83,4 +84,7 @@ app.include_router(InsightsRouter, tags=["Insights"], prefix="/api/insights")
 async def read_root():
 
     return {"message": "Welcome to Boxway API"}
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
 

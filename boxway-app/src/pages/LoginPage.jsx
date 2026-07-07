@@ -2,8 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import Icon from "../components/ui/Icon.jsx"
+import { useTranslation } from '../store/settingsStore';
+import { useFormatters } from '../store/settingsStore';
 
 const LoginPage = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const [role, setRole] = useState('Admin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -55,23 +61,21 @@ const LoginPage = () => {
         <div className="absolute inset-0 z-10 bg-gradient-to-tr from-inverse-surface via-transparent to-transparent opacity-60" />
         <div className="relative z-20 flex flex-col justify-between p-20 w-full">
           <div>
-            <span className="text-primary-container text-sm uppercase tracking-[0.2em] font-bold">EST. MMXXIV</span>
-            <h1 className="text-surface text-[4rem] font-black leading-none tracking-tighter mt-4 uppercase">
-              BOXWAY<br />STUDIO
-            </h1>
+            <span className="text-primary-container text-sm uppercase tracking-[0.2em] font-bold">{t('EST. MMXXIV')}</span>
+            <h1 className="text-surface text-[4rem] font-black leading-none tracking-tighter mt-4 uppercase">{t('BOXWAY')}<br />{t('STUDIO')}</h1>
           </div>
           <div className="flex flex-col gap-6">
             <div className="h-[1px] w-24 bg-primary" />
             {/* Demo Credentials Panel */}
             <div className="bg-white/10 backdrop-blur-sm rounded-lg p-5 border border-white/20 max-w-sm">
-              <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold mb-3">Demo Credentials</p>
+              <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold mb-3">{t('Demo Credentials')}</p>
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-white/60">Admin</span>
+                  <span className="text-white/60">{t('Admin')}</span>
                   <span className="text-white font-mono font-medium">admin@boxway.com / admin123</span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-white/60">Architect</span>
+                  <span className="text-white/60">{t('Architect')}</span>
                   <span className="text-white font-mono font-medium">architect@boxway.com / arch123</span>
                 </div>
               </div>
@@ -86,13 +90,13 @@ const LoginPage = () => {
       {/* Right Section: Authentication Canvas */}
       <div className="w-full lg:w-5/12 flex flex-col justify-center items-center px-8 sm:px-16 lg:px-24 bg-surface relative">
         <div className="lg:hidden absolute top-12 left-12">
-          <span className="text-on-surface font-black tracking-tighter text-2xl uppercase">BOXWAY STUDIO</span>
+          <span className="text-on-surface font-black tracking-tighter text-2xl uppercase">{t('BOXWAY STUDIO')}</span>
         </div>
 
         <div className="w-full max-w-md">
           <header className="mb-10">
-            <h2 className="text-3xl font-bold tracking-tighter text-on-surface uppercase mb-2">Access Portal</h2>
-            <p className="text-on-surface-variant text-xs uppercase tracking-widest font-medium">Internal Project Environment</p>
+            <h2 className="text-3xl font-bold tracking-tighter text-on-surface uppercase mb-2">{t('Access Portal')}</h2>
+            <p className="text-on-surface-variant text-xs uppercase tracking-widest font-medium">{t('Internal Project Environment')}</p>
           </header>
 
           {/* Role Selector Tabs */}
@@ -130,28 +134,24 @@ const LoginPage = () => {
           <form className="space-y-6" onSubmit={handleLogin}>
             <div className="space-y-5">
               <div className="relative group">
-                <label className="block text-[0.65rem] uppercase tracking-widest font-bold text-on-surface-variant mb-1 transition-colors group-focus-within:text-primary">
-                  Email
-                </label>
+                <label className="block text-[0.65rem] uppercase tracking-widest font-bold text-on-surface-variant mb-1 transition-colors group-focus-within:text-primary">{t('Email')}</label>
                 <input
                   required
                   value={email}
                   onChange={(e) => { setEmail(e.target.value); clearError(); }}
                   className="w-full bg-transparent border-0 border-b border-outline-variant py-3 px-0 focus:border-primary focus:ring-0 transition-all text-sm font-medium text-on-surface placeholder:text-surface-dim"
-                  placeholder="admin@boxway.com"
+                  placeholder={t('admin@boxway.com')}
                   type="email"
                 />
               </div>
               <div className="relative group">
-                <label className="block text-[0.65rem] uppercase tracking-widest font-bold text-on-surface-variant mb-1 transition-colors group-focus-within:text-primary">
-                  Password
-                </label>
+                <label className="block text-[0.65rem] uppercase tracking-widest font-bold text-on-surface-variant mb-1 transition-colors group-focus-within:text-primary">{t('Password')}</label>
                 <input
                   required
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); clearError(); }}
                   className="w-full bg-transparent border-0 border-b border-outline-variant py-3 px-0 focus:border-primary focus:ring-0 transition-all text-sm font-medium text-on-surface placeholder:text-surface-dim"
-                  placeholder="••••••••••••"
+                  placeholder={t('••••••••••••')}
                   type="password"
                 />
               </div>
@@ -173,8 +173,8 @@ const LoginPage = () => {
               © 2024 Boxway Studio
             </span>
             <div className="flex gap-4">
-              <a className="text-[0.6rem] text-on-surface-variant font-bold tracking-[0.15em] uppercase hover:text-primary transition-colors" href="#">Security</a>
-              <a className="text-[0.6rem] text-on-surface-variant font-bold tracking-[0.15em] uppercase hover:text-primary transition-colors" href="#">Privacy</a>
+              <a className="text-[0.6rem] text-on-surface-variant font-bold tracking-[0.15em] uppercase hover:text-primary transition-colors" href="#">{t('Security')}</a>
+              <a className="text-[0.6rem] text-on-surface-variant font-bold tracking-[0.15em] uppercase hover:text-primary transition-colors" href="#">{t('Privacy')}</a>
             </div>
           </footer>
         </div>

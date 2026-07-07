@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { usePayrollStore } from '../../../store/payrollStore';
 import Icon from "../../../components/ui/Icon.jsx"
+import { useTranslation } from '../../../store/settingsStore';
+import { useFormatters } from '../../../store/settingsStore';
 
 const api = axios.create({
   baseURL: 'http://localhost:8000/api'
@@ -11,6 +13,10 @@ const api = axios.create({
 const STEPS = ['Select Employees', 'Setup Payroll', 'Review & Confirm'];
 
 const Step3 = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const { multiRun, confirmMultiRun, resetMultiRun } = usePayrollStore();
   const { selectedEmployees: emps, payrollConfig: cfg } = multiRun;
@@ -68,7 +74,7 @@ const Step3 = () => {
             <Icon name="arrow_back" />
           </button>
           <div>
-            <h2 className="text-2xl font-black text-slate-900">Review & Confirm Multi-Payroll</h2>
+            <h2 className="text-2xl font-black text-slate-900">{t('Review & Confirm Multi-Payroll')}</h2>
             <p className="text-sm text-slate-500">{emps.length} employees — final review before processing</p>
           </div>
         </div>
@@ -89,12 +95,12 @@ const Step3 = () => {
 
         <div className="flex items-start gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg mb-6">
           <Icon name="warning" className="text-yellow-600 shrink-0" />
-          <p className="text-sm text-yellow-800">Please review all details. Once submitted, payroll will be queued for processing and approval.</p>
+          <p className="text-sm text-yellow-800">{t('Please review all details. Once submitted, payroll will be queued for processing and approval.')}</p>
         </div>
 
         {/* Summary Card */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm mb-4 p-6">
-          <h3 className="font-bold text-slate-900 mb-4">Payroll Summary</h3>
+          <h3 className="font-bold text-slate-900 mb-4">{t('Payroll Summary')}</h3>
           <div className="grid grid-cols-3 gap-4">
             {[
               { label: 'Total Employees', val: emps.length },
@@ -108,16 +114,16 @@ const Step3 = () => {
             ))}
           </div>
           <div className="mt-4 pt-4 border-t border-slate-100 grid grid-cols-3 gap-3 text-xs text-slate-500">
-            <span>Deductions: <strong className="text-slate-700">${(cfg.totalDeductions || 0).toLocaleString()}</strong></span>
-            <span>Tax ({cfg.taxRate}%): <strong className="text-slate-700">${(cfg.totalTax || 0).toLocaleString()}</strong></span>
-            <span>Pay Period: <strong className="text-slate-700">{cfg.payPeriod}</strong></span>
+            <span>{t('Deductions:')}<strong className="text-slate-700">{formatCurrency((cfg.totalDeductions || 0).toLocaleString())}</strong></span>
+            <span>Tax ({cfg.taxRate}%): <strong className="text-slate-700">{formatCurrency((cfg.totalTax || 0).toLocaleString())}</strong></span>
+            <span>{t('Pay Period:')}<strong className="text-slate-700">{cfg.payPeriod}</strong></span>
           </div>
         </div>
 
         {/* Employee Breakdown */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm mb-6 overflow-hidden">
           <div className="p-5 border-b border-slate-100">
-            <h3 className="font-bold text-slate-900">Employee Breakdown</h3>
+            <h3 className="font-bold text-slate-900">{t('Employee Breakdown')}</h3>
           </div>
           <table className="w-full text-left">
             <thead className="bg-slate-50"><tr>
@@ -136,11 +142,11 @@ const Step3 = () => {
                 return (
                   <tr key={e.id} className="hover:bg-slate-50">
                     <td className="px-5 py-3 text-sm font-semibold text-slate-900">{e.name}</td>
-                    <td className="px-5 py-3 text-sm text-slate-600">${base.toLocaleString()}</td>
-                    <td className="px-5 py-3 text-sm text-green-600">+${bonus.toLocaleString()}</td>
-                    <td className="px-5 py-3 text-sm text-red-500">-${ded.toLocaleString()}</td>
-                    <td className="px-5 py-3 text-sm text-red-500">-${tax.toLocaleString()}</td>
-                    <td className="px-5 py-3 text-sm font-bold text-slate-900">${net.toLocaleString()}</td>
+                    <td className="px-5 py-3 text-sm text-slate-600">{formatCurrency(base.toLocaleString())}</td>
+                    <td className="px-5 py-3 text-sm text-green-600">+{formatCurrency(bonus.toLocaleString())}</td>
+                    <td className="px-5 py-3 text-sm text-red-500">-{formatCurrency(ded.toLocaleString())}</td>
+                    <td className="px-5 py-3 text-sm text-red-500">-{formatCurrency(tax.toLocaleString())}</td>
+                    <td className="px-5 py-3 text-sm font-bold text-slate-900">{formatCurrency(net.toLocaleString())}</td>
                   </tr>
                 );
               })}
@@ -149,7 +155,7 @@ const Step3 = () => {
         </div>
 
         <div className="flex justify-between">
-          <button onClick={() => navigate('/payroll/run/multi/step2')} className="px-6 py-2.5 border border-slate-200 bg-white text-slate-700 text-sm font-semibold rounded hover:bg-slate-50">Back to Edit</button>
+          <button onClick={() => navigate('/payroll/run/multi/step2')} className="px-6 py-2.5 border border-slate-200 bg-white text-slate-700 text-sm font-semibold rounded hover:bg-slate-50">{t('Back to Edit')}</button>
           <button onClick={handleSubmit} className="px-6 py-2.5 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20 flex items-center gap-2">
             <Icon name="check_circle" className="text-lg" /> Process {emps.length} Payrolls
           </button>

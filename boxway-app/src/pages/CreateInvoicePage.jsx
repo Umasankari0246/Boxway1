@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useInvoiceStore } from '../store/invoiceStore';
 import axios from 'axios';
 import Icon from "../components/ui/Icon.jsx"
+import { useTranslation } from '../store/settingsStore';
+import { useFormatters } from '../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -18,6 +20,10 @@ const readFileAsDataUrl = (file) => new Promise((resolve, reject) => {
 });
 
 const CreateInvoicePage = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const { invoiceData, updateField, updateItem, addItem, removeItem, resetInvoice } = useInvoiceStore();
   const [showAddItemModal, setShowAddItemModal] = useState(false);
@@ -195,11 +201,11 @@ const CreateInvoicePage = () => {
         {/* Header Card */}
         <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-6">
           <div>
-            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Invoice Number</label>
+            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">{t('Invoice Number')}</label>
             <div className="text-slate-900 font-mono font-semibold">{generateInvoiceNumber()}</div>
           </div>
           <div>
-            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Issue Date</label>
+            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">{t('Issue Date')}</label>
             <input 
               className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary" 
               type="date" 
@@ -208,7 +214,7 @@ const CreateInvoicePage = () => {
             />
           </div>
           <div>
-            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Due Date</label>
+            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">{t('Due Date')}</label>
             <input 
               className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary" 
               type="date" 
@@ -217,13 +223,13 @@ const CreateInvoicePage = () => {
             />
           </div>
           <div>
-            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Project Link</label>
+            <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">{t('Project Link')}</label>
             <select 
               className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary"
               value={invoiceData.projectLink}
               onChange={(e) => handleProjectChange(e.target.value)}
             >
-              <option value="">Select project</option>
+              <option value="">{t('Select project')}</option>
               {projects.map(project => (
                 <option key={project.id || project._id || project.projectId} value={project.id || project._id || project.projectId}>
                   {project.name}
@@ -238,19 +244,19 @@ const CreateInvoicePage = () => {
           {/* Firm Details (Read-only) */}
           <div className="bg-slate-50 rounded-xl border border-slate-200 p-6 shadow-sm">
             <div className="flex justify-between items-start mb-4">
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">From: BOXWAY STUDIO</h3>
+              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t('From: BOXWAY STUDIO')}</h3>
               <Icon name="lock" className="text-slate-300 text-sm" />
             </div>
             <div className="space-y-2 text-sm text-slate-600">
-              <p className="font-bold text-slate-900">Boxway Studio Architects</p>
-              <p>Suite 402, Creative Hub, South Industrial Park</p>
-              <p>Mumbai, Maharashtra, 400013</p>
+              <p className="font-bold text-slate-900">{t('Boxway Studio Architects')}</p>
+              <p>{t('Suite 402, Creative Hub, South Industrial Park')}</p>
+              <p>{t('Mumbai, Maharashtra, 400013')}</p>
               <div className="pt-2">
-                <p className="text-[10px] text-slate-400 uppercase font-bold">GSTIN</p>
+                <p className="text-[10px] text-slate-400 uppercase font-bold">{t('GSTIN')}</p>
                 <p className="font-mono">27AAAAA0000A1Z5</p>
               </div>
               <div className="pt-2">
-                <p className="text-[10px] text-slate-400 uppercase font-bold">Contact</p>
+                <p className="text-[10px] text-slate-400 uppercase font-bold">{t('Contact')}</p>
                 <p>accounts@boxwaystudio.com | +91 22 4567 8900</p>
               </div>
             </div>
@@ -259,32 +265,32 @@ const CreateInvoicePage = () => {
           {/* Client Details Card */}
           <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
             <div className="flex justify-between items-start mb-4">
-              <h3 className="text-xs font-bold text-primary uppercase tracking-widest">Bill To: Client</h3>
-              <button type="button" onClick={() => setShowClientPicker((current) => !current)} className="text-[10px] text-primary hover:underline font-bold">SEARCH CLIENT</button>
+              <h3 className="text-xs font-bold text-primary uppercase tracking-widest">{t('Bill To: Client')}</h3>
+              <button type="button" onClick={() => setShowClientPicker((current) => !current)} className="text-[10px] text-primary hover:underline font-bold">{t('SEARCH CLIENT')}</button>
             </div>
             <div className="space-y-4">
               <input 
                 className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary" 
-                placeholder="Client Name" type="text" 
+                placeholder={t('Client Name')} type="text" 
                 value={invoiceData.clientName}
                 onChange={(e) => updateField('clientName', e.target.value)}
               />
               <textarea 
                 className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary" 
-                placeholder="Billing Address" rows="2"
+                placeholder={t('Billing Address')} rows="2"
                 value={invoiceData.billingAddress}
                 onChange={(e) => updateField('billingAddress', e.target.value)}
               />
               <div className="grid grid-cols-2 gap-4">
                 <input 
                   className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary" 
-                  placeholder="GSTIN" type="text" 
+                  placeholder={t('GSTIN')} type="text" 
                   value={invoiceData.gstin}
                   onChange={(e) => updateField('gstin', e.target.value)}
                 />
                 <input 
                   className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary" 
-                  placeholder="Contact Person" type="text" 
+                  placeholder={t('Contact Person')} type="text" 
                   value={invoiceData.contactPerson}
                   onChange={(e) => updateField('contactPerson', e.target.value)}
                 />
@@ -294,7 +300,7 @@ const CreateInvoicePage = () => {
                   <div className="p-3 border-b border-slate-100 bg-slate-50">
                     <input
                       className="w-full text-sm border-slate-200 rounded"
-                      placeholder="Search available clients"
+                      placeholder={t('Search available clients')}
                       value={clientSearch}
                       onChange={(e) => setClientSearch(e.target.value)}
                     />
@@ -322,11 +328,11 @@ const CreateInvoicePage = () => {
 
         {/* Authorized Signature Card */}
         <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-          <label className="block text-xs font-bold text-slate-400 uppercase mb-3">Authorized Signature</label>
+          <label className="block text-xs font-bold text-slate-400 uppercase mb-3">{t('Authorized Signature')}</label>
           <input
             className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary"
             type="text"
-            placeholder="Type authorized signatory name"
+            placeholder={t('Type authorized signatory name')}
             value={invoiceData.authorizedSignature}
             onChange={(e) => updateField('authorizedSignature', e.target.value)}
           />
@@ -335,24 +341,23 @@ const CreateInvoicePage = () => {
         {/* Line Items Card */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-            <h3 className="text-sm font-semibold text-slate-800">Invoice Items</h3>
+            <h3 className="text-sm font-semibold text-slate-800">{t('Invoice Items')}</h3>
             <button
               onClick={() => setShowAddItemModal(true)}
               className="flex items-center gap-1 text-primary text-xs font-bold hover:opacity-80 transition-opacity"
             >
-              <Icon name="add" className="text-sm" /> ADD LINE ITEM
-            </button>
+              <Icon name="add" className="text-sm" />{t('ADD LINE ITEM')}</button>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead className="bg-slate-50 border-b border-slate-100">
                 <tr>
-                  <th className="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase">Description</th>
+                  <th className="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase">{t('Description')}</th>
                   <th className="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase w-28">HSN/SAC</th>
-                  <th className="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase w-20">Qty</th>
-                  <th className="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase w-32">Rate</th>
+                  <th className="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase w-20">{t('Qty')}</th>
+                  <th className="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase w-32">{t('Rate')}</th>
                   <th className="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase w-20">Disc %</th>
-                  <th className="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase w-32 text-right">Amount</th>
+                  <th className="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase w-32 text-right">{t('Amount')}</th>
                   <th className="px-4 py-3 w-10"></th>
                 </tr>
               </thead>
@@ -378,7 +383,7 @@ const CreateInvoicePage = () => {
                         <input className="w-full text-sm border-none focus:ring-0 p-0" type="number" value={item.disc} onChange={(e) => updateItem(item.id, 'disc', Number(e.target.value))} />
                       </td>
                       <td className="px-6 py-4 text-sm font-medium text-slate-700 text-right">
-                        ₹{discountedAmount.toFixed(2)}
+                        {formatCurrency(discountedAmount.toFixed(2))}
                       </td>
                       <td className="px-4 py-4">
                         <button onClick={() => removeItem(item.id)} className="text-slate-300 hover:text-brand-red"><Icon name="close" className="text-sm" /></button>
@@ -395,20 +400,20 @@ const CreateInvoicePage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           <div className="space-y-6">
             <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-              <label className="block text-xs font-bold text-slate-400 uppercase mb-3">Payment Terms</label>
+              <label className="block text-xs font-bold text-slate-400 uppercase mb-3">{t('Payment Terms')}</label>
               <select className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary mb-3"
                 value={invoiceData.paymentTerms} onChange={(e) => updateField('paymentTerms', e.target.value)}>
-                <option>Consultation Template</option>
-                <option>Turnkey Project Template</option>
-                <option>Custom Terms</option>
+                <option>{t('Consultation Template')}</option>
+                <option>{t('Turnkey Project Template')}</option>
+                <option>{t('Custom Terms')}</option>
               </select>
               <textarea className="w-full text-xs border-slate-100 bg-slate-50 rounded focus:ring-primary focus:border-primary" rows="3" readOnly defaultValue={"1. Payment to be made within 15 days of invoice date.\n2. Mode of payment: Bank Transfer / NEFT only.\n3. Delayed payments attract 2% interest per month."}></textarea>
             </div>
             <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-              <label className="block text-xs font-bold text-slate-400 uppercase mb-3">Notes & Attachments</label>
+              <label className="block text-xs font-bold text-slate-400 uppercase mb-3">{t('Notes & Attachments')}</label>
               <textarea 
                 className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary mb-4" 
-                placeholder="Add a note..." rows="2"
+                placeholder={t('Add a note...')} rows="2"
                 value={invoiceData.notes} onChange={(e) => updateField('notes', e.target.value)}
               />
               <div className="border-2 border-dashed border-slate-100 rounded-lg p-6 text-center group cursor-pointer hover:border-primary/50 transition-colors">
@@ -422,13 +427,13 @@ const CreateInvoicePage = () => {
                 />
                 <label htmlFor="file-upload" className="cursor-pointer">
                   <Icon name="cloud_upload" className="text-slate-300 group-hover:text-primary mb-2" />
-                  <p className="text-[10px] text-slate-400 font-medium">Click to upload receipts or supporting documents</p>
+                  <p className="text-[10px] text-slate-400 font-medium">{t('Click to upload receipts or supporting documents')}</p>
                 </label>
               </div>
               {/* Display uploaded files */}
               {invoiceData.attachments && invoiceData.attachments.length > 0 && (
                 <div className="mt-4 space-y-2">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase">Uploaded Files</p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">{t('Uploaded Files')}</p>
                   {invoiceData.attachments.map((attachment, index) => (
                     <div key={index} className="flex items-center justify-between bg-slate-50 rounded px-3 py-2">
                       <div className="flex items-center gap-2">
@@ -455,32 +460,32 @@ const CreateInvoicePage = () => {
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="p-6 space-y-4">
               <div className="flex justify-between items-center text-sm">
-                <span className="text-slate-500">Subtotal</span>
-                <span className="font-medium">₹{subtotal.toFixed(2)}</span>
+                <span className="text-slate-500">{t('Subtotal')}</span>
+                <span className="font-medium">{formatCurrency(subtotal.toFixed(2))}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
                 <div className="flex items-center gap-2">
                   <span className="text-slate-500">CGST (9%)</span>
                   <Icon name="info" className="text-[14px] text-slate-300" />
                 </div>
-                <span className="font-medium">₹{cgst.toFixed(2)}</span>
+                <span className="font-medium">{formatCurrency(cgst.toFixed(2))}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
                 <div className="flex items-center gap-2">
                   <span className="text-slate-500">SGST (9%)</span>
                   <Icon name="info" className="text-[14px] text-slate-300" />
                 </div>
-                <span className="font-medium">₹{sgst.toFixed(2)}</span>
+                <span className="font-medium">{formatCurrency(sgst.toFixed(2))}</span>
               </div>
               <div className="flex justify-between items-center text-sm opacity-50">
                 <span className="text-slate-500">IGST (0%)</span>
-                <span className="font-medium">₹0.00</span>
+                <span className="font-medium">${"0.00"} </span>
               </div>
             </div>
             <div className="bg-slate-900 p-6">
               <div className="flex justify-between items-end mb-4">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Amount Payable</span>
-                <span className="text-2xl font-bold text-white tracking-tight">₹{total.toFixed(2)}</span>
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t('Total Amount Payable')}</span>
+                <span className="text-2xl font-bold text-white tracking-tight">{formatCurrency(total.toFixed(2))}</span>
               </div>
             </div>
           </div>
@@ -491,21 +496,13 @@ const CreateInvoicePage = () => {
       <footer className="h-20 bg-white border-t border-slate-200 fixed bottom-0 left-60 right-0 z-20 px-8 flex items-center justify-between shadow-[0_-4px_10px_rgba(0,0,0,0.03)]">
         <div className="flex items-center gap-4">
           <button onClick={handleBack} className="flex items-center gap-2 text-slate-500 hover:text-slate-700 transition-colors text-sm font-medium">
-            <Icon name="arrow_back" className="text-lg" />
-            Back
-          </button>
+            <Icon name="arrow_back" className="text-lg" />{t('Back')}</button>
           <button onClick={handleDiscard} className="flex items-center gap-2 text-slate-500 hover:text-slate-700 transition-colors text-sm font-medium">
-            <Icon name="delete" className="text-lg" />
-            Discard
-          </button>
+            <Icon name="delete" className="text-lg" />{t('Discard')}</button>
         </div>
         <div className="flex items-center gap-4">
-          <button onClick={handleSaveDraft} className="px-6 py-2 border border-slate-300 rounded font-medium text-slate-600 hover:bg-slate-50 transition-colors text-sm">
-            Save as Draft
-          </button>
-          <button onClick={handleNext} className="px-8 py-2 bg-primary text-white rounded font-bold hover:opacity-90 transition-opacity text-sm flex items-center gap-2 cursor-pointer">
-            Preview Invoice
-            <Icon name="visibility" className="text-sm" />
+          <button onClick={handleSaveDraft} className="px-6 py-2 border border-slate-300 rounded font-medium text-slate-600 hover:bg-slate-50 transition-colors text-sm">{t('Save as Draft')}</button>
+          <button onClick={handleNext} className="px-8 py-2 bg-primary text-white rounded font-bold hover:opacity-90 transition-opacity text-sm flex items-center gap-2 cursor-pointer">{t('Preview Invoice')}<Icon name="visibility" className="text-sm" />
           </button>
         </div>
       </footer>
@@ -514,16 +511,16 @@ const CreateInvoicePage = () => {
       {showAddItemModal && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" onClick={() => setShowAddItemModal(false)}>
           <div className="bg-white p-8 w-full max-w-md shadow-2xl" onClick={e => e.stopPropagation()}>
-            <h3 className="text-lg font-black uppercase tracking-tight mb-4">Add Line Item</h3>
+            <h3 className="text-lg font-black uppercase tracking-tight mb-4">{t('Add Line Item')}</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Description</label>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">{t('Description')}</label>
                 <input
                   className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary"
                   type="text"
                   value={newItem.description}
                   onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
-                  placeholder="Item description"
+                  placeholder={t('Item description')}
                 />
               </div>
               <div>
@@ -533,12 +530,12 @@ const CreateInvoicePage = () => {
                   type="text"
                   value={newItem.hsn}
                   onChange={(e) => setNewItem({ ...newItem, hsn: e.target.value })}
-                  placeholder="HSN/SAC code"
+                  placeholder={t('HSN/SAC code')}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Quantity</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">{t('Quantity')}</label>
                   <input
                     className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary"
                     type="number"
@@ -548,7 +545,7 @@ const CreateInvoicePage = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Rate</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">{t('Rate')}</label>
                   <input
                     className="w-full text-sm border-slate-200 rounded focus:ring-primary focus:border-primary"
                     type="number"
@@ -573,8 +570,8 @@ const CreateInvoicePage = () => {
               </div>
             </div>
             <div className="flex gap-3 mt-6">
-              <button onClick={() => setShowAddItemModal(false)} className="flex-1 py-2.5 border border-slate-200 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50">Cancel</button>
-              <button onClick={handleAddItemModal} className="flex-1 py-2.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:opacity-90">Add Item</button>
+              <button onClick={() => setShowAddItemModal(false)} className="flex-1 py-2.5 border border-slate-200 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50">{t('Cancel')}</button>
+              <button onClick={handleAddItemModal} className="flex-1 py-2.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:opacity-90">{t('Add Item')}</button>
             </div>
           </div>
         </div>
@@ -582,7 +579,7 @@ const CreateInvoicePage = () => {
 
       {loadingRefs && (
         <div className="fixed inset-0 z-40 bg-white/60 flex items-center justify-center">
-          <p className="text-sm text-slate-500 font-medium">Loading available projects and clients...</p>
+          <p className="text-sm text-slate-500 font-medium">{t('Loading available projects and clients...')}</p>
         </div>
       )}
     </div>

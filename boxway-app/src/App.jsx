@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import AppLayout from './components/layout/AppLayout';
+import { ThemeProvider } from './components/ThemeProvider';
 
 // Auth
 import LoginPage from './pages/LoginPage';
@@ -49,68 +50,84 @@ import AIInsightsPage from './pages/intelligence/AIInsightsPage';
 
 // Settings
 import SettingsPage from './pages/SettingsPage';
+import { useSettingsStore } from './store/settingsStore';
+
+function AppInitializer({ children }) {
+  const fetchSettings = useSettingsStore(state => state.fetchSettings);
+  
+  React.useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
+  
+  return children;
+}
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        
-        {/* Protected Layout */}
-        <Route path="/" element={<AppLayout />}>
-          <Route index element={<DashboardPage />} />
+    <ThemeProvider>
+      <AppInitializer>
+        <Router>
+          <Routes>
+          <Route path="/login" element={<LoginPage />} />
           
-          {/* Employees */}
-          <Route path="employees" element={<EmployeesPage />} />
-          <Route path="employees/new" element={<NewEmployeePage />} />
-          <Route path="employees/:id/edit" element={<NewEmployeePage />} />
-          <Route path="employees/:id" element={<EmployeeProfilePage />} />
+          {/* Protected Layout */}
+          <Route path="/" element={<AppLayout />}>
+            <Route index element={<DashboardPage />} />
+            
+            {/* Employees */}
+            <Route path="employees" element={<EmployeesPage />} />
+            <Route path="employees/new" element={<NewEmployeePage />} />
+            <Route path="employees/:id/edit" element={<NewEmployeePage />} />
+            <Route path="employees/:id" element={<EmployeeProfilePage />} />
 
-          {/* Clients */}
-          <Route path="clients" element={<ClientsPage />} />
-          <Route path="clients/new" element={<NewClientPage />} />
-          <Route path="clients/:id/edit" element={<NewClientPage />} />
-          <Route path="clients/:id" element={<ClientProfilePage />} />
+            {/* Clients */}
+            <Route path="clients" element={<ClientsPage />} />
+            <Route path="clients/new" element={<NewClientPage />} />
+            <Route path="clients/:id/edit" element={<NewClientPage />} />
+            <Route path="clients/:id" element={<ClientProfilePage />} />
 
-          {/* Studio */}
-          <Route path="projects" element={<ProjectsPage />} />
-          <Route path="projects/new" element={<NewProjectPage />} />
-          <Route path="projects/:id/edit" element={<NewProjectPage />} />
-          <Route path="projects/:id" element={<ProjectViewPage />} />
-          <Route path="proposals" element={<ProposalsPage />} />
-          <Route path="proposals/new" element={<NewProposalPage />} />
-          <Route path="proposals/:id/edit" element={<NewProposalPage />} />
-          <Route path="proposals/review" element={<ReviewProposalPage />} />
-          <Route path="proposals/:id" element={<ViewProposalPage />} />
-          <Route path="documents" element={<DocumentsPage />} />
+            {/* Studio */}
+            <Route path="projects" element={<ProjectsPage />} />
+            <Route path="projects/new" element={<NewProjectPage />} />
+            <Route path="projects/:id/edit" element={<NewProjectPage />} />
+            <Route path="projects/:id" element={<ProjectViewPage />} />
+            <Route path="proposals" element={<ProposalsPage />} />
+            <Route path="proposals/new" element={<NewProposalPage />} />
+            <Route path="proposals/:id/edit" element={<NewProposalPage />} />
+            <Route path="proposals/review" element={<ReviewProposalPage />} />
+            <Route path="proposals/:id" element={<ViewProposalPage />} />
+            <Route path="documents" element={<DocumentsPage />} />
 
-          {/* Finance */}
-          <Route path="invoices" element={<InvoicesPage />} />
-          <Route path="invoices/new" element={<CreateInvoicePage />} />
-          <Route path="invoices/review" element={<ReviewInvoicePage />} />
-          <Route path="expenses" element={<ExpensesPage />} />
+            {/* Finance */}
+            <Route path="invoices" element={<InvoicesPage />} />
+            <Route path="invoices/new" element={<CreateInvoicePage />} />
+            <Route path="invoices/review" element={<ReviewInvoicePage />} />
+            <Route path="expenses" element={<ExpensesPage />} />
 
-          {/* Payroll */}
-          <Route path="payroll" element={<PayrollPage />} />
-          <Route path="payroll/run/single/step1" element={<SinglePayrollStep1 />} />
-          <Route path="payroll/run/single/step2" element={<SinglePayrollStep2 />} />
-          <Route path="payroll/run/single/step3" element={<SinglePayrollStep3 />} />
-          <Route path="payroll/run/multi/step1" element={<MultiPayrollStep1 />} />
-          <Route path="payroll/run/multi/step2" element={<MultiPayrollStep2 />} />
-          <Route path="payroll/run/multi/step3" element={<MultiPayrollStep3 />} />
+            {/* Payroll */}
+            <Route path="payroll" element={<PayrollPage />} />
+            <Route path="payroll/run/single/step1" element={<SinglePayrollStep1 />} />
+            <Route path="payroll/run/single/step2" element={<SinglePayrollStep2 />} />
+            <Route path="payroll/run/single/step3" element={<SinglePayrollStep3 />} />
+            <Route path="payroll/run/multi/step1" element={<MultiPayrollStep1 />} />
+            <Route path="payroll/run/multi/step2" element={<MultiPayrollStep2 />} />
+            <Route path="payroll/run/multi/step3" element={<MultiPayrollStep3 />} />
 
-          {/* Intelligence */}
-          <Route path="analytics" element={<AnalyticsPage />} />
-          <Route path="ai-insights" element={<AIInsightsPage />} />
+            {/* Intelligence */}
+            <Route path="analytics" element={<AnalyticsPage />} />
+            <Route path="ai-insights" element={<AIInsightsPage />} />
 
-          {/* Settings */}
-          <Route path="settings" element={<SettingsPage />} />
+            {/* Settings */}
+            <Route path="settings" element={<Navigate to="/settings/company" replace />} />
+            <Route path="settings/:section" element={<SettingsPage />} />
 
-          {/* Catch-all */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Route>
-      </Routes>
-    </Router>
+            {/* Catch-all */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
+        </Routes>
+        </Router>
+      </AppInitializer>
+    </ThemeProvider>
   );
 }
 

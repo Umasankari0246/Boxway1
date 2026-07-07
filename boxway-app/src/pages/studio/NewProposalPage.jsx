@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
+import { useTranslation } from '../../store/settingsStore';
+import { useFormatters } from '../../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -35,6 +37,10 @@ const DEFAULT_FORM = {
 const PILLARS = ['Sustainable Materials', 'Minimalist Void', 'Brutalist Elements', 'Smart Integration', 'Biophilic Design', 'Net Zero'];
 
 const NewProposalPage = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const { id } = useParams();
   const [step, setStep] = useState(0);
@@ -160,9 +166,7 @@ const NewProposalPage = () => {
           <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mt-0.5 ml-8">Status: Drafting Phase · v1.0</p>
         </div>
         <div className="flex gap-3">
-          <button onClick={handleSaveDraft} className="px-5 py-2.5 bg-zinc-100 text-zinc-700 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-200 transition-colors">
-            Save Draft
-          </button>
+          <button onClick={handleSaveDraft} className="px-5 py-2.5 bg-zinc-100 text-zinc-700 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-200 transition-colors">{t('Save Draft')}</button>
           <button onClick={handleNext} className="px-6 py-2.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors flex items-center gap-2">
             {step < STEPS.length - 1 ? 'Next Step' : 'Review & Submit'}
             <Icon name="arrow_forward" className="text-[16px]" />
@@ -221,12 +225,12 @@ const NewProposalPage = () => {
                 </div>
                 <div className="bg-zinc-50 p-5 grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className={LABEL}>Preferred Communication</label>
+                    <label className={LABEL}>{t('Preferred Communication')}</label>
                     <select value={form.commMode} onChange={e => set('commMode', e.target.value)} className={INPUT + ' appearance-none cursor-pointer'}>
                       <option>Video Call (Zoom/Teams)</option>
-                      <option>In-Person Studio Meeting</option>
-                      <option>Email Correspondence Only</option>
-                      <option>On-Site Meeting</option>
+                      <option>{t('In-Person Studio Meeting')}</option>
+                      <option>{t('Email Correspondence Only')}</option>
+                      <option>{t('On-Site Meeting')}</option>
                     </select>
                   </div>
                   <div className="flex items-center gap-4">
@@ -237,12 +241,12 @@ const NewProposalPage = () => {
                     >
                       <span className={`absolute top-1 w-4 h-4 bg-white transition-all ${form.isPrimary ? 'right-1' : 'left-1'}`} />
                     </button>
-                    <label className={LABEL + ' mb-0'}>Primary Decision Maker</label>
+                    <label className={LABEL + ' mb-0'}>{t('Primary Decision Maker')}</label>
                   </div>
                 </div>
                 <div>
-                  <label className={LABEL}>Stakeholders & Key Partners</label>
-                  <textarea value={form.stakeholders} onChange={e => set('stakeholders', e.target.value)} rows={2} placeholder="List other involved parties, spouses, or board members..." className={INPUT + ' resize-none'} />
+                  <label className={LABEL}>{t('Stakeholders & Key Partners')}</label>
+                  <textarea value={form.stakeholders} onChange={e => set('stakeholders', e.target.value)} rows={2} placeholder={t('List other involved parties, spouses, or board members...')} className={INPUT + ' resize-none'} />
                 </div>
               </section>
             )}
@@ -257,30 +261,30 @@ const NewProposalPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="md:col-span-2">
                     <label className={LABEL}>Project Title / Alias</label>
-                    <input type="text" value={form.projectTitle} onChange={e => set('projectTitle', e.target.value)} placeholder="e.g. The Monolith Pavilion" className={INPUT + ' text-xl font-black'} />
+                    <input type="text" value={form.projectTitle} onChange={e => set('projectTitle', e.target.value)} placeholder={t('e.g. The Monolith Pavilion')} className={INPUT + ' text-xl font-black'} />
                   </div>
                   <div>
-                    <label className={LABEL}>Project Type</label>
+                    <label className={LABEL}>{t('Project Type')}</label>
                     <select value={form.projectType} onChange={e => set('projectType', e.target.value)} className={INPUT}>
-                      <option>High-End Residential</option>
+                      <option>{t('High-End Residential')}</option>
                       <option>Commercial / Retail</option>
                       <option>Hospitality / Boutique Hotel</option>
                       <option>Cultural / Institutional</option>
                       <option>Renovation / Restoration</option>
-                      <option>Mixed-Use Development</option>
+                      <option>{t('Mixed-Use Development')}</option>
                     </select>
                   </div>
                   <div>
                     <label className={LABEL}>Site Address / Coordinates</label>
-                    <input type="text" value={form.siteAddress} onChange={e => set('siteAddress', e.target.value)} placeholder="Street name, City, Country" className={INPUT} />
+                    <input type="text" value={form.siteAddress} onChange={e => set('siteAddress', e.target.value)} placeholder={t('Street name, City, Country')} className={INPUT} />
                   </div>
                   <div>
                     <label className={LABEL}>Approx. Plot Size (sqm)</label>
-                    <input type="number" value={form.plotSize} onChange={e => set('plotSize', e.target.value)} placeholder="0.00" className={INPUT} />
+                    <input type="number" value={form.plotSize} onChange={e => set('plotSize', e.target.value)} placeholder={t('0.00')} className={INPUT} />
                   </div>
                   <div>
                     <label className={LABEL}>Target Built-up Area (sqm)</label>
-                    <input type="number" value={form.buildupArea} onChange={e => set('buildupArea', e.target.value)} placeholder="0.00" className={INPUT} />
+                    <input type="number" value={form.buildupArea} onChange={e => set('buildupArea', e.target.value)} placeholder={t('0.00')} className={INPUT} />
                   </div>
                 </div>
               </section>
@@ -294,7 +298,7 @@ const NewProposalPage = () => {
                   <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-zinc-900">03. Budget & Timeline</h3>
                 </div>
                 <div>
-                  <label className={LABEL}>Investment Range</label>
+                  <label className={LABEL}>{t('Investment Range')}</label>
                   <select value={form.budgetRange} onChange={e => set('budgetRange', e.target.value)} className={INPUT}>
                     <option>Under $500K</option>
                     <option>$500K – $1.5M</option>
@@ -305,7 +309,7 @@ const NewProposalPage = () => {
                 </div>
                 <div>
                   <div className="flex justify-between mb-2">
-                    <label className={LABEL + ' mb-0'}>Timeline Flexibility</label>
+                    <label className={LABEL + ' mb-0'}>{t('Timeline Flexibility')}</label>
                     <span className="text-[9px] font-black text-primary uppercase tracking-widest">
                       {form.timelineFlexibility < 34 ? 'Strict' : form.timelineFlexibility < 67 ? 'Moderate' : 'Flexible'}
                     </span>
@@ -313,7 +317,7 @@ const NewProposalPage = () => {
                   <input type="range" min={0} max={100} value={form.timelineFlexibility} onChange={e => set('timelineFlexibility', e.target.value)} className="w-full accent-primary cursor-pointer" />
                 </div>
                 <div className="space-y-3">
-                  <label className={LABEL}>Project Includes</label>
+                  <label className={LABEL}>{t('Project Includes')}</label>
                   {[
                     { key: 'includesInterior', label: 'Interior Curation' },
                     { key: 'includesLandscape', label: 'Landscape Design' },
@@ -341,17 +345,17 @@ const NewProposalPage = () => {
                   <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-zinc-900">04. Requirements & Vision</h3>
                 </div>
                 <div>
-                  <label className={LABEL}>Core Purpose & Priorities</label>
+                  <label className={LABEL}>{t('Core Purpose & Priorities')}</label>
                   <textarea
                     value={form.vision}
                     onChange={e => set('vision', e.target.value)}
                     rows={4}
-                    placeholder="Describe the soul of the project. What feeling should the space evoke?"
+                    placeholder={t('Describe the soul of the project. What feeling should the space evoke?')}
                     className="w-full bg-zinc-50 border-0 border-l-2 border-primary focus:ring-0 p-4 text-sm text-zinc-800 placeholder:text-zinc-300 italic resize-none"
                   />
                 </div>
                 <div className="space-y-3">
-                  <label className={LABEL}>Must-Have Design Pillars</label>
+                  <label className={LABEL}>{t('Must-Have Design Pillars')}</label>
                   <div className="flex flex-wrap gap-2">
                     {PILLARS.map(p => (
                       <button
@@ -376,21 +380,21 @@ const NewProposalPage = () => {
                   <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-zinc-900">05. Site & Documentation</h3>
                 </div>
                 <div>
-                  <label className={LABEL}>Site Notes & Context</label>
-                  <textarea value={form.siteNotes} onChange={e => set('siteNotes', e.target.value)} rows={3} placeholder="Conservation area constraints, neighboring buildings, planning history..." className={INPUT + ' resize-none'} />
+                  <label className={LABEL}>{t('Site Notes & Context')}</label>
+                  <textarea value={form.siteNotes} onChange={e => set('siteNotes', e.target.value)} rows={3} placeholder={t('Conservation area constraints, neighboring buildings, planning history...')} className={INPUT + ' resize-none'} />
                 </div>
                 <div className="border-2 border-dashed border-zinc-200 p-8 flex flex-col items-center text-center gap-3 hover:border-primary cursor-pointer transition-colors group">
                   <input type="file" multiple accept=".pdf,.doc,.docx,.dwg,.jpg,.jpeg,.png" onChange={handleFileUpload} className="hidden" id="file-upload" />
                   <label htmlFor="file-upload" className="cursor-pointer">
                     <Icon name="cloud_upload" className="text-zinc-300 group-hover:text-primary text-[36px] transition-colors" />
                     <div>
-                      <p className="text-xs font-black uppercase tracking-widest text-zinc-700">Upload Site Files</p>
+                      <p className="text-xs font-black uppercase tracking-widest text-zinc-700">{t('Upload Site Files')}</p>
                       <p className="text-[10px] text-zinc-400 mt-1">CAD, PDF, or Site Imagery — max 50MB</p>
                     </div>
                   </label>
                   {uploadedFiles.length > 0 && (
                     <div className="mt-4 text-left w-full">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Uploaded Files:</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">{t('Uploaded Files:')}</p>
                       {uploadedFiles.map((file, idx) => (
                         <div key={idx} className="text-[10px] text-zinc-600 truncate">{file.name}</div>
                       ))}
@@ -439,7 +443,7 @@ const NewProposalPage = () => {
                   <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-zinc-900">07. Internal Qualification</h3>
                 </div>
                 <div>
-                  <label className={LABEL}>Priority Level</label>
+                  <label className={LABEL}>{t('Priority Level')}</label>
                   <div className="grid grid-cols-3 gap-1 mt-2">
                     {['Hot', 'Warm', 'Cold'].map(p => (
                       <button
@@ -454,11 +458,11 @@ const NewProposalPage = () => {
                   </div>
                 </div>
                 <div>
-                  <label className={LABEL}>Lead Source</label>
-                  <input type="text" value={form.leadSource} onChange={e => set('leadSource', e.target.value)} placeholder="e.g. Architectural Digest / Referral / Google" className={INPUT} />
+                  <label className={LABEL}>{t('Lead Source')}</label>
+                  <input type="text" value={form.leadSource} onChange={e => set('leadSource', e.target.value)} placeholder={t('e.g. Architectural Digest / Referral / Google')} className={INPUT} />
                 </div>
                 <div>
-                  <label className={LABEL}>Assign Lead Architect</label>
+                  <label className={LABEL}>{t('Assign Lead Architect')}</label>
                   <select className={INPUT}>
                     <option>Marcus Johnson — Senior Architect</option>
                     <option>Priya Nair — Project Manager</option>
@@ -476,34 +480,34 @@ const NewProposalPage = () => {
               <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rotate-45 translate-x-10 -translate-y-10" />
               <div className="flex items-center gap-3 mb-6">
                 <Icon name="payments" className="text-primary text-[20px]" />
-                <h3 className="text-[10px] font-black uppercase tracking-[0.15em]">Budget & Scope Summary</h3>
+                <h3 className="text-[10px] font-black uppercase tracking-[0.15em]">{t('Budget & Scope Summary')}</h3>
               </div>
               <div className="space-y-4 text-sm relative z-10">
                 <div>
-                  <p className="text-[9px] text-white/40 uppercase tracking-widest mb-1">Investment Range</p>
+                  <p className="text-[9px] text-white/40 uppercase tracking-widest mb-1">{t('Investment Range')}</p>
                   <p className="font-bold text-white">{form.budgetRange || '—'}</p>
                 </div>
                 <div>
-                  <p className="text-[9px] text-white/40 uppercase tracking-widest mb-1">Timeline Flexibility</p>
+                  <p className="text-[9px] text-white/40 uppercase tracking-widest mb-1">{t('Timeline Flexibility')}</p>
                   <p className="font-bold text-primary">{form.timelineFlexibility < 34 ? 'Strict' : form.timelineFlexibility < 67 ? 'Moderate' : 'Flexible'}</p>
                 </div>
                 <div>
-                  <p className="text-[9px] text-white/40 uppercase tracking-widest mb-1">Project Type</p>
+                  <p className="text-[9px] text-white/40 uppercase tracking-widest mb-1">{t('Project Type')}</p>
                   <p className="font-medium text-sm">{form.projectType || '—'}</p>
                 </div>
                 <div>
-                  <p className="text-[9px] text-white/40 uppercase tracking-widest mb-1">Client</p>
+                  <p className="text-[9px] text-white/40 uppercase tracking-widest mb-1">{t('Client')}</p>
                   <p className="font-medium">{form.fullName || '—'}</p>
                   <p className="text-white/50 text-xs mt-0.5">{form.company}</p>
                 </div>
                 <div>
-                  <p className="text-[9px] text-white/40 uppercase tracking-widest mb-1">Services Included</p>
+                  <p className="text-[9px] text-white/40 uppercase tracking-widest mb-1">{t('Services Included')}</p>
                   {form.scopeServices.length > 0 ? form.scopeServices.map(s => (
                     <div key={s} className="flex items-center gap-2 text-xs mt-1">
                       <Icon name="check" style={{ fontVariationSettings: "'wght' 700" }} className="text-primary text-[12px]" />
                       <span>{s}</span>
                     </div>
-                  )) : <p className="text-white/30 text-xs">None selected</p>}
+                  )) : <p className="text-white/30 text-xs">{t('None selected')}</p>}
                 </div>
               </div>
             </div>

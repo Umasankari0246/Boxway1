@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Plus, User, CheckCircle, Building2, DollarSign, RefreshCw, MapPin, ChevronRight, Trash2, Edit3 } from 'lucide-react';
 import axios from 'axios';
+import { useTranslation } from '../../store/settingsStore';
+import { useFormatters } from '../../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -10,6 +12,10 @@ const api = axios.create({
 });
 
 const ClientsPage = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('All');
@@ -87,15 +93,13 @@ const ClientsPage = () => {
       <div className="bg-white border-b border-slate-200 px-8 py-6">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <p className="text-sm text-slate-500 mt-1">Manage your client relationships and project portfolios</p>
+            <p className="text-sm text-slate-500 mt-1">{t('Manage your client relationships and project portfolios')}</p>
           </div>
           <div className="flex gap-3">
             <button onClick={handleRefresh} disabled={loading} className="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-50 transition-colors flex items-center gap-2 disabled:opacity-50">
-              <RefreshCw className="h-4 w-4" /> Refresh
-            </button>
+              <RefreshCw className="h-4 w-4" />{t('Refresh')}</button>
             <button onClick={() => navigate('/clients/new')} className="px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2">
-              <Plus className="h-4 w-4" /> New Client
-            </button>
+              <Plus className="h-4 w-4" />{t('New Client')}</button>
           </div>
         </div>
 
@@ -105,7 +109,7 @@ const ClientsPage = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
             <input 
               type="text" 
-              placeholder="Search clients by name or contact person..." 
+              placeholder={t('Search clients by name or contact person...')} 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white transition-colors"
@@ -116,9 +120,9 @@ const ClientsPage = () => {
             onChange={(e) => setFilter(e.target.value)}
             className="min-w-[150px] px-4 py-2 bg-white border border-slate-200 rounded text-sm text-slate-600 focus:outline-none focus:border-primary"
           >
-            <option value="All">All Status</option>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
+            <option value="All">{t('All Status')}</option>
+            <option value="Active">{t('Active')}</option>
+            <option value="Inactive">{t('Inactive')}</option>
           </select>
         </div>
       </div>
@@ -148,26 +152,24 @@ const ClientsPage = () => {
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
           {/* List Header */}
           <div className="grid grid-cols-[auto_2fr_1.5fr_1fr_1fr_1fr_120px] gap-4 px-8 py-4 bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider items-center">
-            <div className="w-10">Image</div>
-            <div>Client</div>
-            <div>Contact Person</div>
-            <div>Projects</div>
-            <div>Total Value</div>
-            <div>Status</div>
-            <div className="text-right">Actions</div>
+            <div className="w-10">{t('Image')}</div>
+            <div>{t('Client')}</div>
+            <div>{t('Contact Person')}</div>
+            <div>{t('Projects')}</div>
+            <div>{t('Total Value')}</div>
+            <div>{t('Status')}</div>
+            <div className="text-right">{t('Actions')}</div>
           </div>
 
           {/* List Body */}
           <div className="divide-y divide-slate-100">
             {loading ? (
               <div className="px-8 py-12 text-center text-slate-500 text-sm flex flex-col items-center">
-                 <RefreshCw className="animate-spin h-8 w-8 mb-2" />
-                 Loading clients...
-              </div>
+                 <RefreshCw className="animate-spin h-8 w-8 mb-2" />{t('Loading clients...')}</div>
             ) : clients.length === 0 ? (
               <div className="px-8 py-12 text-center text-slate-500 text-sm">
                  <User className="h-10 w-10 mb-2 text-slate-300" />
-                 <p>No clients found.</p>
+                 <p>{t('No clients found.')}</p>
               </div>
             ) : (
               paginatedClients.map((c, index) => (
@@ -191,7 +193,7 @@ const ClientsPage = () => {
                   </div>
                   <div className="text-sm text-slate-600">{c.contactPerson}</div>
                   <div className="text-sm font-semibold text-slate-900">{c.totalProjects}</div>
-                  <div className="text-sm font-semibold text-slate-900">${c.totalValue.toLocaleString()}</div>
+                  <div className="text-sm font-semibold text-slate-900">{formatCurrency(c.totalValue.toLocaleString())}</div>
                   <div>
                     <select
                       value={c.status}
@@ -201,18 +203,18 @@ const ClientsPage = () => {
                         c.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'
                       }`}
                     >
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
+                      <option value="Active">{t('Active')}</option>
+                      <option value="Inactive">{t('Inactive')}</option>
                     </select>
                   </div>
                   <div className="flex justify-end gap-1 items-center">
-                    <button onClick={(e) => { e.stopPropagation(); handleDelete(c.id); }} className="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition-colors" title="Delete">
+                    <button onClick={(e) => { e.stopPropagation(); handleDelete(c.id); }} className="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition-colors" title={t('Delete')}>
                       <Trash2 className="h-4 w-4" />
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); navigate(`/clients/${c.id}/edit`); }} className="text-slate-400 hover:text-blue-500 p-1.5 rounded hover:bg-blue-50 transition-colors" title="Edit">
+                    <button onClick={(e) => { e.stopPropagation(); navigate(`/clients/${c.id}/edit`); }} className="text-slate-400 hover:text-blue-500 p-1.5 rounded hover:bg-blue-50 transition-colors" title={t('Edit')}>
                       <Edit3 className="h-4 w-4" />
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); navigate(`/clients/${c.id}`); }} className="text-slate-400 hover:text-primary p-1.5 rounded hover:bg-primary/10 transition-colors" title="View Details">
+                    <button onClick={(e) => { e.stopPropagation(); navigate(`/clients/${c.id}`); }} className="text-slate-400 hover:text-primary p-1.5 rounded hover:bg-primary/10 transition-colors" title={t('View Details')}>
                       <ChevronRight className="h-5 w-5" />
                     </button>
                   </div>
@@ -232,9 +234,7 @@ const ClientsPage = () => {
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
                   className="px-3 py-1.5 text-xs font-medium rounded border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Previous
-                </button>
+                >{t('Previous')}</button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                   <button
                     key={page}
@@ -252,9 +252,7 @@ const ClientsPage = () => {
                   onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
                   className="px-3 py-1.5 text-xs font-medium rounded border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Next
-                </button>
+                >{t('Next')}</button>
               </div>
             </div>
           )}

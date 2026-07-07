@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import Icon from "../../components/ui/Icon.jsx"
+import { useTranslation } from '../../store/settingsStore';
+import { useFormatters } from '../../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -25,6 +27,10 @@ const statusConfig = {
 };
 
 const ViewProposalPage = () => {
+  const { formatCurrency, formatDate } = useFormatters();
+
+  const { t } = useTranslation();
+
   const navigate = useNavigate();
   const { id } = useParams();
   const [proposal, setProposal] = useState(null);
@@ -147,7 +153,7 @@ const ViewProposalPage = () => {
     doc.text(`Lead: ${proposal.lead}`, 20, 55);
     doc.text(`Status: ${proposal.status}`, 20, 65);
     doc.text(`Phase: ${proposal.phase}`, 20, 75);
-    doc.text(`Value: $${proposal.value.toLocaleString()}`, 20, 85);
+    doc.text(`Value: $${formatCurrency(proposal.value.toLocaleString())}`, 20, 85);
     doc.text(`Submitted: ${proposal.submittedDate || 'Not yet submitted'}`, 20, 95);
     doc.save(`proposal-${proposal.id}.pdf`);
   };
@@ -197,18 +203,18 @@ const ViewProposalPage = () => {
         </div>
         <div className="flex gap-3 items-center">
           <span className={`px-2.5 py-1 text-[9px] font-black uppercase tracking-widest ${cfg.cls}`}>{proposal?.status || 'Loading'}</span>
-          <button onClick={handleDownload} className="px-5 py-2.5 border border-zinc-200 text-zinc-700 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors">Download PDF</button>
+          <button onClick={handleDownload} className="px-5 py-2.5 border border-zinc-200 text-zinc-700 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors">{t('Download PDF')}</button>
         </div>
       </div>
 
       <div className="px-8 pb-16 pt-6 max-w-7xl">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="text-zinc-400">Loading proposal...</div>
+            <div className="text-zinc-400">{t('Loading proposal...')}</div>
           </div>
         ) : !proposal ? (
           <div className="flex items-center justify-center py-20">
-            <div className="text-zinc-400">Proposal not found</div>
+            <div className="text-zinc-400">{t('Proposal not found')}</div>
           </div>
         ) : (
           <>
@@ -247,8 +253,7 @@ const ViewProposalPage = () => {
             {currentStage < APPROVAL_STAGES.length - 1 && (
               <div className="mb-6 flex items-center gap-3 p-4 bg-amber-50 border border-amber-200">
                 <Icon name="pending_actions" className="text-amber-600 text-[20px]" />
-                <p className="text-xs text-amber-800 font-semibold flex-1">
-                  Currently in <strong>{APPROVAL_STAGES[currentStage].label}</strong> phase. Ready to advance?
+                <p className="text-xs text-amber-800 font-semibold flex-1">{t('Currently in')}<strong>{APPROVAL_STAGES[currentStage].label}</strong> phase. Ready to advance?
                 </p>
                 <button onClick={advanceStage} className="px-4 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors">
                   Advance to {APPROVAL_STAGES[currentStage + 1].label} →
@@ -258,7 +263,7 @@ const ViewProposalPage = () => {
             {currentStage === APPROVAL_STAGES.length - 1 && (
               <div className="mb-6 flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200">
                 <Icon name="check_circle" style={{ fontVariationSettings: "'FILL' 1" }} className="text-emerald-600 text-[20px]" />
-                <p className="text-xs text-emerald-800 font-semibold">This proposal has been fully <strong>Approved</strong>. All stages complete.</p>
+                <p className="text-xs text-emerald-800 font-semibold">{t('This proposal has been fully')}<strong>{t('Approved')}</strong>. All stages complete.</p>
               </div>
             )}
 
@@ -281,7 +286,7 @@ const ViewProposalPage = () => {
                       {[
                         { label: 'Client', val: proposal.client },
                         { label: 'Client Contact', val: proposal.clientContact },
-                        { label: 'Proposal Value', val: `$${proposal.value.toLocaleString()}`, cls: 'text-primary font-black text-lg' },
+                        { label: 'Proposal Value', val: `$${formatCurrency(proposal.value.toLocaleString())}`, cls: 'text-primary font-black text-lg' },
                         { label: 'Lead Architect', val: proposal.lead },
                         { label: 'Submitted', val: proposal.submittedDate || 'Not yet submitted' },
                         { label: 'Expires', val: proposal.expiryDate || '—' },
@@ -298,7 +303,7 @@ const ViewProposalPage = () => {
               {/* Scope Tab */}
               {activeTab === 'scope' && (
                 <div className="space-y-4">
-                  <h3 className="text-xl font-black mb-4">Scope of Work</h3>
+                  <h3 className="text-xl font-black mb-4">{t('Scope of Work')}</h3>
                   {[
                     { num: '01', title: 'Architectural Concept Design', desc: 'Initial spatial programming, massing studies, and exterior aesthetic direction. Includes 3D visualization and site integration analysis.', hours: '40 Hours' },
                     { num: '02', title: 'Material Specification & Sourcing', desc: 'Curation of bespoke materials including carbonized wood cladding, basalt flooring, and custom glazing solutions.', hours: '24 Hours' },
@@ -325,14 +330,14 @@ const ViewProposalPage = () => {
               {activeTab === 'budget' && (
                 <div>
                   <div className="bg-zinc-900 text-white p-8 mb-4">
-                    <p className="text-[9px] text-white/40 uppercase tracking-widest mb-2">Total Professional Fees</p>
-                    <p className="text-4xl font-black">${proposal.value.toLocaleString()}</p>
+                    <p className="text-[9px] text-white/40 uppercase tracking-widest mb-2">{t('Total Professional Fees')}</p>
+                    <p className="text-4xl font-black">{formatCurrency(proposal.value.toLocaleString())}</p>
                   </div>
                   <div className="grid grid-cols-3 gap-4">
                     {[
-                      { label: 'Retainer (10%)', val: `$${Math.round(proposal.value * 0.1).toLocaleString()}` },
-                      { label: 'Monthly Fixed', val: `$${Math.round(proposal.value / 12).toLocaleString()}` },
-                      { label: 'Contingency (15%)', val: `$${Math.round(proposal.value * 0.15).toLocaleString()}` },
+                      { label: 'Retainer (10%)', val: `$${formatCurrency(Math.round(proposal.value * 0.1).toLocaleString())}` },
+                      { label: 'Monthly Fixed', val: `$${formatCurrency(Math.round(proposal.value / 12).toLocaleString())}` },
+                      { label: 'Contingency (15%)', val: `$${formatCurrency(Math.round(proposal.value * 0.15).toLocaleString())}` },
                     ].map(f => (
                       <div key={f.label} className="bg-zinc-50 border border-zinc-100 p-4">
                         <p className="text-[9px] text-zinc-400 uppercase tracking-widest mb-1">{f.label}</p>
@@ -388,19 +393,19 @@ const ViewProposalPage = () => {
               {/* ─── COMMENTS / APPROVAL TIMELINE ─── */}
               <div className="mt-10 pt-8 border-t border-zinc-100">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="font-black text-zinc-900 text-lg">Approval Activity Log</h3>
+                  <h3 className="font-black text-zinc-900 text-lg">{t('Approval Activity Log')}</h3>
                   <span className="text-[9px] font-black uppercase tracking-widest text-zinc-400">{comments.length} entries</span>
                 </div>
 
                 {/* Compose */}
                 <div className="flex gap-3 mb-8">
-                  <div className="w-8 h-8 bg-primary text-white text-[11px] font-black flex items-center justify-center shrink-0">AC</div>
+                  <div className="w-8 h-8 bg-primary text-white text-[11px] font-black flex items-center justify-center shrink-0">{t('AC')}</div>
                   <div className="flex-1">
                     <textarea
                       value={newComment}
                       onChange={e => setNewComment(e.target.value)}
                       rows={2}
-                      placeholder="Add a note, update, or action item..."
+                      placeholder={t('Add a note, update, or action item...')}
                       className="w-full border border-zinc-200 bg-zinc-50 text-sm px-4 py-3 focus:outline-none focus:border-primary resize-none"
                     />
                     <div className="flex items-center justify-between mt-2">
@@ -409,7 +414,7 @@ const ViewProposalPage = () => {
                           <button key={s.key} onClick={() => setCurrentStage(i)} className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 border transition-colors ${currentStage === i ? 'bg-primary text-white border-primary' : 'border-zinc-200 text-zinc-400 hover:border-zinc-400'}`}>{s.label}</button>
                         ))}
                       </div>
-                      <button onClick={submitComment} disabled={!newComment.trim()} className="px-4 py-1.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors disabled:opacity-40">Post</button>
+                      <button onClick={submitComment} disabled={!newComment.trim()} className="px-4 py-1.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors disabled:opacity-40">{t('Post')}</button>
                     </div>
                   </div>
                 </div>
@@ -446,15 +451,13 @@ const ViewProposalPage = () => {
                               onClick={() => setExpandedReplies(prev => prev.includes(c.id) ? prev.filter(x => x !== c.id) : [...prev, c.id])}
                               className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 hover:text-zinc-700 transition-colors"
                             >
-                              <Icon name="reply" className="text-[14px]" />
-                              Reply
-                            </button>
+                              <Icon name="reply" className="text-[14px]" />{t('Reply')}</button>
                           </div>
                         )}
                         {expandedReplies.includes(c.id) && (
                           <div className="mt-3 ml-4 border-l-2 border-zinc-100 pl-4">
                             <input
-                              placeholder="Write a reply..."
+                              placeholder={t('Write a reply...')}
                               className="w-full text-sm border border-zinc-200 px-3 py-2 bg-zinc-50 focus:outline-none focus:border-primary"
                               onKeyDown={e => e.key === 'Enter' && setExpandedReplies(prev => prev.filter(x => x !== c.id))}
                             />
@@ -471,7 +474,7 @@ const ViewProposalPage = () => {
             <div className="col-span-12 lg:col-span-4 space-y-5 overflow-y-auto max-h-screen">
               {/* Dark Client Card */}
               <div className="bg-zinc-900 text-white p-7">
-                <span className="text-[9px] tracking-[0.15em] uppercase text-white/40 font-black">Client Entity</span>
+                <span className="text-[9px] tracking-[0.15em] uppercase text-white/40 font-black">{t('Client Entity')}</span>
                 <div className="mt-4 flex items-center gap-3">
                   <div className="w-11 h-11 bg-white/10 flex items-center justify-center font-black text-lg">
                     {proposal.client?.charAt(0)}
@@ -484,15 +487,15 @@ const ViewProposalPage = () => {
                 <hr className="my-5 border-white/10" />
                 <div className="space-y-3 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-white/40 uppercase tracking-wider">Status</span>
+                    <span className="text-white/40 uppercase tracking-wider">{t('Status')}</span>
                     <span className="font-bold text-white">{proposal.status}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-white/40 uppercase tracking-wider">Version</span>
+                    <span className="text-white/40 uppercase tracking-wider">{t('Version')}</span>
                     <span className="font-bold text-white">v{proposal.version}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-white/40 uppercase tracking-wider">Lead</span>
+                    <span className="text-white/40 uppercase tracking-wider">{t('Lead')}</span>
                     <span className="font-bold text-white">{proposal.lead}</span>
                   </div>
                 </div>
@@ -500,17 +503,17 @@ const ViewProposalPage = () => {
 
               {/* Financial Summary */}
               <div className="bg-white border-l-4 border-primary p-7 shadow-sm">
-                <span className="text-[9px] text-zinc-400 uppercase tracking-widest font-black">Financial Summary</span>
+                <span className="text-[9px] text-zinc-400 uppercase tracking-widest font-black">{t('Financial Summary')}</span>
                 <div className="mt-4">
-                  <p className="text-3xl font-black tracking-tighter text-zinc-900">${proposal.value.toLocaleString()}</p>
-                  <p className="text-xs text-zinc-400 mt-1">Total Estimated Professional Fees</p>
+                  <p className="text-3xl font-black tracking-tighter text-zinc-900">{formatCurrency(proposal.value.toLocaleString())}</p>
+                  <p className="text-xs text-zinc-400 mt-1">{t('Total Estimated Professional Fees')}</p>
                 </div>
                 <hr className="my-4 border-zinc-100" />
                 <div className="space-y-2 text-xs">
-                  <div className="flex justify-between"><span className="text-zinc-400">Retainer (10%)</span><span className="font-black">${Math.round(proposal.value * 0.1).toLocaleString()}</span></div>
-                  <div className="flex justify-between"><span className="text-zinc-400">Monthly Fixed</span><span className="font-black">${Math.round(proposal.value / 12).toLocaleString()}</span></div>
+                  <div className="flex justify-between"><span className="text-zinc-400">Retainer (10%)</span><span className="font-black">{formatCurrency(Math.round(proposal.value * 0.1).toLocaleString())}</span></div>
+                  <div className="flex justify-between"><span className="text-zinc-400">{t('Monthly Fixed')}</span><span className="font-black">{formatCurrency(Math.round(proposal.value / 12).toLocaleString())}</span></div>
                 </div>
-                <button onClick={handleFeeBreakdown} className="w-full mt-5 py-2.5 border border-zinc-200 text-zinc-700 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors">View Fee Breakdown</button>
+                <button onClick={handleFeeBreakdown} className="w-full mt-5 py-2.5 border border-zinc-200 text-zinc-700 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-colors">{t('View Fee Breakdown')}</button>
                 {showFeeBreakdown && (
                   <div className="mt-4 p-4 bg-zinc-50 border border-zinc-200 space-y-3 text-xs max-h-96 overflow-y-auto">
                     <div className="flex justify-between items-center gap-2">
@@ -567,19 +570,16 @@ const ViewProposalPage = () => {
                         className="w-20 px-2 py-1 border border-zinc-200 text-right font-black"
                       />
                     </div>
-                    <button onClick={handleSaveFeeBreakdown} className="w-full mt-3 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors">
-                      Save Fee Breakdown
-                    </button>
+                    <button onClick={handleSaveFeeBreakdown} className="w-full mt-3 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors">{t('Save Fee Breakdown')}</button>
                   </div>
                 )}
               </div>
 
               {/* Approval action */}
               <div className="bg-white border border-zinc-100 p-5 shadow-sm space-y-3">
-                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-2">Quick Actions</p>
+                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-2">{t('Quick Actions')}</p>
                 <button onClick={() => navigate(`/proposals/${id}/edit`)} className="w-full py-2.5 bg-zinc-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors flex items-center justify-center gap-2">
-                  <Icon name="edit" className="text-[16px]" />Edit Proposal
-                </button>
+                  <Icon name="edit" className="text-[16px]" />{t('Edit Proposal')}</button>
                 {currentStage < APPROVAL_STAGES.length - 1 && (
                   <button onClick={advanceStage} className="w-full py-2.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors flex items-center justify-center gap-2">
                     <Icon name="arrow_forward" className="text-[16px]" />

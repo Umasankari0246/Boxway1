@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx";
 import jsPDF from 'jspdf';
+import { useFormatters } from '../../hooks/useFormatters.js';
+import { useTranslation } from '../../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -13,6 +15,9 @@ const api = axios.create({
 const TABS = ['Dashboard', 'Payroll Runs', 'Payslips', 'Settings'];
 
 const PayrollDashboardTab = ({ navigate }) => {
+  const { formatCurrency, formatDate } = useFormatters();
+  const { t } = useTranslation();
+
   const [payrollRuns, setPayrollRuns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -70,8 +75,8 @@ const PayrollDashboardTab = ({ navigate }) => {
     doc.text(`Period: ${run.period}`, 20, 45);
     doc.text(`Employees: ${run.employees}`, 20, 55);
     doc.text(`Ad Hoc Payments: ${run.adHoc}`, 20, 65);
-    doc.text(`Gross Amount: $${run.grossAmount.toLocaleString()}`, 20, 75);
-    doc.text(`Net Amount: $${run.netAmount.toLocaleString()}`, 20, 85);
+    doc.text(`Gross Amount: $${formatCurrency(run.grossAmount)}`, 20, 75);
+    doc.text(`Net Amount: $${formatCurrency(run.netAmount)}`, 20, 85);
     doc.text(`Status: ${run.status}`, 20, 95);
     doc.text(`Processed Date: ${run.processedDate || '—'}`, 20, 105);
     doc.text(`Approved By: ${run.approvedBy || '—'}`, 20, 115);
@@ -88,7 +93,7 @@ const PayrollDashboardTab = ({ navigate }) => {
         { label: 'Total Employees Paid', val: '8', trend: '+2.4%', trendUp: true },
         { label: 'Ad Hoc Payments', val: '3', sub: 'This month' },
         { label: 'Pending Approvals', val: payrollRuns.filter(r => r.status === 'Pending Approval').length, sub: 'Needs action', color: 'text-primary' },
-        { label: 'Total Payroll Amount', val: '$68,750', sub: 'Oct 2023' },
+        { label: 'Total Payroll Amount', val: formatCurrency(68750), sub: 'Oct 2023' },
       ].map(k => (
         <div key={k.label} className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
           <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">{k.label}</p>
@@ -107,8 +112,8 @@ const PayrollDashboardTab = ({ navigate }) => {
     <div className="col-span-12 lg:col-span-8">
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
         <div className="p-6 border-b border-slate-200 flex justify-between items-center">
-          <h4 className="font-bold text-slate-900">Recent Payroll Runs</h4>
-          <button onClick={() => {}} className="text-sm font-semibold text-primary hover:underline">View All</button>
+          <h4 className="font-bold text-slate-900">{t('Recent Payroll Runs')}</h4>
+          <button onClick={() => {}} className="text-sm font-semibold text-primary hover:underline">{t('View All')}</button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
@@ -123,7 +128,7 @@ const PayrollDashboardTab = ({ navigate }) => {
                   <td className="px-6 py-4 font-semibold text-sm text-slate-700">{run.period}</td>
                   <td className="px-6 py-4 text-sm text-slate-600">{run.employees}</td>
                   <td className="px-6 py-4 text-sm text-slate-600">{run.adHoc}</td>
-                  <td className="px-6 py-4 text-sm font-medium text-slate-900">${run.grossAmount.toLocaleString()}</td>
+                  <td className="px-6 py-4 text-sm font-medium text-slate-900">{formatCurrency(run.grossAmount)}</td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 text-[10px] font-bold rounded uppercase ${run.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{run.status}</span>
                   </td>
@@ -132,9 +137,7 @@ const PayrollDashboardTab = ({ navigate }) => {
                       <button 
                         onClick={() => handleApprove(run.id)}
                         className="px-3 py-1 bg-primary text-white text-xs font-bold rounded hover:bg-primary/90"
-                      >
-                        Approve
-                      </button>
+                      >{t('Approve')}</button>
                     ) : (
                       <>
                         <button 
@@ -149,14 +152,12 @@ const PayrollDashboardTab = ({ navigate }) => {
                               onClick={() => handleView(run)}
                               className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2"
                             >
-                              <Icon name="visibility" className="text-lg" /> View
-                            </button>
+                              <Icon name="visibility" className="text-lg" />{t('View')}</button>
                             <button 
                               onClick={() => handleDownload(run)}
                               className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2"
                             >
-                              <Icon name="download" className="text-lg" /> Download
-                            </button>
+                              <Icon name="download" className="text-lg" />{t('Download')}</button>
                           </div>
                         )}
                       </>
@@ -174,36 +175,35 @@ const PayrollDashboardTab = ({ navigate }) => {
     <div className="col-span-12 lg:col-span-4 space-y-6">
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="p-6 border-b border-slate-200 flex items-center justify-between">
-          <h4 className="font-bold text-slate-900">Alerts & Insights</h4>
+          <h4 className="font-bold text-slate-900">{t('Alerts & Insights')}</h4>
           <span className="bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full">2 New</span>
         </div>
         <div className="p-4 space-y-3">
           <div className="p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg flex gap-4">
             <Icon name="error" className="text-red-500 shrink-0" />
             <div>
-              <p className="text-sm font-bold text-slate-900">Missing salary data</p>
+              <p className="text-sm font-bold text-slate-900">{t('Missing salary data')}</p>
               <p className="text-xs text-slate-500 mt-1">1 employee hasn't updated their direct deposit info.</p>
-              <button className="mt-2 text-xs font-bold text-red-500 hover:underline">View Employees</button>
+              <button className="mt-2 text-xs font-bold text-red-500 hover:underline">{t('View Employees')}</button>
             </div>
           </div>
           <div className="p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-r-lg flex gap-4">
             <Icon name="pending_actions" className="text-yellow-600 shrink-0" />
             <div>
-              <p className="text-sm font-bold text-slate-900">Pending approvals</p>
-              <p className="text-xs text-slate-500 mt-1">November payroll draft awaiting sign-off.</p>
-              <button className="mt-2 text-xs font-bold text-yellow-600 hover:underline">Go to Approvals</button>
+              <p className="text-sm font-bold text-slate-900">{t('Pending approvals')}</p>
+              <p className="text-xs text-slate-500 mt-1">{t('November payroll draft awaiting sign-off.')}</p>
+              <button className="mt-2 text-xs font-bold text-yellow-600 hover:underline">{t('Go to Approvals')}</button>
             </div>
           </div>
         </div>
       </div>
       <div className="bg-zinc-900 rounded-xl p-6 text-white relative overflow-hidden shadow-xl">
         <div className="relative z-10">
-          <h4 className="font-bold text-lg mb-2">Run Payroll</h4>
-          <p className="text-zinc-400 text-sm mb-6">Process the current cycle for all departments.</p>
+          <h4 className="font-bold text-lg mb-2">{t('Run Payroll')}</h4>
+          <p className="text-zinc-400 text-sm mb-6">{t('Process the current cycle for all departments.')}</p>
           <div className="space-y-3">
             <button onClick={() => navigate('/payroll/run/single/step1')} className="w-full py-3 border border-white/20 text-white text-sm font-bold rounded-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2">
-              <Icon name="person" className="text-xl" /> Single Employee
-            </button>
+              <Icon name="person" className="text-xl" />{t('Single Employee')}</button>
             <button onClick={() => navigate('/payroll/run/multi/step1')} className="w-full py-3 bg-primary text-white font-bold rounded-lg shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all flex items-center justify-center gap-2">
               <Icon name="group" className="text-xl" /> All / Multi Employees
             </button>
@@ -220,7 +220,7 @@ const PayrollDashboardTab = ({ navigate }) => {
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowViewModal(false)}>
         <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
           <div className="p-6 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white">
-            <h3 className="text-xl font-bold text-slate-900">Payroll Run Details</h3>
+            <h3 className="text-xl font-bold text-slate-900">{t('Payroll Run Details')}</h3>
             <button onClick={() => setShowViewModal(false)} className="text-slate-400 hover:text-slate-600">
               <Icon name="close" className="text-2xl" />
             </button>
@@ -228,39 +228,39 @@ const PayrollDashboardTab = ({ navigate }) => {
           <div className="p-6 space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Payroll ID</p>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('Payroll ID')}</p>
                 <p className="text-sm font-semibold text-slate-900">{selectedRun.id}</p>
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Period</p>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('Period')}</p>
                 <p className="text-sm font-semibold text-slate-900">{selectedRun.period}</p>
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Employees</p>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('Employees')}</p>
                 <p className="text-sm font-semibold text-slate-900">{selectedRun.employees}</p>
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Ad Hoc Payments</p>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('Ad Hoc Payments')}</p>
                 <p className="text-sm font-semibold text-slate-900">{selectedRun.adHoc}</p>
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Gross Amount</p>
-                <p className="text-sm font-semibold text-slate-900">${selectedRun.grossAmount.toLocaleString()}</p>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('Gross Amount')}</p>
+                <p className="text-sm font-semibold text-slate-900">{formatCurrency(selectedRun.grossAmount)}</p>
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Net Amount</p>
-                <p className="text-sm font-semibold text-slate-900">${selectedRun.netAmount.toLocaleString()}</p>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('Net Amount')}</p>
+                <p className="text-sm font-semibold text-slate-900">{formatCurrency(selectedRun.netAmount)}</p>
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Status</p>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('Status')}</p>
                 <span className={`px-2 py-1 text-[10px] font-bold rounded uppercase ${selectedRun.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{selectedRun.status}</span>
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Processed Date</p>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('Processed Date')}</p>
                 <p className="text-sm font-semibold text-slate-900">{selectedRun.processedDate || '—'}</p>
               </div>
               <div className="col-span-2">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Approved By</p>
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('Approved By')}</p>
                 <p className="text-sm font-semibold text-slate-900">{selectedRun.approvedBy || '—'}</p>
               </div>
             </div>
@@ -270,14 +270,11 @@ const PayrollDashboardTab = ({ navigate }) => {
               onClick={() => handleDownload(selectedRun)}
               className="px-4 py-2 border border-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-50 flex items-center gap-2"
             >
-              <Icon name="download" className="text-lg" /> Download
-            </button>
+              <Icon name="download" className="text-lg" />{t('Download')}</button>
             <button 
               onClick={() => setShowViewModal(false)}
               className="px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90"
-            >
-              Close
-            </button>
+            >{t('Close')}</button>
           </div>
         </div>
       </div>
@@ -287,6 +284,8 @@ const PayrollDashboardTab = ({ navigate }) => {
 };
 
 const PayrollRunsTab = ({ navigate }) => {
+  const { t } = useTranslation();
+  const { formatCurrency, formatDate } = useFormatters();
   const [payrollRuns, setPayrollRuns] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -307,14 +306,12 @@ const PayrollRunsTab = ({ navigate }) => {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-bold text-slate-900">All Payroll Runs</h3>
+        <h3 className="text-lg font-bold text-slate-900">{t('All Payroll Runs')}</h3>
         <div className="flex gap-3">
           <button onClick={() => navigate('/payroll/run/single/step1')} className="flex items-center gap-2 px-4 py-2 border border-slate-200 bg-white text-slate-700 text-sm font-bold rounded hover:bg-slate-50">
-            <Icon name="person" className="text-lg" /> Single Run
-          </button>
+            <Icon name="person" className="text-lg" />{t('Single Run')}</button>
           <button onClick={() => navigate('/payroll/run/multi/step1')} className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-lg shadow-primary/20">
-            <Icon name="group" className="text-lg" /> Multi Run
-          </button>
+            <Icon name="group" className="text-lg" />{t('Multi Run')}</button>
         </div>
       </div>
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
@@ -330,8 +327,8 @@ const PayrollRunsTab = ({ navigate }) => {
                 <td className="px-6 py-4 font-semibold text-sm text-slate-700">{run.period}</td>
                 <td className="px-6 py-4 text-sm text-slate-600">{run.employees}</td>
                 <td className="px-6 py-4 text-sm text-slate-600">{run.adHoc}</td>
-                <td className="px-6 py-4 text-sm font-medium text-slate-900">${run.grossAmount.toLocaleString()}</td>
-                <td className="px-6 py-4 text-sm text-slate-600">${run.netAmount.toLocaleString()}</td>
+                <td className="px-6 py-4 text-sm font-medium text-slate-900">{formatCurrency(run.grossAmount)}</td>
+                <td className="px-6 py-4 text-sm text-slate-600">{formatCurrency(run.netAmount)}</td>
                 <td className="px-6 py-4">
                   <span className={`px-2 py-1 text-[10px] font-bold rounded uppercase ${run.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{run.status}</span>
                 </td>
@@ -347,6 +344,8 @@ const PayrollRunsTab = ({ navigate }) => {
 };
 
 const PayslipsTab = () => {
+  const { t } = useTranslation();
+  const { formatCurrency, formatDate } = useFormatters();
   const [payslips, setPayslips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -387,9 +386,9 @@ const PayslipsTab = () => {
     doc.text(`Employee ID: ${payslip.employeeId}`, 20, 45);
     doc.text(`Employee Name: ${payslip.employeeName}`, 20, 55);
     doc.text(`Period: ${payslip.period}`, 20, 65);
-    doc.text(`Gross Salary: $${payslip.grossSalary.toLocaleString()}`, 20, 75);
-    doc.text(`Deductions: $${payslip.deductions.toLocaleString()}`, 20, 85);
-    doc.text(`Net Salary: $${payslip.net.toLocaleString()}`, 20, 95);
+    doc.text(`Gross Salary: $${formatCurrency(payslip.grossSalary)}`, 20, 75);
+    doc.text(`Deductions: $${formatCurrency(payslip.deductions)}`, 20, 85);
+    doc.text(`Net Salary: $${formatCurrency(payslip.net)}`, 20, 95);
     doc.text(`Status: ${payslip.status}`, 20, 105);
     doc.text(`Issued Date: ${payslip.issuedDate}`, 20, 115);
     
@@ -398,7 +397,7 @@ const PayslipsTab = () => {
 
   const handleEmail = (payslip) => {
     const subject = encodeURIComponent(`Payslip for ${payslip.period} - ${payslip.employeeName}`);
-    const body = encodeURIComponent(`Please find attached the payslip for ${payslip.period}.\n\nEmployee: ${payslip.employeeName}\nNet Salary: $${payslip.net.toLocaleString()}`);
+    const body = encodeURIComponent(`Please find attached the payslip for ${payslip.period}.\n\nEmployee: ${payslip.employeeName}\nNet Salary: $${formatCurrency(payslip.net)}`);
     window.open(`mailto:?subject=${subject}&body=${body}`);
   };
 
@@ -407,12 +406,12 @@ const PayslipsTab = () => {
       <div className="flex items-center gap-4 mb-6">
         <div className="relative flex-1 max-w-sm">
           <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg" />
-          <input value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded bg-white text-sm focus:outline-none focus:border-primary" placeholder="Search payslips..." />
+          <input value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded bg-white text-sm focus:outline-none focus:border-primary" placeholder={t('Search payslips...')} />
         </div>
         <select className="px-3 py-2 border border-slate-200 bg-white rounded text-sm focus:outline-none focus:border-primary">
-          <option>All Periods</option>
-          <option>October 2023</option>
-          <option>September 2023</option>
+          <option>{t('All Periods')}</option>
+          <option>{t('October 2023')}</option>
+          <option>{t('September 2023')}</option>
         </select>
       </div>
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
@@ -430,29 +429,29 @@ const PayslipsTab = () => {
                   <p className="text-xs text-slate-400">{p.employeeId}</p>
                 </td>
                 <td className="px-6 py-4 text-sm text-slate-600">{p.period}</td>
-                <td className="px-6 py-4 text-sm font-medium text-slate-900">${p.grossSalary.toLocaleString()}</td>
-                <td className="px-6 py-4 text-sm text-red-600">-${p.deductions.toLocaleString()}</td>
-                <td className="px-6 py-4 text-sm font-bold text-slate-900">${p.net.toLocaleString()}</td>
+                <td className="px-6 py-4 text-sm font-medium text-slate-900">{formatCurrency(p.grossSalary)}</td>
+                <td className="px-6 py-4 text-sm text-red-600">-{formatCurrency(p.deductions)}</td>
+                <td className="px-6 py-4 text-sm font-bold text-slate-900">{formatCurrency(p.net)}</td>
                 <td className="px-6 py-4"><span className="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] font-bold rounded uppercase">{p.status}</span></td>
                 <td className="px-6 py-4">
                   <div className="flex gap-2">
                     <button 
                       onClick={() => handleView(p)}
-                      title="View" 
+                      title={t('View')} 
                       className="p-1 text-slate-400 hover:text-primary transition-colors"
                     >
                       <Icon name="visibility" className="text-lg" />
                     </button>
                     <button 
                       onClick={() => handleDownload(p)}
-                      title="Download" 
+                      title={t('Download')} 
                       className="p-1 text-slate-400 hover:text-primary transition-colors"
                     >
                       <Icon name="download" className="text-lg" />
                     </button>
                     <button 
                       onClick={() => handleEmail(p)}
-                      title="Email" 
+                      title={t('Email')} 
                       className="p-1 text-slate-400 hover:text-primary transition-colors"
                     >
                       <Icon name="mail" className="text-lg" />
@@ -470,7 +469,7 @@ const PayslipsTab = () => {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowViewModal(false)}>
           <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="p-6 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white">
-              <h3 className="text-xl font-bold text-slate-900">Payslip Details</h3>
+              <h3 className="text-xl font-bold text-slate-900">{t('Payslip Details')}</h3>
               <button onClick={() => setShowViewModal(false)} className="text-slate-400 hover:text-slate-600">
                 <Icon name="close" className="text-2xl" />
               </button>
@@ -478,39 +477,39 @@ const PayslipsTab = () => {
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Payslip ID</p>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('Payslip ID')}</p>
                   <p className="text-sm font-semibold text-slate-900">{selectedPayslip.id}</p>
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Employee ID</p>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('Employee ID')}</p>
                   <p className="text-sm font-semibold text-slate-900">{selectedPayslip.employeeId}</p>
                 </div>
                 <div className="col-span-2">
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Employee Name</p>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('Employee Name')}</p>
                   <p className="text-sm font-semibold text-slate-900">{selectedPayslip.employeeName}</p>
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Period</p>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('Period')}</p>
                   <p className="text-sm font-semibold text-slate-900">{selectedPayslip.period}</p>
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Issued Date</p>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('Issued Date')}</p>
                   <p className="text-sm font-semibold text-slate-900">{selectedPayslip.issuedDate}</p>
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Gross Salary</p>
-                  <p className="text-sm font-semibold text-slate-900">${selectedPayslip.grossSalary.toLocaleString()}</p>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('Gross Salary')}</p>
+                  <p className="text-sm font-semibold text-slate-900">{formatCurrency(selectedPayslip.grossSalary)}</p>
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Deductions</p>
-                  <p className="text-sm font-semibold text-red-600">-${selectedPayslip.deductions.toLocaleString()}</p>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('Deductions')}</p>
+                  <p className="text-sm font-semibold text-red-600">-{formatCurrency(selectedPayslip.deductions)}</p>
                 </div>
                 <div className="col-span-2">
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Net Salary</p>
-                  <p className="text-2xl font-bold text-slate-900">${selectedPayslip.net.toLocaleString()}</p>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('Net Salary')}</p>
+                  <p className="text-2xl font-bold text-slate-900">{formatCurrency(selectedPayslip.net)}</p>
                 </div>
                 <div className="col-span-2">
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Status</p>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('Status')}</p>
                   <span className="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded uppercase">{selectedPayslip.status}</span>
                 </div>
               </div>
@@ -520,14 +519,11 @@ const PayslipsTab = () => {
                 onClick={() => handleDownload(selectedPayslip)}
                 className="px-4 py-2 border border-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-50 flex items-center gap-2"
               >
-                <Icon name="download" className="text-lg" /> Download
-              </button>
+                <Icon name="download" className="text-lg" />{t('Download')}</button>
               <button 
                 onClick={() => setShowViewModal(false)}
                 className="px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90"
-              >
-                Close
-              </button>
+              >{t('Close')}</button>
             </div>
           </div>
         </div>
@@ -537,6 +533,8 @@ const PayslipsTab = () => {
 };
 
 const SettingsTab = () => {
+  const { t } = useTranslation();
+  const { formatCurrency, formatDate } = useFormatters();
   const [activeSection, setActiveSection] = useState('templates');
   const [templates, setTemplates] = useState([
     { id: 1, name: 'Standard Tech', department: 'Engineering', basicSalary: 4000, allowance: 600, deduction: 150 },
@@ -730,22 +728,22 @@ const SettingsTab = () => {
           <div className="space-y-5">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <h3 className="text-lg font-bold text-slate-900">Salary Templates</h3>
-                <p className="text-sm text-slate-500">Quickly create salary structures for each department.</p>
+                <h3 className="text-lg font-bold text-slate-900">{t('Salary Templates')}</h3>
+                <p className="text-sm text-slate-500">{t('Quickly create salary structures for each department.')}</p>
               </div>
-              <button onClick={() => { setShowTemplateForm(true); setTemplateMessage(''); }} className="px-3 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary/90">Add Template</button>
+              <button onClick={() => { setShowTemplateForm(true); setTemplateMessage(''); }} className="px-3 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary/90">{t('Add Template')}</button>
             </div>
             {templateMessage && <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-700">{templateMessage}</div>}
             {showTemplateForm && (
               <form onSubmit={handleTemplateSave} className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <input value={templateForm.name} onChange={(e) => setTemplateForm({ ...templateForm, name: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Template Name" />
-                <input value={templateForm.department} onChange={(e) => setTemplateForm({ ...templateForm, department: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Department" />
-                <input type="number" value={templateForm.basicSalary} onChange={(e) => setTemplateForm({ ...templateForm, basicSalary: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Basic Salary" />
-                <input type="number" value={templateForm.allowance} onChange={(e) => setTemplateForm({ ...templateForm, allowance: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Allowance" />
-                <input type="number" value={templateForm.deduction} onChange={(e) => setTemplateForm({ ...templateForm, deduction: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Deduction" />
+                <input value={templateForm.name} onChange={(e) => setTemplateForm({ ...templateForm, name: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder={t('Template Name')} />
+                <input value={templateForm.department} onChange={(e) => setTemplateForm({ ...templateForm, department: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder={t('Department')} />
+                <input type="number" value={templateForm.basicSalary} onChange={(e) => setTemplateForm({ ...templateForm, basicSalary: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder={t('Basic Salary')} />
+                <input type="number" value={templateForm.allowance} onChange={(e) => setTemplateForm({ ...templateForm, allowance: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder={t('Allowance')} />
+                <input type="number" value={templateForm.deduction} onChange={(e) => setTemplateForm({ ...templateForm, deduction: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder={t('Deduction')} />
                 <div className="md:col-span-2 flex justify-end gap-2">
-                  <button type="button" onClick={resetTemplateForm} className="px-3 py-2 border border-slate-200 rounded-lg text-sm font-semibold text-slate-600">Cancel</button>
-                  <button type="submit" className="px-3 py-2 bg-primary text-white text-sm font-semibold rounded-lg">Save</button>
+                  <button type="button" onClick={resetTemplateForm} className="px-3 py-2 border border-slate-200 rounded-lg text-sm font-semibold text-slate-600">{t('Cancel')}</button>
+                  <button type="submit" className="px-3 py-2 bg-primary text-white text-sm font-semibold rounded-lg">{t('Save')}</button>
                 </div>
               </form>
             )}
@@ -753,12 +751,12 @@ const SettingsTab = () => {
               <table className="w-full text-left text-sm">
                 <thead className="bg-slate-50">
                   <tr>
-                    <th className="px-3 py-2 font-semibold text-slate-500">Template</th>
-                    <th className="px-3 py-2 font-semibold text-slate-500">Department</th>
-                    <th className="px-3 py-2 font-semibold text-slate-500">Basic</th>
-                    <th className="px-3 py-2 font-semibold text-slate-500">Allowance</th>
-                    <th className="px-3 py-2 font-semibold text-slate-500">Deduction</th>
-                    <th className="px-3 py-2 font-semibold text-slate-500">Actions</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">{t('Template')}</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">{t('Department')}</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">{t('Basic')}</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">{t('Allowance')}</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">{t('Deduction')}</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">{t('Actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -766,13 +764,13 @@ const SettingsTab = () => {
                     <tr key={item.id}>
                       <td className="px-3 py-2 font-semibold text-slate-800">{item.name}</td>
                       <td className="px-3 py-2 text-slate-600">{item.department}</td>
-                      <td className="px-3 py-2 text-slate-600">${item.basicSalary.toLocaleString()}</td>
-                      <td className="px-3 py-2 text-slate-600">${item.allowance.toLocaleString()}</td>
-                      <td className="px-3 py-2 text-slate-600">${item.deduction.toLocaleString()}</td>
+                      <td className="px-3 py-2 text-slate-600">{formatCurrency(item.basicSalary)}</td>
+                      <td className="px-3 py-2 text-slate-600">{formatCurrency(item.allowance)}</td>
+                      <td className="px-3 py-2 text-slate-600">{formatCurrency(item.deduction)}</td>
                       <td className="px-3 py-2">
                         <div className="flex gap-2">
-                          <button onClick={() => handleTemplateEdit(item)} className="text-sm font-semibold text-primary">Edit</button>
-                          <button onClick={() => handleTemplateDelete(item.id)} className="text-sm font-semibold text-red-500">Delete</button>
+                          <button onClick={() => handleTemplateEdit(item)} className="text-sm font-semibold text-primary">{t('Edit')}</button>
+                          <button onClick={() => handleTemplateDelete(item.id)} className="text-sm font-semibold text-red-500">{t('Delete')}</button>
                         </div>
                       </td>
                     </tr>
@@ -787,24 +785,24 @@ const SettingsTab = () => {
           <div className="space-y-5">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <h3 className="text-lg font-bold text-slate-900">Ad-Hoc Payments</h3>
-                <p className="text-sm text-slate-500">Create quick one-time payouts for employees.</p>
+                <h3 className="text-lg font-bold text-slate-900">{t('Ad-Hoc Payments')}</h3>
+                <p className="text-sm text-slate-500">{t('Create quick one-time payouts for employees.')}</p>
               </div>
-              <button onClick={() => { setShowPaymentForm(true); setPaymentMessage(''); }} className="px-3 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary/90">Add Payment</button>
+              <button onClick={() => { setShowPaymentForm(true); setPaymentMessage(''); }} className="px-3 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary/90">{t('Add Payment')}</button>
             </div>
             {paymentMessage && <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-700">{paymentMessage}</div>}
             {showPaymentForm && (
               <form onSubmit={handlePaymentSave} className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <input value={paymentForm.employee} onChange={(e) => setPaymentForm({ ...paymentForm, employee: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Employee" />
+                <input value={paymentForm.employee} onChange={(e) => setPaymentForm({ ...paymentForm, employee: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder={t('Employee')} />
                 <select value={paymentForm.paymentType} onChange={(e) => setPaymentForm({ ...paymentForm, paymentType: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm">
-                  <option value="Bonus">Bonus</option>
-                  <option value="Commission">Commission</option>
+                  <option value="Bonus">{t('Bonus')}</option>
+                  <option value="Commission">{t('Commission')}</option>
                 </select>
-                <input type="number" value={paymentForm.amount} onChange={(e) => setPaymentForm({ ...paymentForm, amount: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder="Amount" />
+                <input type="number" value={paymentForm.amount} onChange={(e) => setPaymentForm({ ...paymentForm, amount: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" placeholder={t('Amount')} />
                 <input type="date" value={paymentForm.date} onChange={(e) => setPaymentForm({ ...paymentForm, date: e.target.value })} className="rounded-lg border border-slate-200 px-3 py-2 text-sm" />
                 <div className="md:col-span-2 flex justify-end gap-2">
-                  <button type="button" onClick={resetPaymentForm} className="px-3 py-2 border border-slate-200 rounded-lg text-sm font-semibold text-slate-600">Cancel</button>
-                  <button type="submit" className="px-3 py-2 bg-primary text-white text-sm font-semibold rounded-lg">Save</button>
+                  <button type="button" onClick={resetPaymentForm} className="px-3 py-2 border border-slate-200 rounded-lg text-sm font-semibold text-slate-600">{t('Cancel')}</button>
+                  <button type="submit" className="px-3 py-2 bg-primary text-white text-sm font-semibold rounded-lg">{t('Save')}</button>
                 </div>
               </form>
             )}
@@ -812,11 +810,11 @@ const SettingsTab = () => {
               <table className="w-full text-left text-sm">
                 <thead className="bg-slate-50">
                   <tr>
-                    <th className="px-3 py-2 font-semibold text-slate-500">Employee</th>
-                    <th className="px-3 py-2 font-semibold text-slate-500">Type</th>
-                    <th className="px-3 py-2 font-semibold text-slate-500">Amount</th>
-                    <th className="px-3 py-2 font-semibold text-slate-500">Date</th>
-                    <th className="px-3 py-2 font-semibold text-slate-500">Actions</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">{t('Employee')}</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">{t('Type')}</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">{t('Amount')}</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">{t('Date')}</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">{t('Actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -824,10 +822,10 @@ const SettingsTab = () => {
                     <tr key={item.id}>
                       <td className="px-3 py-2 font-semibold text-slate-800">{item.employee}</td>
                       <td className="px-3 py-2 text-slate-600">{item.paymentType}</td>
-                      <td className="px-3 py-2 text-slate-600">${item.amount.toLocaleString()}</td>
+                      <td className="px-3 py-2 text-slate-600">{formatCurrency(item.amount)}</td>
                       <td className="px-3 py-2 text-slate-600">{item.date}</td>
                       <td className="px-3 py-2">
-                        <button onClick={() => handlePaymentDelete(item.id)} className="text-sm font-semibold text-red-500">Delete</button>
+                        <button onClick={() => handlePaymentDelete(item.id)} className="text-sm font-semibold text-red-500">{t('Delete')}</button>
                       </td>
                     </tr>
                   ))}
@@ -840,8 +838,8 @@ const SettingsTab = () => {
         return (
           <div className="space-y-5">
             <div>
-              <h3 className="text-lg font-bold text-slate-900">Payment Methods</h3>
-              <p className="text-sm text-slate-500">Enable or disable each method and pick your default one.</p>
+              <h3 className="text-lg font-bold text-slate-900">{t('Payment Methods')}</h3>
+              <p className="text-sm text-slate-500">{t('Enable or disable each method and pick your default one.')}</p>
             </div>
             {paymentMethodMessage && <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-700">{paymentMethodMessage}</div>}
             <div className="space-y-3">
@@ -857,9 +855,7 @@ const SettingsTab = () => {
                       Enable/Disable
                     </label>
                     <label className="flex items-center gap-2 text-sm text-slate-700">
-                      <input type="radio" name="defaultMethod" checked={method.default} onChange={() => handleDefaultMethod(method.id)} />
-                      Default
-                    </label>
+                      <input type="radio" name="defaultMethod" checked={method.default} onChange={() => handleDefaultMethod(method.id)} />{t('Default')}</label>
                   </div>
                 </div>
               ))}
@@ -870,20 +866,20 @@ const SettingsTab = () => {
         return (
           <div className="space-y-5">
             <div>
-              <h3 className="text-lg font-bold text-slate-900">Roles & Access</h3>
-              <p className="text-sm text-slate-500">Control who can view, create, edit, approve, and delete payroll records.</p>
+              <h3 className="text-lg font-bold text-slate-900">{t('Roles & Access')}</h3>
+              <p className="text-sm text-slate-500">{t('Control who can view, create, edit, approve, and delete payroll records.')}</p>
             </div>
             {roleMessage && <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-700">{roleMessage}</div>}
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead className="bg-slate-50">
                   <tr>
-                    <th className="px-3 py-2 font-semibold text-slate-500">Role</th>
-                    <th className="px-3 py-2 font-semibold text-slate-500">View</th>
-                    <th className="px-3 py-2 font-semibold text-slate-500">Create</th>
-                    <th className="px-3 py-2 font-semibold text-slate-500">Edit</th>
-                    <th className="px-3 py-2 font-semibold text-slate-500">Approve</th>
-                    <th className="px-3 py-2 font-semibold text-slate-500">Delete</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">{t('Role')}</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">{t('View')}</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">{t('Create')}</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">{t('Edit')}</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">{t('Approve')}</th>
+                    <th className="px-3 py-2 font-semibold text-slate-500">{t('Delete')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -907,10 +903,10 @@ const SettingsTab = () => {
           <div className="space-y-5">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <h3 className="text-lg font-bold text-slate-900">Approval Workflows</h3>
-                <p className="text-sm text-slate-500">Add, remove, and reorder approval stages with one click.</p>
+                <h3 className="text-lg font-bold text-slate-900">{t('Approval Workflows')}</h3>
+                <p className="text-sm text-slate-500">{t('Add, remove, and reorder approval stages with one click.')}</p>
               </div>
-              <button onClick={addWorkflowLevel} className="px-3 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary/90">Add Level</button>
+              <button onClick={addWorkflowLevel} className="px-3 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary/90">{t('Add Level')}</button>
             </div>
             {workflowMessage && <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-700">{workflowMessage}</div>}
             <div className="space-y-3">
@@ -922,13 +918,13 @@ const SettingsTab = () => {
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
                     <select value={item.role} onChange={(e) => updateWorkflowRole(item.id, e.target.value)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm">
-                      <option value="HR Manager">HR Manager</option>
-                      <option value="Finance Manager">Finance Manager</option>
-                      <option value="Payroll Admin">Payroll Admin</option>
+                      <option value="HR Manager">{t('HR Manager')}</option>
+                      <option value="Finance Manager">{t('Finance Manager')}</option>
+                      <option value="Payroll Admin">{t('Payroll Admin')}</option>
                     </select>
                     <button onClick={() => moveWorkflowLevel(item.id, 'up')} className="px-2 py-2 border border-slate-200 rounded-lg text-sm">↑</button>
                     <button onClick={() => moveWorkflowLevel(item.id, 'down')} className="px-2 py-2 border border-slate-200 rounded-lg text-sm">↓</button>
-                    <button onClick={() => removeWorkflowLevel(item.id)} className="px-3 py-2 bg-red-50 text-red-600 text-sm font-semibold rounded-lg">Remove</button>
+                    <button onClick={() => removeWorkflowLevel(item.id)} className="px-3 py-2 bg-red-50 text-red-600 text-sm font-semibold rounded-lg">{t('Remove')}</button>
                   </div>
                 </div>
               ))}
@@ -939,22 +935,22 @@ const SettingsTab = () => {
         return (
           <div className="space-y-5">
             <div>
-              <h3 className="text-lg font-bold text-slate-900">Notifications</h3>
-              <p className="text-sm text-slate-500">Turn on alerts for payroll activity and approvals.</p>
+              <h3 className="text-lg font-bold text-slate-900">{t('Notifications')}</h3>
+              <p className="text-sm text-slate-500">{t('Turn on alerts for payroll activity and approvals.')}</p>
             </div>
             {notificationMessage && <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-sm text-emerald-700">{notificationMessage}</div>}
             <div className="rounded-xl border border-slate-200 p-4 space-y-3">
               <label className="flex items-center justify-between text-sm text-slate-700">
-                <span>Email Notifications</span>
+                <span>{t('Email Notifications')}</span>
                 <input type="checkbox" checked={notificationSettings.email} onChange={() => setNotificationSettings({ ...notificationSettings, email: !notificationSettings.email })} />
               </label>
               <label className="flex items-center justify-between text-sm text-slate-700">
-                <span>In-App Notifications</span>
+                <span>{t('In-App Notifications')}</span>
                 <input type="checkbox" checked={notificationSettings.inApp} onChange={() => setNotificationSettings({ ...notificationSettings, inApp: !notificationSettings.inApp })} />
               </label>
             </div>
             <div className="rounded-xl border border-slate-200 p-4 space-y-3">
-              <p className="text-sm font-semibold text-slate-800">Notification Events</p>
+              <p className="text-sm font-semibold text-slate-800">{t('Notification Events')}</p>
               {Object.entries(notificationSettings.events).map(([key, value]) => (
                 <label key={key} className="flex items-center justify-between text-sm text-slate-700">
                   <span>{key.replace(/([A-Z])/g, ' $1').replace(/^./, (c) => c.toUpperCase())}</span>
@@ -963,7 +959,7 @@ const SettingsTab = () => {
               ))}
             </div>
             <div className="flex justify-end">
-              <button onClick={() => setNotificationMessage('Notification settings saved.')} className="px-3 py-2 bg-primary text-white text-sm font-semibold rounded-lg">Save</button>
+              <button onClick={() => setNotificationMessage('Notification settings saved.')} className="px-3 py-2 bg-primary text-white text-sm font-semibold rounded-lg">{t('Save')}</button>
             </div>
           </div>
         );
@@ -996,6 +992,8 @@ const SettingsTab = () => {
 };
 
 const PayrollPage = () => {
+  const { t } = useTranslation();
+  const { formatCurrency, formatDate } = useFormatters();
   const [activeTab, setActiveTab] = useState('Dashboard');
   const navigate = useNavigate();
 
