@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
-import Icon from "../../components/ui/Icon.jsx"
+import { ArrowLeft, ArrowRight, Building2, Users, Calendar, DollarSign, CheckSquare, Info, Check, Plus } from 'lucide-react';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
@@ -10,12 +10,12 @@ const api = axios.create({
 });
 
 const STEPS = [
-  { id: '01', label: 'Details',    icon: 'architecture' },
-  { id: '02', label: 'Client',    icon: 'person_pin'   },
-  { id: '03', label: 'Resources',  icon: 'group'        },
-  { id: '04', label: 'Phases',    icon: 'timeline'     },
-  { id: '05', label: 'Budget',    icon: 'payments'     },
-  { id: '06', label: 'Review',    icon: 'fact_check'   },
+  { id: '01', label: 'Details',    icon: Building2 },
+  { id: '02', label: 'Client',     icon: Users   },
+  { id: '03', label: 'Resources',  icon: Users        },
+  { id: '04', label: 'Phases',     icon: Calendar     },
+  { id: '05', label: 'Budget',     icon: DollarSign     },
+  { id: '06', label: 'Review',     icon: CheckSquare   },
 ];
 
 const PROJECT_PHASES = {
@@ -27,8 +27,8 @@ const PROJECT_PHASES = {
   'Default':                   ['Initial Meeting','Resource Assignment','Design','Construction','Interior Design','Material Purchase','Vendor Finalization','Handover'],
 };
 
-const LABEL = 'text-[9px] uppercase tracking-[0.15em] font-black text-zinc-400 block mb-1.5';
-const INPUT = 'w-full border-b border-zinc-200 bg-zinc-50 px-3 py-2 text-sm focus:outline-none focus:border-primary';
+const LABEL = 'block text-sm font-bold text-slate-700 mb-1.5';
+const INPUT = 'w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors';
 
 const NewProjectPage = () => {
   const navigate = useNavigate();
@@ -48,17 +48,13 @@ const NewProjectPage = () => {
     description: '',
     startDate: '',
     endDate: '',
-    // Client
     client: fromProposal?.client || '',
     clientContact: fromProposal?.fullName || '',
     clientEmail: fromProposal?.email || '',
     clientProjectCode: 'BW24-',
-    // Resources
     leadArchitect: '',
     teamMembers: [],
-    // Budget
     budget: '',
-    // Phases — auto-generated from type
     phases: (PROJECT_PHASES['High-End Residential']).map((p, i) => ({ name: p, active: true, order: i })),
   });
 
@@ -120,7 +116,6 @@ const NewProjectPage = () => {
           });
         } catch (err) {
           console.error('Error fetching project:', err);
-          alert('Failed to load project data');
         } finally {
           setLoading(false);
         }
@@ -134,7 +129,7 @@ const NewProjectPage = () => {
     setForm(prev => ({ ...prev, type, phases }));
   };
 
-  const toggleMember = (id) => set('teamMembers', form.teamMembers.includes(id) ? form.teamMembers.filter(x => x !== id) : [...form.teamMembers, id]);
+  const toggleMember = (empId) => set('teamMembers', form.teamMembers.includes(empId) ? form.teamMembers.filter(x => x !== empId) : [...form.teamMembers, empId]);
 
   const togglePhase = (idx) => {
     const phases = [...form.phases];
@@ -168,318 +163,355 @@ const NewProjectPage = () => {
         };
         if (isEditMode) {
           await api.patch(`/projects/${id}`, projectPayload);
-          alert('Project updated successfully!');
         } else {
           await api.post('/projects/', projectPayload);
-          alert('Project created successfully!');
         }
         navigate('/projects');
       } catch (err) {
         console.error('Error saving project:', err);
-        alert('Failed to save project. Please try again.');
       }
     }
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-[#fcf9f8]">
-      {/* Header */}
-      <div className="sticky top-0 z-20 bg-[#fcf9f8]/95 backdrop-blur border-b border-zinc-100 px-8 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate('/projects')} className="text-zinc-400 hover:text-zinc-700 transition-colors">
-            <Icon name="arrow_back" className="text-[20px]" />
-          </button>
-          <div>
-            <h2 className="text-xl font-black tracking-tight text-zinc-900 uppercase">{isEditMode ? 'Edit Project' : 'New Project'}</h2>
-            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mt-0.5">
-              {fromProposal ? `From Proposal: ${fromProposal.id}` : 'Create project from scratch'}
-            </p>
-          </div>
-        </div>
-        <div className="flex gap-3">
-          <button className="px-5 py-2.5 bg-zinc-100 text-zinc-700 text-[10px] font-black uppercase tracking-widest hover:bg-zinc-200 transition-colors">Save Draft</button>
-          <button onClick={handleNext} className="px-6 py-2.5 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors flex items-center gap-1.5">
-            {step < STEPS.length - 1 ? 'Continue' : 'Create Project'}
-            <Icon name="arrow_forward" className="text-[16px]" />
-          </button>
-        </div>
-      </div>
-
-      {/* Stepper */}
-      <div className="px-8 py-4 border-b border-zinc-100 overflow-x-auto">
-        <div className="flex items-stretch gap-0 min-w-max">
-          {STEPS.map((s, i) => (
-            <button key={s.id} onClick={() => setStep(i)} className={`flex items-center gap-2 px-5 py-2 border-b-2 transition-all ${i === step ? 'border-primary text-primary' : i < step ? 'border-zinc-300 text-zinc-400' : 'border-transparent text-zinc-300'}`}>
-              <span className={`w-5 h-5 text-[9px] font-black flex items-center justify-center ${i <= step ? 'bg-primary text-white' : 'bg-zinc-100 text-zinc-400'}`}>
-                {i < step ? '✓' : s.id}
-              </span>
-              <span className="text-[10px] font-black uppercase tracking-wider">{s.label}</span>
+    <div className="flex flex-col h-full bg-[#f8f6f6]">
+      {/* Header Container */}
+      <div className="bg-white border-b border-slate-200 px-8 py-6 sticky top-0 z-20">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <button onClick={() => navigate('/projects')} className="p-2 rounded-full hover:bg-slate-50 text-slate-500 transition-colors">
+              <ArrowLeft className="h-5 w-5" />
             </button>
-          ))}
+            <div>
+              <h2 className="text-xl font-bold text-slate-900">{isEditMode ? 'Edit Project' : 'New Project'}</h2>
+              <p className="text-sm text-slate-500 mt-1">
+                {fromProposal ? `From Proposal: ${fromProposal.id}` : 'Create project from scratch'}
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <button className="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-50 transition-colors">Save Draft</button>
+            <button onClick={handleNext} className="px-4 py-2 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2">
+              {step < STEPS.length - 1 ? 'Continue' : 'Create Project'}
+              {step < STEPS.length - 1 && <ArrowRight className="h-4 w-4" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Stepper */}
+        <div className="mt-6 flex items-center overflow-x-auto">
+          <div className="flex items-center gap-2 min-w-max">
+            {STEPS.map((s, i) => (
+              <button key={s.id} onClick={() => setStep(i)} className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${i === step ? 'bg-primary/10 text-primary font-bold' : 'text-slate-500 hover:bg-slate-50'}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${i === step ? 'bg-primary text-white' : i < step ? 'bg-primary text-white' : 'bg-slate-200 text-slate-500'}`}>
+                  {i < step ? <Check className="h-3 w-3" /> : i + 1}
+                </div>
+                <span className="text-sm">{s.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="px-8 pb-16 pt-6 max-w-5xl">
-        {/* Step 0: Project Details */}
-        {step === 0 && (
-          <div className="space-y-8">
-            <div className="flex items-center gap-3 mb-4">
-              <Icon name="architecture" className="p-2 bg-zinc-50 text-primary text-[20px]" />
-              <h3 className="text-[11px] font-black uppercase tracking-[0.15em]">01. Project Details</h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="md:col-span-2">
-                <label className={LABEL}>Project Name / Title</label>
-                <input value={form.name} onChange={e => set('name', e.target.value)} placeholder="e.g. Meridian Tower Renovation" className={INPUT + ' text-lg font-black'} />
-              </div>
-              <div>
-                <label className={LABEL}>Project Type</label>
-                <select value={form.type} onChange={e => updateType(e.target.value)} className={INPUT}>
-                  {Object.keys(PROJECT_PHASES).filter(k => k !== 'Default').map(t => <option key={t}>{t}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className={LABEL}>Project Code (Auto)</label>
-                <input value={form.clientProjectCode} onChange={e => set('clientProjectCode', e.target.value)} placeholder="BW24-01BFN-DGL" className={INPUT + ' font-mono'} />
-              </div>
-              <div>
-                <label className={LABEL}>Start Date</label>
-                <input type="date" value={form.startDate} onChange={e => set('startDate', e.target.value)} className={INPUT} />
-              </div>
-              <div>
-                <label className={LABEL}>Expected End Date</label>
-                <input type="date" value={form.endDate} onChange={e => set('endDate', e.target.value)} className={INPUT} />
-              </div>
-              <div className="md:col-span-2">
-                <label className={LABEL}>Project Description</label>
-                <textarea value={form.description} onChange={e => set('description', e.target.value)} rows={3} placeholder="Brief scope of the project..." className={INPUT + ' resize-none'} />
-              </div>
-              {fromProposal && (
-                <div className="md:col-span-2 flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200">
-                  <Icon name="link" style={{ fontVariationSettings: "'FILL' 1" }} className="text-emerald-600 text-[20px]" />
-                  <p className="text-xs text-emerald-800 font-semibold">
-                    Linked to Proposal <strong>{fromProposal.id || 'PRP001'}</strong> — details pre-filled from approved enquiry.
-                  </p>
+      <div className="flex-1 overflow-y-auto px-8 py-8">
+        <div className="max-w-4xl mx-auto bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden p-8">
+          
+          {/* Step 0: Project Details */}
+          {step === 0 && (
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+                <div className="p-3 bg-primary/10 rounded-lg text-primary">
+                  <Building2 className="h-6 w-6" />
                 </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Step 1: Client */}
-        {step === 1 && (
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 mb-4">
-              <Icon name="person_pin" className="p-2 bg-zinc-50 text-primary text-[20px]" />
-              <h3 className="text-[11px] font-black uppercase tracking-[0.15em]">02. Client Information</h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className={LABEL}>Client / Company</label>
-                <select value={form.client} onChange={e => set('client', e.target.value)} className={INPUT}>
-                  <option value="">Select client...</option>
-                  {clients.map(c => <option key={c.id || c.clientId} value={c.id || c.clientId}>{c.name}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className={LABEL}>Client Contact Name</label>
-                <input value={form.clientContact} onChange={e => set('clientContact', e.target.value)} placeholder="Robert Chen" className={INPUT} />
-              </div>
-              <div>
-                <label className={LABEL}>Client Email</label>
-                <input value={form.clientEmail} onChange={e => set('clientEmail', e.target.value)} placeholder="robert@meridian.com" className={INPUT} />
-              </div>
-              <div>
-                <label className={LABEL}>Client Phone</label>
-                <input placeholder="+1 555-2001" className={INPUT} />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Step 2: Resources */}
-        {step === 2 && (
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 mb-4">
-              <Icon name="group" className="p-2 bg-zinc-50 text-primary text-[20px]" />
-              <h3 className="text-[11px] font-black uppercase tracking-[0.15em]">03. Resource Assignment</h3>
-            </div>
-            <div>
-              <label className={LABEL}>Lead Architect</label>
-              <select value={form.leadArchitect} onChange={e => set('leadArchitect', e.target.value)} className={INPUT + ' mb-6'}>
-                {employees.map(e => <option key={e.id || e.employeeId} value={e.id || e.employeeId}>{e.name} — {e.role}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className={LABEL + ' mb-3'}>Team Members (select all that apply)</label>
-              <p className="text-[10px] text-zinc-400 mb-3">Resources can also be added/changed mid-project</p>
-              <div className="space-y-2">
-                {employees.map(e => {
-                  const empId = e.id || e.employeeId;
-                  return (
-                    <label key={empId} className="flex items-center gap-3 p-3 bg-zinc-50 hover:bg-zinc-100 transition-colors cursor-pointer">
-                      <div
-                        onClick={() => toggleMember(empId)}
-                        className={`w-4 h-4 border-2 flex items-center justify-center transition-colors shrink-0 ${form.teamMembers.includes(empId) ? 'border-primary bg-primary' : 'border-zinc-300'}`}
-                      >
-                        {form.teamMembers.includes(empId) && <Icon name="check" style={{ fontVariationSettings: "'wght' 700" }} className="text-white text-[12px]" />}
-                      </div>
-                      <div className="w-8 h-8 bg-primary/10 text-primary text-[11px] font-black flex items-center justify-center shrink-0">{e.name.charAt(0)}</div>
-                      <div>
-                        <p className="text-xs font-black text-zinc-800">{e.name}</p>
-                        <p className="text-[9px] text-zinc-400">{e.role}</p>
-                      </div>
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Step 3: Phases */}
-        {step === 3 && (
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 mb-2">
-              <Icon name="timeline" className="p-2 bg-zinc-50 text-primary text-[20px]" />
-              <div>
-                <h3 className="text-[11px] font-black uppercase tracking-[0.15em]">04. Project Phases</h3>
-                <p className="text-[9px] text-zinc-400 mt-0.5">Auto-generated from project type. Toggle phases as needed.</p>
-              </div>
-            </div>
-            <div className="p-3 bg-amber-50 border border-amber-200 flex items-center gap-2 mb-2">
-              <Icon name="info" className="text-amber-600 text-[18px]" />
-              <p className="text-[10px] text-amber-800 font-semibold">Phases for type: <strong>{form.type}</strong>. Resources can be reassigned at any phase.</p>
-            </div>
-            <div className="space-y-2">
-              {form.phases.map((ph, i) => (
-                <div key={i} className={`flex items-center gap-4 p-4 border transition-all ${ph.active ? 'bg-white border-zinc-100' : 'bg-zinc-50 border-zinc-100 opacity-50'}`}>
-                  <div
-                    onClick={() => togglePhase(i)}
-                    className={`w-4 h-4 border-2 flex items-center justify-center transition-colors shrink-0 cursor-pointer ${ph.active ? 'border-primary bg-primary' : 'border-zinc-300'}`}
-                  >
-                    {ph.active && <Icon name="check" style={{ fontVariationSettings: "'wght' 700" }} className="text-white text-[12px]" />}
-                  </div>
-                  <div className="flex items-center gap-3 flex-1">
-                    <span className="text-[10px] font-black font-mono text-primary w-6">{String(i + 1).padStart(2, '0')}</span>
-                    <span className="text-xs font-black text-zinc-800">{ph.name}</span>
-                  </div>
-                  <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 ${i === 0 ? 'bg-primary text-white' : 'bg-zinc-100 text-zinc-400'}`}>
-                    {i === 0 ? 'Start' : 'Upcoming'}
-                  </span>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900">Project Details</h3>
+                  <p className="text-sm text-slate-500">Enter the basic information for this project.</p>
                 </div>
-              ))}
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="md:col-span-2">
+                  <label className={LABEL}>Project Name / Title</label>
+                  <input value={form.name} onChange={e => set('name', e.target.value)} placeholder="e.g. Meridian Tower Renovation" className={INPUT} />
+                </div>
+                <div>
+                  <label className={LABEL}>Project Type</label>
+                  <select value={form.type} onChange={e => updateType(e.target.value)} className={INPUT}>
+                    {Object.keys(PROJECT_PHASES).filter(k => k !== 'Default').map(t => <option key={t}>{t}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className={LABEL}>Project Code (Auto)</label>
+                  <input value={form.clientProjectCode} onChange={e => set('clientProjectCode', e.target.value)} placeholder="BW24-01BFN-DGL" className={INPUT} />
+                </div>
+                <div>
+                  <label className={LABEL}>Start Date</label>
+                  <input type="date" value={form.startDate} onChange={e => set('startDate', e.target.value)} className={INPUT} />
+                </div>
+                <div>
+                  <label className={LABEL}>Expected End Date</label>
+                  <input type="date" value={form.endDate} onChange={e => set('endDate', e.target.value)} className={INPUT} />
+                </div>
+                <div className="md:col-span-2">
+                  <label className={LABEL}>Project Description</label>
+                  <textarea value={form.description} onChange={e => set('description', e.target.value)} rows={4} placeholder="Brief scope of the project..." className={INPUT + ' resize-none'} />
+                </div>
+                {fromProposal && (
+                  <div className="md:col-span-2 flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <Info className="text-blue-600 h-5 w-5" />
+                    <p className="text-sm text-blue-800">
+                      Linked to Proposal <strong>{fromProposal.id || 'PRP001'}</strong> — details pre-filled from approved enquiry.
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Step 4: Budget */}
-        {step === 4 && (
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 mb-4">
-              <Icon name="payments" className="p-2 bg-zinc-50 text-primary text-[20px]" />
-              <h3 className="text-[11px] font-black uppercase tracking-[0.15em]">05. Budget & Financials</h3>
+          {/* Step 1: Client */}
+          {step === 1 && (
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+                <div className="p-3 bg-primary/10 rounded-lg text-primary">
+                  <Users className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900">Client Information</h3>
+                  <p className="text-sm text-slate-500">Link a client to this project and set contact details.</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className={LABEL}>Client / Company</label>
+                  <select value={form.client} onChange={e => set('client', e.target.value)} className={INPUT}>
+                    <option value="">Select client...</option>
+                    {clients.map(c => <option key={c.id || c.clientId} value={c.id || c.clientId}>{c.name}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className={LABEL}>Client Contact Name</label>
+                  <input value={form.clientContact} onChange={e => set('clientContact', e.target.value)} placeholder="Robert Chen" className={INPUT} />
+                </div>
+                <div>
+                  <label className={LABEL}>Client Email</label>
+                  <input value={form.clientEmail} onChange={e => set('clientEmail', e.target.value)} placeholder="robert@meridian.com" className={INPUT} />
+                </div>
+                <div>
+                  <label className={LABEL}>Client Phone</label>
+                  <input placeholder="+1 555-2001" className={INPUT} />
+                </div>
+              </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className={LABEL}>Total Project Budget ($)</label>
-                <input type="number" value={form.budget} onChange={e => set('budget', e.target.value)} placeholder="e.g. 450000" className={INPUT + ' text-xl font-black'} />
+          )}
+
+          {/* Step 2: Resources */}
+          {step === 2 && (
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+                <div className="p-3 bg-primary/10 rounded-lg text-primary">
+                  <Users className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900">Resource Assignment</h3>
+                  <p className="text-sm text-slate-500">Assign a lead architect and project team members.</p>
+                </div>
               </div>
               <div>
-                <label className={LABEL}>Currency</label>
-                <select className={INPUT}><option>USD ($)</option><option>GBP (£)</option><option>EUR (€)</option></select>
-              </div>
-              <div>
-                <label className={LABEL}>Fee Type</label>
-                <select className={INPUT}>
-                  <option>Lump Sum Fixed Fee</option>
-                  <option>Percentage of Construction Cost</option>
-                  <option>Hourly Rate</option>
-                  <option>RIBA Stage-Based Payments</option>
+                <label className={LABEL}>Lead Architect</label>
+                <select value={form.leadArchitect} onChange={e => set('leadArchitect', e.target.value)} className={INPUT + ' mb-6'}>
+                  {employees.map(e => <option key={e.id || e.employeeId} value={e.id || e.employeeId}>{e.name} — {e.role}</option>)}
                 </select>
               </div>
               <div>
-                <label className={LABEL}>Payment Schedule</label>
-                <select className={INPUT}>
-                  <option>Milestone-Based</option>
-                  <option>Monthly Retainer</option>
-                  <option>50/50 (Deposit + Completion)</option>
-                </select>
-              </div>
-              <div className="md:col-span-2">
-                <label className={LABEL}>Budget Notes</label>
-                <textarea rows={2} placeholder="Any budget constraints, contingency notes..." className={INPUT + ' resize-none'} />
+                <label className={LABEL}>Team Members</label>
+                <p className="text-sm text-slate-500 mb-4">Select all that apply. Resources can also be changed mid-project.</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {employees.map(e => {
+                    const empId = e.id || e.employeeId;
+                    const isSelected = form.teamMembers.includes(empId);
+                    return (
+                      <label key={empId} className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-colors ${isSelected ? 'border-primary bg-primary/5' : 'border-slate-200 hover:bg-slate-50'}`}>
+                        <div className={`w-5 h-5 rounded flex items-center justify-center transition-colors shrink-0 ${isSelected ? 'bg-primary' : 'bg-slate-200'}`}>
+                          {isSelected && <Check className="h-3 w-3 text-white" />}
+                        </div>
+                        <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-600 font-bold flex items-center justify-center shrink-0">
+                          {e.name.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-slate-900">{e.name}</p>
+                          <p className="text-xs text-slate-500">{e.role}</p>
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Step 5: Review */}
-        {step === 5 && (
-          <div className="space-y-6">
-            <div className="flex items-center gap-3 mb-4">
-              <Icon name="fact_check" className="p-2 bg-zinc-50 text-primary text-[20px]" />
-              <h3 className="text-[11px] font-black uppercase tracking-[0.15em]">06. Review & Create</h3>
-            </div>
-            <div className="grid grid-cols-12 gap-5">
-              <div className="col-span-12 lg:col-span-8 space-y-4">
-                {[
-                  { label: 'Project Name', val: form.name || '—' },
-                  { label: 'Type', val: form.type },
-                  { label: 'Client', val: form.client || '—' },
-                  { label: 'Contact', val: form.clientContact || '—' },
-                  { label: 'Budget', val: form.budget ? `$${Number(form.budget).toLocaleString()}` : '—' },
-                  { label: 'Start Date', val: form.startDate || '—' },
-                  { label: 'End Date', val: form.endDate || '—' },
-                  { label: 'Project Code', val: form.clientProjectCode || '—' },
-                ].map(f => (
-                  <div key={f.label} className="flex items-center justify-between px-4 py-3 bg-zinc-50 border-l-4 border-zinc-100">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">{f.label}</p>
-                    <p className="text-xs font-bold text-zinc-900">{f.val}</p>
+          {/* Step 3: Phases */}
+          {step === 3 && (
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 mb-4 pb-4 border-b border-slate-100">
+                <div className="p-3 bg-primary/10 rounded-lg text-primary">
+                  <Calendar className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900">Project Phases</h3>
+                  <p className="text-sm text-slate-500">Auto-generated from project type. Toggle phases as needed.</p>
+                </div>
+              </div>
+              <div className="p-4 bg-blue-50 rounded-lg flex items-center gap-3 mb-4">
+                <Info className="text-blue-600 h-5 w-5" />
+                <p className="text-sm text-blue-800">Phases for type: <strong className="font-bold">{form.type}</strong>. Resources can be reassigned at any phase.</p>
+              </div>
+              <div className="space-y-3">
+                {form.phases.map((ph, i) => (
+                  <div key={i} className={`flex items-center gap-4 p-4 rounded-xl border transition-all ${ph.active ? 'border-slate-200 bg-white shadow-sm' : 'border-slate-100 bg-slate-50 opacity-60'}`}>
+                    <div
+                      onClick={() => togglePhase(i)}
+                      className={`w-5 h-5 rounded flex items-center justify-center transition-colors shrink-0 cursor-pointer ${ph.active ? 'bg-primary' : 'bg-slate-200'}`}
+                    >
+                      {ph.active && <Check className="text-white h-3 w-3" />}
+                    </div>
+                    <div className="flex items-center gap-4 flex-1">
+                      <span className="text-sm font-bold text-slate-400 w-6">{String(i + 1).padStart(2, '0')}</span>
+                      <span className="text-sm font-bold text-slate-900">{ph.name}</span>
+                    </div>
+                    <span className={`text-xs font-bold rounded-lg px-3 py-1 ${i === 0 ? 'bg-primary/10 text-primary' : 'bg-slate-100 text-slate-500'}`}>
+                      {i === 0 ? 'Start' : 'Upcoming'}
+                    </span>
                   </div>
                 ))}
-                <div className="px-4 py-3 bg-zinc-50 border-l-4 border-zinc-100">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-2">Phases ({form.phases.filter(p => p.active).length} active)</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {form.phases.filter(p => p.active).map((ph, i) => (
-                      <span key={i} className="text-[9px] font-black uppercase px-2 py-0.5 bg-primary/10 text-primary">{ph.name}</span>
-                    ))}
-                  </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Budget */}
+          {step === 4 && (
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+                <div className="p-3 bg-primary/10 rounded-lg text-primary">
+                  <DollarSign className="h-6 w-6" />
                 </div>
-                <div className="px-4 py-3 bg-zinc-50 border-l-4 border-zinc-100">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-2">Team ({form.teamMembers.length} members)</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {employees.filter(e => form.teamMembers.includes(e.id || e.employeeId)).map(e => (
-                      <span key={e.id || e.employeeId} className="text-[9px] font-black uppercase px-2 py-0.5 bg-zinc-200 text-zinc-700">{e.name}</span>
-                    ))}
-                  </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900">Budget & Financials</h3>
+                  <p className="text-sm text-slate-500">Configure the budget, currency, and payment schedule.</p>
                 </div>
               </div>
-              <div className="col-span-12 lg:col-span-4">
-                <div className="bg-zinc-900 text-white p-6 space-y-5">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-white/40">Project Summary</p>
-                  <div><p className="text-[9px] text-white/40 uppercase tracking-widest">Name</p><p className="font-bold">{form.name || '—'}</p></div>
-                  <div><p className="text-[9px] text-white/40 uppercase tracking-widest">Budget</p><p className="text-2xl font-black text-primary">{form.budget ? `$${Number(form.budget).toLocaleString()}` : '—'}</p></div>
-                  <div><p className="text-[9px] text-white/40 uppercase tracking-widest">Phases</p><p className="font-bold">{form.phases.filter(p => p.active).length} phases defined</p></div>
-                  <button onClick={handleNext} className="w-full py-3 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-primary transition-colors flex items-center justify-center gap-2">
-                    <Icon name="add" className="text-[16px]" />Create Project
-                  </button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className={LABEL}>Total Project Budget ($)</label>
+                  <input type="number" value={form.budget} onChange={e => set('budget', e.target.value)} placeholder="e.g. 450000" className={INPUT + ' text-lg'} />
+                </div>
+                <div>
+                  <label className={LABEL}>Currency</label>
+                  <select className={INPUT}><option>USD ($)</option><option>GBP (£)</option><option>EUR (€)</option></select>
+                </div>
+                <div>
+                  <label className={LABEL}>Fee Type</label>
+                  <select className={INPUT}>
+                    <option>Lump Sum Fixed Fee</option>
+                    <option>Percentage of Construction Cost</option>
+                    <option>Hourly Rate</option>
+                    <option>RIBA Stage-Based Payments</option>
+                  </select>
+                </div>
+                <div>
+                  <label className={LABEL}>Payment Schedule</label>
+                  <select className={INPUT}>
+                    <option>Milestone-Based</option>
+                    <option>Monthly Retainer</option>
+                    <option>50/50 (Deposit + Completion)</option>
+                  </select>
+                </div>
+                <div className="md:col-span-2">
+                  <label className={LABEL}>Budget Notes</label>
+                  <textarea rows={3} placeholder="Any budget constraints, contingency notes..." className={INPUT + ' resize-none'} />
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Bottom Navigation */}
-        <div className="flex justify-between mt-10 pt-6 border-t border-zinc-100">
-          <button onClick={() => step > 0 ? setStep(s => s - 1) : navigate('/projects')} className="flex items-center gap-2 text-zinc-500 hover:text-zinc-900 text-[10px] font-black uppercase tracking-widest transition-colors">
-            <Icon name="arrow_back" className="text-[18px]" />
-            {step > 0 ? 'Previous' : 'Cancel'}
-          </button>
-          <button onClick={handleNext} className="flex items-center gap-2 px-6 py-3 bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors">
-            {step < STEPS.length - 1 ? 'Continue' : 'Create Project'}
-            <Icon name="arrow_forward" className="text-[16px]" />
-          </button>
+          {/* Step 5: Review */}
+          {step === 5 && (
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+                <div className="p-3 bg-primary/10 rounded-lg text-primary">
+                  <CheckSquare className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900">Review & Create</h3>
+                  <p className="text-sm text-slate-500">Double check all project information before creating.</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="md:col-span-2 space-y-4">
+                  {[
+                    { label: 'Project Name', val: form.name || '—' },
+                    { label: 'Type', val: form.type },
+                    { label: 'Client', val: form.client || '—' },
+                    { label: 'Contact', val: form.clientContact || '—' },
+                    { label: 'Budget', val: form.budget ? `$${Number(form.budget).toLocaleString()}` : '—' },
+                    { label: 'Start Date', val: form.startDate || '—' },
+                    { label: 'End Date', val: form.endDate || '—' },
+                    { label: 'Project Code', val: form.clientProjectCode || '—' },
+                  ].map(f => (
+                    <div key={f.label} className="flex justify-between items-center py-3 border-b border-slate-100">
+                      <span className="text-sm text-slate-500">{f.label}</span>
+                      <span className="text-sm font-bold text-slate-900">{f.val}</span>
+                    </div>
+                  ))}
+                  
+                  <div className="pt-4">
+                    <p className="text-sm font-bold text-slate-900 mb-3">Phases ({form.phases.filter(p => p.active).length} active)</p>
+                    <div className="flex flex-wrap gap-2">
+                      {form.phases.filter(p => p.active).map((ph, i) => (
+                        <span key={i} className="text-xs font-bold rounded-lg px-3 py-1 bg-slate-100 text-slate-600">{ph.name}</span>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="pt-4">
+                    <p className="text-sm font-bold text-slate-900 mb-3">Team ({form.teamMembers.length} members)</p>
+                    <div className="flex flex-wrap gap-2">
+                      {employees.filter(e => form.teamMembers.includes(e.id || e.employeeId)).map(e => (
+                        <span key={e.id || e.employeeId} className="text-xs font-bold rounded-lg px-3 py-1 bg-primary/10 text-primary">{e.name}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="bg-slate-50 rounded-xl p-6 border border-slate-200 text-center">
+                    <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-6">Summary</h4>
+                    <div className="mb-6">
+                      <p className="text-3xl font-black text-slate-900">{form.name || 'Untitled'}</p>
+                    </div>
+                    <div className="mb-8">
+                      <p className="text-sm text-slate-500 mb-1">Total Budget</p>
+                      <p className="text-3xl font-black text-primary">{form.budget ? `$${Number(form.budget).toLocaleString()}` : '—'}</p>
+                    </div>
+                    <button onClick={handleNext} className="w-full py-3 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+                      <Check className="h-5 w-5" /> Create Project
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Bottom Navigation */}
+          <div className="flex justify-between mt-10 pt-6 border-t border-slate-100">
+            <button onClick={() => step > 0 ? setStep(s => s - 1) : navigate('/projects')} className="flex items-center gap-2 text-slate-500 hover:text-slate-900 text-sm font-bold transition-colors">
+              <ArrowLeft className="h-5 w-5" />
+              {step > 0 ? 'Previous' : 'Cancel'}
+            </button>
+            <button onClick={handleNext} className="flex items-center gap-2 px-6 py-3 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors shadow-sm">
+              {step < STEPS.length - 1 ? 'Continue' : 'Create Project'}
+              {step < STEPS.length - 1 && <ArrowRight className="h-5 w-5" />}
+            </button>
+          </div>
+
         </div>
       </div>
     </div>

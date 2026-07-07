@@ -104,7 +104,8 @@ function App() {
           <Route path="ai-insights" element={<AIInsightsPage />} />
 
           {/* Settings */}
-          <Route path="settings" element={<SettingsPage />} />
+          <Route path="settings" element={<Navigate to="/settings/company" replace />} />
+          <Route path="settings/:section" element={<SettingsPage />} />
 
           {/* Catch-all */}
           <Route path="*" element={<Navigate to="/" replace />} />

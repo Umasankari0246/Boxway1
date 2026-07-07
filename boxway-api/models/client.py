@@ -28,7 +28,7 @@ class UpdateClientSchema(BaseModel):
     type: Optional[str]
     city: Optional[str]
     address: Optional[str]
-    totalProjects: Optional[int]
+    totalProjects: Optional[int]3
     totalValue: Optional[float]
     status: Optional[str]
     notes: Optional[str]
