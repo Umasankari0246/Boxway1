@@ -192,15 +192,33 @@ const SettingsPage = () => {
     if (isSaving) return;
     setIsSaving(true);
     try {
+      const langReverseMap = { 'en': 'English', 'es': 'Spanish', 'fr': 'French', 'de': 'German' };
+      const currencyReverseMap = { 'USD': 'USD ($)', 'EUR': 'EUR (€)', 'GBP': 'GBP (£)', 'INR': 'INR (₹)' };
+      
+      const mappedAppearance = {
+        theme: appearance.theme ? appearance.theme.charAt(0).toUpperCase() + appearance.theme.slice(1).toLowerCase() : 'Light',
+        language: langReverseMap[appearance.language] || appearance.language,
+        currency: currencyReverseMap[appearance.currency] || appearance.currency,
+        dateFormat: appearance.dateFormat
+      };
+
       const payload = {
         companyProfile,
         users,
         notifications,
-        appearance, // Sent to backend, but client trusts Zustand
+        appearance: mappedAppearance,
         integrations,
         security,
         billing: billingInfo
       };
+
+      // Sync with global store permanently
+      settings.setTheme(appearance.theme?.toLowerCase() || 'light');
+      settings.setLanguage(appearance.language || 'en');
+      settings.setCurrency(appearance.currency || 'USD');
+      settings.setDateFormat(appearance.dateFormat || 'MM/DD/YYYY');
+      settings.setPreviewSettings(null);
+
       // Try to save to backend
       const response = await api.patch('/settings/', payload);
       setSaved(true);
@@ -543,36 +561,36 @@ const SettingsPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Theme')}</label>
-                    <select value={appearance.theme || 'Light'} onChange={(e) => handleAppearanceChange('theme', e.target.value)} className="w-full border border-slate-200 rounded px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors">
-                      <option>{t('Light')}</option>
-                      <option>{t('Dark')}</option>
-                      <option>{t('Auto')}</option>
+                    <select value={appearance.theme?.toLowerCase() || 'light'} onChange={(e) => handleAppearanceChange('theme', e.target.value)} className="w-full border border-slate-200 rounded px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors">
+                      <option value="light">{t('Light')}</option>
+                      <option value="dark">{t('Dark')}</option>
+                      <option value="auto">{t('Auto')}</option>
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Language')}</label>
-                    <select value={appearance.language || 'English'} onChange={(e) => handleAppearanceChange('language', e.target.value)} className="w-full border border-slate-200 rounded px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors">
-                      <option>{t('English')}</option>
-                      <option>{t('Spanish')}</option>
-                      <option>{t('French')}</option>
-                      <option>{t('German')}</option>
+                    <select value={appearance.language || 'en'} onChange={(e) => handleAppearanceChange('language', e.target.value)} className="w-full border border-slate-200 rounded px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors">
+                      <option value="en">{t('English')}</option>
+                      <option value="es">{t('Spanish')}</option>
+                      <option value="fr">{t('French')}</option>
+                      <option value="de">{t('German')}</option>
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Date Format')}</label>
                     <select value={appearance.dateFormat || 'MM/DD/YYYY'} onChange={(e) => handleAppearanceChange('dateFormat', e.target.value)} className="w-full border border-slate-200 rounded px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors">
-                      <option>MM/DD/YYYY</option>
-                      <option>DD/MM/YYYY</option>
-                      <option>{t('YYYY-MM-DD')}</option>
+                      <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                      <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                      <option value="YYYY-MM-DD">{t('YYYY-MM-DD')}</option>
                     </select>
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{t('Currency')}</label>
-                    <select value={appearance.currency || 'USD ($)'} onChange={(e) => handleAppearanceChange('currency', e.target.value)} className="w-full border border-slate-200 rounded px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors">
-                      <option>USD ($)</option>
-                      <option>EUR (€)</option>
-                      <option>GBP (£)</option>
-                      <option>INR (₹)</option>
+                    <select value={appearance.currency || 'USD'} onChange={(e) => handleAppearanceChange('currency', e.target.value)} className="w-full border border-slate-200 rounded px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors">
+                      <option value="USD">USD ($)</option>
+                      <option value="EUR">EUR (€)</option>
+                      <option value="GBP">GBP (£)</option>
+                      <option value="INR">INR (₹)</option>
                     </select>
                   </div>
                 </div>
