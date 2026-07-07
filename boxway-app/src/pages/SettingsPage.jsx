@@ -412,7 +412,7 @@ const SettingsPage = () => {
             {sections.map(s => (
               <button key={s} onClick={() => handleSectionChange(s)}
                 className={`w-full text-left flex items-center px-4 py-2.5 rounded text-sm font-medium transition-colors ${activeSection === s ? 'bg-primary text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'}`}>
-                {s}
+                {t(s)}
               </button>
             ))}
           </nav>
@@ -429,7 +429,7 @@ const SettingsPage = () => {
                   className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 text-sm font-bold rounded hover:bg-slate-200 transition-colors"
                 >
                   <Icon name={isEditingCompany ? "close" : "edit"} className="text-lg" />
-                  {isEditingCompany ? 'Cancel' : 'Edit'}
+                  {isEditingCompany ? t('Cancel') : t('Edit')}
                 </button>
               </div>
               <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 space-y-6">
@@ -484,7 +484,7 @@ const SettingsPage = () => {
                 <div className="mt-6 flex justify-end gap-3">
                   <button onClick={() => setIsEditingCompany(false)} className="px-6 py-3 border border-slate-200 text-slate-700 text-sm font-bold rounded hover:bg-slate-50 transition-colors">{t('Cancel')}</button>
                   <button onClick={() => { handleSave(); setIsEditingCompany(false); }} className="flex items-center gap-2 px-6 py-3 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-sm transition-all">
-                    {saved ? <><Icon name="check" className="text-lg" />{t('Saved!')}</> : 'Save Changes'}
+                    {saved ? <><Icon name="check" className="text-lg" />{t('Saved!')}</> : t('Save Changes')}
                   </button>
                 </div>
               )}
@@ -546,7 +546,7 @@ const SettingsPage = () => {
               )}
               <div className="mt-6 flex justify-end">
                 <button onClick={handleSave} disabled={isSaving} className="flex items-center gap-2 px-6 py-3 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-sm transition-all disabled:opacity-50">
-                  {isSaving ? <><Icon name="refresh" className="text-lg animate-spin" />{t('Saving...')}</> : saved ? <><Icon name="check" className="text-lg" />{t('Saved!')}</> : 'Save Changes'}
+                  {isSaving ? <><Icon name="refresh" className="text-lg animate-spin" />{t('Saving...')}</> : saved ? <><Icon name="check" className="text-lg" />{t('Saved!')}</> : t('Save Changes')}
                 </button>
               </div>
             </div>
@@ -597,7 +597,7 @@ const SettingsPage = () => {
               </div>
               <div className="mt-6 flex justify-end">
                 <button onClick={handleAppearanceSave} className="flex items-center gap-2 px-6 py-3 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-sm transition-all">
-                  {saved ? <><Icon name="check" className="text-lg" />{t('Saved!')}</> : 'Save Changes'}
+                  {saved ? <><Icon name="check" className="text-lg" />{t('Saved!')}</> : t('Save Changes')}
                 </button>
               </div>
             </div>
@@ -671,7 +671,7 @@ const SettingsPage = () => {
               </div>
               <div className="mt-6 flex justify-end">
                 <button onClick={handleSave} className="flex items-center gap-2 px-6 py-3 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-sm transition-all">
-                  {saved ? <><Icon name="check" className="text-lg" />{t('Saved!')}</> : 'Save Changes'}
+                  {saved ? <><Icon name="check" className="text-lg" />{t('Saved!')}</> : t('Save Changes')}
                 </button>
               </div>
             </div>
@@ -792,7 +792,7 @@ const SettingsPage = () => {
               )}
               <div className="mt-6 flex justify-end">
                 <button onClick={handleSave} className="flex items-center gap-2 px-6 py-3 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-sm transition-all">
-                  {saved ? <><Icon name="check" className="text-lg" />{t('Saved!')}</> : 'Save Changes'}
+                  {saved ? <><Icon name="check" className="text-lg" />{t('Saved!')}</> : t('Save Changes')}
                 </button>
               </div>
             </div>
@@ -861,7 +861,7 @@ const SettingsPage = () => {
               )}
               <div className="mt-6 flex justify-end">
                 <button onClick={handleSave} disabled={isSaving} className="flex items-center gap-2 px-6 py-3 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-sm transition-all disabled:opacity-50">
-                  {isSaving ? <><Icon name="refresh" className="text-lg animate-spin" />{t('Saving...')}</> : saved ? <><Icon name="check" className="text-lg" />{t('Saved!')}</> : 'Save Changes'}
+                  {isSaving ? <><Icon name="refresh" className="text-lg animate-spin" />{t('Saving...')}</> : saved ? <><Icon name="check" className="text-lg" />{t('Saved!')}</> : t('Save Changes')}
                 </button>
               </div>
             </div>
@@ -968,7 +968,7 @@ const SettingsPage = () => {
               )}
               <div className="mt-6 flex justify-end">
                 <button onClick={handleSave} className="flex items-center gap-2 px-6 py-3 bg-primary text-white text-sm font-bold rounded hover:bg-primary/90 shadow-sm transition-all">
-                  {saved ? <><Icon name="check" className="text-lg" />{t('Saved!')}</> : 'Save Changes'}
+                  {saved ? <><Icon name="check" className="text-lg" />{t('Saved!')}</> : t('Save Changes')}
                 </button>
               </div>
             </div>
