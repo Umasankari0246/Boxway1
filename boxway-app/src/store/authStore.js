@@ -1,42 +1,30 @@
 import { create } from 'zustand';
+import axios from 'axios';
 
-// Mock credentials – consistent with what the login page shows
-const MOCK_CREDENTIALS = [
-  {
-    id: 1,
-    name: 'Alex Carter',
-    email: 'admin@boxway.com',
-    password: 'admin123',
-    role: 'Admin',
-    title: 'Studio Principal',
-    department: 'Management',
-  },
-  {
-    id: 2,
-    name: 'Marcus Johnson',
-    email: 'architect@boxway.com',
-    password: 'arch123',
-    role: 'Architect',
-    title: 'Senior Architect',
-    department: 'Design',
-  },
-];
+const api = axios.create({
+  baseURL: window.location.hostname === 'localhost'
+    ? 'http://localhost:8001/api'
+    : 'https://boxxway.onrender.com/api'
+});
 
 export const useAuthStore = create((set) => ({
   user: null,
   loginError: null,
 
-  login: (email, password) => {
-    const match = MOCK_CREDENTIALS.find(
-      (u) => u.email.trim().toLowerCase() === email.trim().toLowerCase() && u.password === password
-    );
-    if (match) {
-      const { password: _pw, ...user } = match; // strip password from stored state
-      set({ user, loginError: null });
-      return true;
+  login: async (email, password) => {
+    try {
+      const response = await api.post('/auth/login', { email, password });
+      if (response.data && response.data.data) {
+        set({ user: response.data.data, loginError: null });
+        return true;
+      }
+      set({ loginError: 'Invalid response from server' });
+      return false;
+    } catch (error) {
+      const errorMessage = error.response?.data?.detail || 'Invalid email or password. Try admin@boxway.com / admin123';
+      set({ loginError: errorMessage });
+      return false;
     }
-    set({ loginError: 'Invalid email or password. Try admin@boxway.com / admin123' });
-    return false;
   },
 
   clearError: () => set({ loginError: null }),
