@@ -7,7 +7,7 @@ import { useTranslation } from '../../../store/settingsStore';
 import { useFormatters } from '../../../store/settingsStore';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api'
+  baseURL: 'http://localhost:8001/api'
 });
 
 const STEPS = ['Select Employees', 'Setup Payroll', 'Review & Confirm'];
