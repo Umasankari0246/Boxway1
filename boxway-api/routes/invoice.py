@@ -28,7 +28,38 @@ async def add_invoice(invoice: InvoiceSchema = Body(...)):
 @router.get("/", response_description="Invoices retrieved")
 async def get_invoices():
     invoices = []
+    client_collection = db.get_collection("clients")
+    project_collection = db.get_collection("projects")
+    
     for invoice in invoice_collection.find():
+        # Resolve client name if clientId exists but client name is missing or unknown
+        if invoice.get("clientId") and (not invoice.get("client") or invoice.get("client") == "Unknown Client"):
+            client = client_collection.find_one({"clientId": invoice["clientId"]})
+            if client:
+                invoice["client"] = client.get("name", client.get("companyName", "Unknown Client"))
+        
+        # If no clientId but client name is unknown, try to find by name
+        if not invoice.get("clientId") and (not invoice.get("client") or invoice.get("client") == "Unknown Client"):
+            # Try to find a client to associate (default to first available)
+            client = client_collection.find_one()
+            if client:
+                invoice["clientId"] = client.get("clientId")
+                invoice["client"] = client.get("name", client.get("companyName", "Unknown Client"))
+        
+        # Resolve project name if projectId exists but project name is missing or unknown
+        if invoice.get("projectId") and (not invoice.get("project") or invoice.get("project") == "Unknown Project"):
+            project = project_collection.find_one({"projectId": invoice["projectId"]})
+            if project:
+                invoice["project"] = project.get("name", "Unknown Project")
+        
+        # If no projectId but project name is unknown, try to find by name
+        if not invoice.get("projectId") and (not invoice.get("project") or invoice.get("project") == "Unknown Project"):
+            # Try to find a project to associate (default to first available)
+            project = project_collection.find_one()
+            if project:
+                invoice["projectId"] = project.get("projectId")
+                invoice["project"] = project.get("name", "Unknown Project")
+        
         invoices.append(invoice_helper(invoice))
     return {"message": "Success", "data": invoices}
 
