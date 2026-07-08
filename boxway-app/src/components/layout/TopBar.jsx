@@ -8,7 +8,7 @@ import { useFormatters } from '../../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
-    ? 'http://localhost:8000/api'
+    ? 'http://localhost:8001/api'
     : 'https://boxxway.onrender.com/api',
 });
 

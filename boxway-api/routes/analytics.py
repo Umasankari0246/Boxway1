@@ -7,6 +7,22 @@ from collections import defaultdict
 router = APIRouter()
 db = get_database()
 
+@router.get("/", response_description="Analytics overview")
+async def get_analytics_overview():
+    """Get combined analytics data or available endpoints"""
+    return {
+        "message": "Success",
+        "data": {
+            "availableEndpoints": [
+                "/kpis",
+                "/revenue-by-month",
+                "/projects-by-status",
+                "/top-clients"
+            ],
+            "description": "Use specific endpoints for detailed analytics"
+        }
+    }
+
 @router.get("/kpis", response_description="KPIs retrieved")
 async def get_kpis():
     """Get key performance indicators aggregated from all collections"""

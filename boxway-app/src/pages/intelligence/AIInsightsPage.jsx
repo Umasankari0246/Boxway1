@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Icon from "../../components/ui/Icon.jsx"
 import { useTranslation } from '../../store/settingsStore';
@@ -6,7 +7,7 @@ import { useFormatters } from '../../store/settingsStore';
 
 const api = axios.create({
   baseURL: window.location.hostname === 'localhost'
-    ? 'http://localhost:8000/api'
+    ? 'http://localhost:8001/api'
     : 'https://boxxway.onrender.com/api',
 });
 
@@ -19,6 +20,7 @@ const typeConfig = {
 };
 
 const AIInsightsPage = () => {
+  const navigate = useNavigate();
   const { formatCurrency, formatDate } = useFormatters();
 
   const { t } = useTranslation();
@@ -28,6 +30,17 @@ const AIInsightsPage = () => {
   const [input, setInput] = useState('');
   const [insights, setInsights] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isAiOpen, setIsAiOpen] = useState(true);
+
+  const handleActionClick = (category, action) => {
+    if (action === 'View Invoice') return navigate('/invoices');
+    if (action === 'Contact Client') return navigate('/clients');
+    if (category === 'Finance') return navigate('/analytics');
+    if (category === 'Sales') return navigate('/clients');
+    if (category === 'Resources') return navigate('/employees');
+    if (category === 'Projects') return navigate('/projects');
+    navigate('/');
+  };
 
   useEffect(() => {
     const fetchInsights = async () => {
@@ -69,19 +82,25 @@ const AIInsightsPage = () => {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-8 bg-[#f8f6f6]">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-2xl font-black text-slate-900">{t('AI Insights')}</h2>
-          <p className="text-sm text-slate-500">{t('Powered by intelligent analysis of your business data')}</p>
+    <div className="flex flex-col h-full bg-[#f8f6f6]">
+      {/* Header Container */}
+      <div className="bg-white border-b border-slate-200 px-8 py-6 z-10">
+        <div className="flex justify-between items-center">
+          <div>
+            <p className="text-sm text-slate-500 mt-1">{t('Powered by intelligent analysis of your business data')}</p>
+          </div>
+          <div className="flex gap-3">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-bold">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />{t('AI Active')}
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-bold">
-          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />{t('AI Active')}</div>
       </div>
 
-      <div className="grid grid-cols-12 gap-6">
+      <div className="flex-1 overflow-y-auto p-8 relative">
+        <div className="grid grid-cols-12 gap-6 relative">
         {/* Insights Feed */}
-        <div className="col-span-7">
+        <div className={`transition-all duration-300 ${isAiOpen ? 'col-span-12 lg:col-span-7' : 'col-span-12'}`}>
           <div className="flex items-center gap-3 mb-4">
             <h3 className="font-bold text-slate-900">{t('Smart Alerts & Recommendations')}</h3>
             <span className="bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{insights.length}</span>
@@ -112,7 +131,7 @@ const AIInsightsPage = () => {
                         </div>
                         <div className="flex items-center justify-between mt-3">
                           <p className="text-xs text-slate-400">Generated {insight.generatedAt}</p>
-                          <button className="text-xs font-bold text-primary hover:underline">{insight.action} →</button>
+                          <button onClick={() => handleActionClick(insight.category, insight.action)} className="text-xs font-bold text-primary hover:underline">{insight.action} →</button>
                         </div>
                       </div>
                     </div>
@@ -124,19 +143,24 @@ const AIInsightsPage = () => {
         </div>
 
         {/* AI Chat */}
-        <div className="col-span-5">
-          <div className="bg-zinc-900 rounded-xl overflow-hidden flex flex-col h-[600px]">
-            <div className="p-5 border-b border-white/10">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                  <Icon name="psychology" className="text-white text-lg" />
+        {isAiOpen && (
+          <div className="col-span-12 lg:col-span-5 transition-all duration-300 relative">
+            <div className="lg:sticky lg:top-6 z-40 w-full">
+              <div className="bg-zinc-900 rounded-xl overflow-hidden flex flex-col h-[600px] shadow-2xl">
+              <div className="p-5 border-b border-white/10 flex justify-between items-start">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                    <Icon name="psychology" className="text-white text-lg" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-white text-sm">{t('Boxway AI')}</p>
+                    <p className="text-zinc-400 text-xs">{t('Business Intelligence Assistant')}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-bold text-white text-sm">{t('Boxway AI')}</p>
-                  <p className="text-zinc-400 text-xs">{t('Business Intelligence Assistant')}</p>
-                </div>
+                <button onClick={() => setIsAiOpen(false)} className="text-zinc-500 hover:text-white transition-colors p-1 bg-white/5 rounded-full hover:bg-white/10">
+                  <Icon name="close" className="text-lg" />
+                </button>
               </div>
-            </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {chat.map((msg, i) => (
@@ -172,7 +196,21 @@ const AIInsightsPage = () => {
               </div>
             </div>
           </div>
-        </div>
+          </div>
+          </div>
+        )}
+
+        {/* Floating AI Button when minimized */}
+        {!isAiOpen && (
+          <button 
+            onClick={() => setIsAiOpen(true)}
+            className="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-zinc-900 text-white flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.2)] hover:bg-zinc-800 transition-all hover:scale-105 z-50 group"
+            title="Open Boxway AI"
+          >
+            <Icon name="psychology" className="text-2xl text-primary group-hover:text-white transition-colors" />
+          </button>
+        )}
+      </div>
       </div>
     </div>
   );

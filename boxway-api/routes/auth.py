@@ -54,9 +54,16 @@ async def login_user(login_data: LoginSchema = Body(...)):
     if not user:
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
-    # Verify password
-    if not verify_password(login_data.password, user["password"]):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
+    # Verify password (try bcrypt first, then plain text for demo compatibility)
+    try:
+        if not verify_password(login_data.password, user["password"]):
+            # Try plain text comparison for demo users
+            if login_data.password != user["password"]:
+                raise HTTPException(status_code=401, detail="Invalid email or password")
+    except Exception as e:
+        # If bcrypt fails, try plain text
+        if login_data.password != user["password"]:
+            raise HTTPException(status_code=401, detail="Invalid email or password")
     
     # Return user without password
     user_data = user_helper(user)
