@@ -25,12 +25,21 @@ const ReviewProposalPage = () => {
 
   const handleSubmit = async () => {
     try {
+      // Parse budget range to get numeric value
+      let numericValue = 0;
+      if (form.budgetRange) {
+        const match = form.budgetRange.match(/\$?([\d.]+)M/);
+        if (match) {
+          numericValue = parseFloat(match[1]) * 1000000;
+        }
+      }
+
       const newProposal = {
         title: form.projectTitle || 'Untitled Proposal',
         client: form.fullName || 'Unknown Client',
         clientContact: form.email || '',
-        lead: 'Marcus Johnson',
-        value: 0,
+        lead: form.leadEmployee || '',
+        value: numericValue,
         status: 'Submitted',
         phase: 'Initial',
         version: 1,
@@ -46,12 +55,21 @@ const ReviewProposalPage = () => {
 
   const handleSaveDraft = async () => {
     try {
+      // Parse budget range to get numeric value
+      let numericValue = 0;
+      if (form.budgetRange) {
+        const match = form.budgetRange.match(/\$?([\d.]+)M/);
+        if (match) {
+          numericValue = parseFloat(match[1]) * 1000000;
+        }
+      }
+
       const newProposal = {
         title: form.projectTitle || 'Untitled Proposal',
         client: form.fullName || 'Unknown Client',
         clientContact: form.email || '',
-        lead: 'Marcus Johnson',
-        value: 0,
+        lead: form.leadEmployee || '',
+        value: numericValue,
         status: 'Draft',
         phase: 'Initial',
         version: 1,
@@ -66,10 +84,10 @@ const ReviewProposalPage = () => {
   };
 
   const sections = [
-    { label: 'Full Name', val: form.fullName || 'Eleanor Sterling-Hayes' },
-    { label: 'Email', val: form.email || 'eleanor.hayes@monolith-estate.co.uk' },
-    { label: 'Phone', val: form.phone || '+44 7700 900 452' },
-    { label: 'Company', val: form.company || 'Sterling Estate Development' },
+    { label: 'Full Name', val: form.fullName || '—' },
+    { label: 'Email', val: form.email || '—' },
+    { label: 'Phone', val: form.phone || '—' },
+    { label: 'Company', val: form.company || '—' },
   ];
 
   return (
@@ -101,7 +119,7 @@ const ReviewProposalPage = () => {
             <p className="text-zinc-500 mt-2 text-sm">
               Please review the captured data for the{' '}
               <span className="text-zinc-900 font-semibold underline decoration-primary/30 decoration-2 underline-offset-4">
-                {form.projectTitle || 'The Monolith Pavilion'}
+                {form.projectTitle || '—'}
               </span>{' '}
               project before final submission.
             </p>
@@ -134,11 +152,11 @@ const ReviewProposalPage = () => {
                 ))}
                 <div>
                   <p className={LABEL}>{t('Communication Preference')}</p>
-                  <p className={VAL}>{form.commMode || 'Video Call'}</p>
+                  <p className={VAL}>{form.commMode || '—'}</p>
                 </div>
                 <div>
                   <p className={LABEL}>{t('Lead Source')}</p>
-                  <p className={VAL}>{form.leadSource || 'Referral'}</p>
+                  <p className={VAL}>{form.leadSource || '—'}</p>
                 </div>
               </div>
             </div>
@@ -155,7 +173,7 @@ const ReviewProposalPage = () => {
               <div className="mb-4">
                 <p className={LABEL + ' mb-1'}>{t('Project Vision')}</p>
                 <p className="text-base leading-relaxed italic text-zinc-600 font-light">
-                  {form.vision || '"To create a seamless transition between the existing facade and a raw concrete extension that celebrates structural honesty and natural light."'}
+                  {form.vision || '—'}
                 </p>
               </div>
               {form.pillars?.length > 0 && (
@@ -175,9 +193,9 @@ const ReviewProposalPage = () => {
                   <h4 className="text-[10px] font-black uppercase tracking-widest">{t('Project Details')}</h4>
                 </div>
                 <div className="space-y-3">
-                  <div><p className={LABEL}>{t('Title')}</p><p className={VAL}>{form.projectTitle || 'The Monolith Pavilion'}</p></div>
-                  <div><p className={LABEL}>{t('Type')}</p><p className={VAL}>{form.projectType || 'High-End Residential'}</p></div>
-                  <div><p className={LABEL}>{t('Site Address')}</p><p className={VAL}>{form.siteAddress || '12 Swain\'s Lane, London'}</p></div>
+                  <div><p className={LABEL}>{t('Title')}</p><p className={VAL}>{form.projectTitle || '—'}</p></div>
+                  <div><p className={LABEL}>{t('Type')}</p><p className={VAL}>{form.projectType || '—'}</p></div>
+                  <div><p className={LABEL}>{t('Site Address')}</p><p className={VAL}>{form.siteAddress || '—'}</p></div>
                   <div><p className={LABEL}>{t('Plot Size')}</p><p className={VAL}>{form.plotSize ? `${form.plotSize} sqm` : '—'}</p></div>
                 </div>
               </div>
@@ -187,12 +205,13 @@ const ReviewProposalPage = () => {
                   <h4 className="text-[10px] font-black uppercase tracking-widest">{t('Scope of Services')}</h4>
                 </div>
                 <div className="space-y-2">
-                  {(form.scopeServices?.length > 0 ? form.scopeServices : ['RIBA Stages 0-4 (Design)', 'Contract Administration', 'BIM Coordination']).map(s => (
+                  {(form.scopeServices?.length > 0 ? form.scopeServices : []).map(s => (
                     <div key={s} className="flex items-center gap-2 text-xs">
                       <Icon name="check" className="text-primary text-[14px]" />
                       <span>{s}</span>
                     </div>
                   ))}
+                  {(!form.scopeServices || form.scopeServices.length === 0) && <span className="text-zinc-400 text-xs">No services specified</span>}
                 </div>
               </div>
             </div>
@@ -226,17 +245,18 @@ const ReviewProposalPage = () => {
               </div>
               <div>
                 <p className="text-[9px] text-white/40 uppercase tracking-widest mb-1">{t('Primary Typology')}</p>
-                <p className="font-bold text-white">{form.projectType || 'High-End Residential'}</p>
+                <p className="font-bold text-white">{form.projectType || '—'}</p>
               </div>
               <hr className="my-5 border-white/10" />
               <div>
                 <p className="text-[9px] text-white/40 uppercase tracking-widest mb-2">{t('Service Phases Included')}</p>
-                {(form.scopeServices || ['RIBA Stages 0-4 (Design)', 'Contract Administration']).map(s => (
+                {(form.scopeServices?.length > 0 ? form.scopeServices : []).map(s => (
                   <div key={s} className="flex items-center justify-between text-xs mt-2">
                     <span className="text-white/70">{s}</span>
                     <Icon name="check" style={{ fontVariationSettings: "'wght' 700" }} className="text-primary text-[14px]" />
                   </div>
                 ))}
+                {(!form.scopeServices || form.scopeServices.length === 0) && <span className="text-white/40 text-xs">No services specified</span>}
               </div>
             </div>
 
@@ -249,7 +269,7 @@ const ReviewProposalPage = () => {
               <div className="space-y-5">
                 <div>
                   <p className={LABEL + ' mb-1'}>{t('Investment Range')}</p>
-                  <p className="text-2xl font-black text-zinc-900">{form.budgetRange || '$1.5M – $3.0M'}</p>
+                  <p className="text-2xl font-black text-zinc-900">{form.budgetRange || '—'}</p>
                 </div>
                 <div>
                   <p className={LABEL + ' mb-1'}>{t('Timeline Flexibility')}</p>
@@ -261,7 +281,7 @@ const ReviewProposalPage = () => {
                 <div>
                   <p className={LABEL + ' mb-1'}>{t('Priority Level')}</p>
                   <span className={`inline-block px-3 py-1 text-[9px] font-black uppercase tracking-widest ${form.priority === 'Hot' ? 'bg-primary text-white' : form.priority === 'Warm' ? 'bg-amber-100 text-amber-700' : 'bg-zinc-100 text-zinc-500'}`}>
-                    {form.priority || 'Hot'} Lead
+                    {form.priority || '—'}
                   </span>
                 </div>
               </div>

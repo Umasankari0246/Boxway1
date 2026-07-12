@@ -270,7 +270,7 @@ const ProposalsPage = () => {
                           onClick={() => setPhaseDropdownId(phaseDropdownId === p.id ? null : p.id)}
                           className="text-xs text-zinc-600 min-w-[80px]"
                         >
-                          {p.phase || 'Initial'}
+                          {p.phase || '—'}
                         </button>
                         {phaseDropdownId === p.id && (
                           <div className="absolute top-full left-0 mt-1 bg-white border border-zinc-200 rounded shadow-lg z-[99999] min-w-[100px] max-h-48 overflow-y-auto">

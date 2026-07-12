@@ -25,13 +25,14 @@ const INPUT = 'w-full bg-transparent border-0 border-b border-zinc-200 focus:rin
 const LABEL = 'block text-[9px] uppercase tracking-[0.15em] font-black text-zinc-500 mb-1.5';
 
 const DEFAULT_FORM = {
-  fullName: '', email: '', phone: '', company: '', commMode: 'Video Call (Zoom/Teams)', isPrimary: true, stakeholders: '',
-  projectTitle: '', projectType: 'High-End Residential', siteAddress: '', plotSize: '', buildupArea: '',
-  budgetRange: '$1.5M – $3.0M', timelineFlexibility: 50, includesInterior: true, includesLandscape: false, includesBIM: true,
-  vision: '', pillars: ['Minimalist Void'],
+  clientId: '', fullName: '', email: '', phone: '', company: '', commMode: '', isPrimary: true, stakeholders: '',
+  projectId: '', projectTitle: '', projectType: '', siteAddress: '', plotSize: '', buildupArea: '',
+  budgetRange: '', value: 0, timelineFlexibility: 50, includesInterior: false, includesLandscape: false, includesBIM: false,
+  vision: '', pillars: [],
   siteNotes: '',
-  scopeServices: ['RIBA Stages 0-4 (Design)', 'Contract Administration'],
-  leadSource: '', priority: 'Hot',
+  scopeServices: [],
+  leadSource: '', priority: '',
+  leadEmployee: '',
 };
 
 const PILLARS = ['Sustainable Materials', 'Minimalist Void', 'Brutalist Elements', 'Smart Integration', 'Biophilic Design', 'Net Zero'];
@@ -48,8 +49,29 @@ const NewProposalPage = () => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isEditMode, setIsEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [clients, setClients] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [employees, setEmployees] = useState([]);
 
   const set = (field, val) => setForm(p => ({ ...p, [field]: val }));
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [clientsRes, projectsRes, employeesRes] = await Promise.all([
+          api.get('/clients/'),
+          api.get('/projects/'),
+          api.get('/employees/'),
+        ]);
+        setClients(clientsRes.data.data || []);
+        setProjects(projectsRes.data.data || []);
+        setEmployees(employeesRes.data.data || []);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+      }
+    };
+    fetchData();
+  }, []);
 
   useEffect(() => {
     if (id) {
@@ -60,29 +82,30 @@ const NewProposalPage = () => {
           const response = await api.get(`/proposals/${id}`);
           const proposal = response.data.data;
           setForm({
-            fullName: proposal.client,
-            email: proposal.clientContact,
+            fullName: proposal.client || '',
+            email: proposal.clientContact || '',
             phone: '',
             company: '',
-            commMode: 'Video Call (Zoom/Teams)',
+            commMode: '',
             isPrimary: true,
             stakeholders: '',
-            projectTitle: proposal.title,
-            projectType: 'High-End Residential',
+            projectTitle: proposal.title || '',
+            projectType: '',
             siteAddress: '',
             plotSize: '',
             buildupArea: '',
-            budgetRange: '$1.5M – $3.0M',
+            budgetRange: '',
             timelineFlexibility: 50,
-            includesInterior: true,
+            includesInterior: false,
             includesLandscape: false,
-            includesBIM: true,
+            includesBIM: false,
             vision: '',
-            pillars: ['Minimalist Void'],
+            pillars: [],
             siteNotes: '',
-            scopeServices: ['RIBA Stages 0-4 (Design)', 'Contract Administration'],
+            scopeServices: [],
             leadSource: '',
-            priority: 'Hot',
+            priority: '',
+            leadEmployee: proposal.lead || '',
           });
         } catch (err) {
           console.error('Error fetching proposal:', err);
@@ -117,12 +140,21 @@ const NewProposalPage = () => {
 
   const handleSaveDraft = async () => {
     try {
+      // Parse budget range to get numeric value (take the upper bound)
+      let numericValue = 0;
+      if (form.budgetRange) {
+        const match = form.budgetRange.match(/\$?([\d.]+)M/);
+        if (match) {
+          numericValue = parseFloat(match[1]) * 1000000;
+        }
+      }
+
       const proposalData = {
         title: form.projectTitle || 'Untitled Proposal',
         client: form.fullName || 'Unknown Client',
         clientContact: form.email || '',
-        lead: 'Marcus Johnson',
-        value: 0,
+        lead: form.leadEmployee || '',
+        value: numericValue,
         status: 'Draft',
         phase: 'Initial',
         version: 1,
@@ -211,17 +243,52 @@ const NewProposalPage = () => {
                   <h3 className="text-[11px] font-black uppercase tracking-[0.15em] text-zinc-900">01. Client Information</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {[
-                    { field: 'fullName', label: 'Full Name', placeholder: 'e.g. Julianne Sterling', type: 'text' },
-                    { field: 'email', label: 'Email Address', placeholder: 'j.sterling@estate.com', type: 'email' },
-                    { field: 'phone', label: 'Phone Number', placeholder: '+1 555-000-1234', type: 'tel' },
-                    { field: 'company', label: 'Company / Entity', placeholder: 'Sterling Development Group', type: 'text' },
-                  ].map(f => (
-                    <div key={f.field} className="group">
-                      <label className={LABEL}>{f.label}</label>
-                      <input type={f.type} value={form[f.field]} onChange={e => set(f.field, e.target.value)} placeholder={f.placeholder} className={INPUT} />
-                    </div>
-                  ))}
+                  <div className="md:col-span-2">
+                    <label className={LABEL}>Select Client</label>
+                    <select 
+                      value={form.clientId || ''} 
+                      onChange={e => {
+                        const clientId = e.target.value;
+                        set('clientId', clientId);
+                        if (clientId) {
+                          const client = clients.find(c => (c.id || c.clientId) === clientId);
+                          if (client) {
+                            set('fullName', client.name || '');
+                            set('email', client.email || '');
+                            set('company', client.companyName || client.name || '');
+                            set('phone', client.phone || '');
+                          }
+                        } else {
+                          set('fullName', '');
+                          set('email', '');
+                          set('company', '');
+                          set('phone', '');
+                        }
+                      }}
+                      className={INPUT + ' appearance-none cursor-pointer'}
+                    >
+                      <option value="">Select a client...</option>
+                      {clients.map(c => (
+                        <option key={c.id || c.clientId} value={c.id || c.clientId}>{c.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className={LABEL}>Full Name</label>
+                    <input type="text" value={form.fullName} onChange={e => set('fullName', e.target.value)} placeholder={t('Auto-filled from client selection')} className={INPUT} />
+                  </div>
+                  <div>
+                    <label className={LABEL}>Email Address</label>
+                    <input type="email" value={form.email} onChange={e => set('email', e.target.value)} placeholder={t('Auto-filled from client selection')} className={INPUT} />
+                  </div>
+                  <div>
+                    <label className={LABEL}>Phone Number</label>
+                    <input type="tel" value={form.phone} onChange={e => set('phone', e.target.value)} placeholder={t('Auto-filled from client selection')} className={INPUT} />
+                  </div>
+                  <div>
+                    <label className={LABEL}>Company / Entity</label>
+                    <input type="text" value={form.company} onChange={e => set('company', e.target.value)} placeholder={t('Auto-filled from client selection')} className={INPUT} />
+                  </div>
                 </div>
                 <div className="bg-zinc-50 p-5 grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
@@ -260,12 +327,41 @@ const NewProposalPage = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="md:col-span-2">
+                    <label className={LABEL}>Select Project (Optional)</label>
+                    <select 
+                      value={form.projectId || ''} 
+                      onChange={e => {
+                        const projectId = e.target.value;
+                        set('projectId', projectId);
+                        if (projectId) {
+                          const project = projects.find(p => (p.id || p.projectId) === projectId);
+                          if (project) {
+                            set('projectTitle', project.name || '');
+                            set('projectType', project.type || '');
+                            set('siteAddress', project.city || project.location || '');
+                          }
+                        } else {
+                          set('projectTitle', '');
+                          set('projectType', '');
+                          set('siteAddress', '');
+                        }
+                      }}
+                      className={INPUT + ' appearance-none cursor-pointer'}
+                    >
+                      <option value="">Select an existing project...</option>
+                      {projects.map(p => (
+                        <option key={p.id || p.projectId} value={p.id || p.projectId}>{p.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="md:col-span-2">
                     <label className={LABEL}>Project Title / Alias</label>
-                    <input type="text" value={form.projectTitle} onChange={e => set('projectTitle', e.target.value)} placeholder={t('e.g. The Monolith Pavilion')} className={INPUT + ' text-xl font-black'} />
+                    <input type="text" value={form.projectTitle} onChange={e => set('projectTitle', e.target.value)} placeholder={t('Auto-filled from project selection or enter manually')} className={INPUT + ' text-xl font-black'} />
                   </div>
                   <div>
                     <label className={LABEL}>{t('Project Type')}</label>
                     <select value={form.projectType} onChange={e => set('projectType', e.target.value)} className={INPUT}>
+                      <option value="">Select type...</option>
                       <option>{t('High-End Residential')}</option>
                       <option>Commercial / Retail</option>
                       <option>Hospitality / Boutique Hotel</option>
@@ -463,11 +559,15 @@ const NewProposalPage = () => {
                 </div>
                 <div>
                   <label className={LABEL}>{t('Assign Lead Architect')}</label>
-                  <select className={INPUT}>
-                    <option>Marcus Johnson — Senior Architect</option>
-                    <option>Priya Nair — Project Manager</option>
-                    <option>Nina Patel — Architect</option>
-                    <option>Elena Rodriguez — Interior Designer</option>
+                  <select 
+                    value={form.leadEmployee || ''} 
+                    onChange={e => set('leadEmployee', e.target.value)}
+                    className={INPUT + ' appearance-none cursor-pointer'}
+                  >
+                    <option value="">Select lead architect...</option>
+                    {employees.map(e => (
+                      <option key={e.id || e.employeeId} value={e.id || e.employeeId}>{e.name} — {e.role}</option>
+                    ))}
                   </select>
                 </div>
               </section>

@@ -134,6 +134,18 @@ const ProjectsPage = () => {
     document.body.removeChild(link);
   };
 
+  const handleDelete = async (projectId, projectName) => {
+    if (window.confirm(`Are you sure you want to delete "${projectName}"?`)) {
+      try {
+        await api.delete(`/projects/${projectId}`);
+        setProjects(projects.filter(p => p.id !== projectId));
+      } catch (err) {
+        console.error('Error deleting project:', err);
+        alert('Failed to delete project');
+      }
+    }
+  };
+
   return (
     <div className="flex flex-col h-full bg-[#f8f6f6]">
       {/* Header Container */}
@@ -264,7 +276,17 @@ const ProjectsPage = () => {
                       {p.status}
                     </span>
                   </div>
-                  <div className="flex justify-end items-center">
+                  <div className="flex justify-end items-center gap-2">
+                    <button 
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        handleDelete(p.id, p.name); 
+                      }} 
+                      className="text-slate-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 transition-colors" 
+                      title={t('Delete')}
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
                     <button onClick={(e) => { e.stopPropagation(); navigate(`/projects/${p.id}`); }} className="text-slate-400 hover:text-primary p-1.5 rounded hover:bg-primary/10 transition-colors" title={t('View Details')}>
                       <ChevronRight className="h-5 w-5" />
                     </button>

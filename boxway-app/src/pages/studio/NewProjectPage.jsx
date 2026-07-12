@@ -50,14 +50,16 @@ const NewProjectPage = () => {
 
   const [form, setForm] = useState({
     name: fromProposal?.title || '',
-    type: fromProposal?.projectType || 'High-End Residential',
+    type: fromProposal?.projectType || '',
     description: '',
     startDate: '',
     endDate: '',
     client: fromProposal?.client || '',
     clientContact: fromProposal?.fullName || '',
     clientEmail: fromProposal?.email || '',
-    clientProjectCode: 'BW24-',
+    clientCompany: '',
+    clientPhone: '',
+    clientProjectCode: '',
     leadArchitect: '',
     teamMembers: [],
     budget: '',
@@ -66,18 +68,38 @@ const NewProjectPage = () => {
 
   const set = (f, v) => setForm(p => ({ ...p, [f]: v }));
 
+  const handleClientChange = async (clientId) => {
+    set('client', clientId);
+    if (clientId) {
+      try {
+        const res = await api.get(`/clients/${clientId}`);
+        const client = res.data.data;
+        setForm(prev => ({
+          ...prev,
+          clientContact: client.contactName || client.contactPerson || client.name || '',
+          clientEmail: client.email || '',
+          clientCompany: client.companyName || client.name || '',
+          clientPhone: client.phone || '',
+        }));
+      } catch (err) {
+        console.error('Error fetching client details:', err);
+      }
+    } else {
+      setForm(prev => ({
+        ...prev,
+        clientContact: '',
+        clientEmail: '',
+        clientCompany: '',
+        clientPhone: '',
+      }));
+    }
+  };
+
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
         const res = await api.get('/employees/');
         setEmployees(res.data.data);
-        if (res.data.data.length > 0) {
-          setForm(prev => ({
-            ...prev,
-            leadArchitect: prev.leadArchitect || (res.data.data[0].id || res.data.data[0].employeeId),
-            teamMembers: prev.teamMembers.length > 0 ? prev.teamMembers : [(res.data.data[0].id || res.data.data[0].employeeId)]
-          }));
-        }
       } catch (err) {
         console.error('Error fetching employees:', err);
       }
@@ -286,23 +308,23 @@ const NewProjectPage = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className={LABEL}>Client / Company</label>
-                  <select value={form.client} onChange={e => set('client', e.target.value)} className={INPUT}>
+                  <label className={LABEL}>Client</label>
+                  <select value={form.client} onChange={e => handleClientChange(e.target.value)} className={INPUT}>
                     <option value="">{t('Select client...')}</option>
                     {clients.map(c => <option key={c.id || c.clientId} value={c.id || c.clientId}>{c.name}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className={LABEL}>{t('Client Contact Name')}</label>
-                  <input value={form.clientContact} onChange={e => set('clientContact', e.target.value)} placeholder={t('Robert Chen')} className={INPUT} />
+                  <input value={form.clientContact} onChange={e => set('clientContact', e.target.value)} placeholder={t('Auto-filled from client')} className={INPUT} />
                 </div>
                 <div>
                   <label className={LABEL}>{t('Client Email')}</label>
-                  <input value={form.clientEmail} onChange={e => set('clientEmail', e.target.value)} placeholder={t('robert@meridian.com')} className={INPUT} />
+                  <input value={form.clientEmail} onChange={e => set('clientEmail', e.target.value)} placeholder={t('Auto-filled from client')} className={INPUT} />
                 </div>
                 <div>
                   <label className={LABEL}>{t('Client Phone')}</label>
-                  <input placeholder={t('+1 555-2001')} className={INPUT} />
+                  <input value={form.clientPhone} onChange={e => set('clientPhone', e.target.value)} placeholder={t('Auto-filled from client')} className={INPUT} />
                 </div>
               </div>
             </div>

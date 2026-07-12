@@ -4,7 +4,9 @@ import axios from 'axios';
 
 // Create an axios instance for settings to avoid circular dependencies
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api',
+  baseURL: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:8001/api'
+    : 'https://boxxway.onrender.com/api',
 });
 
 // Default settings as requested

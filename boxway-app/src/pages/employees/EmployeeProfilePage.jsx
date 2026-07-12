@@ -273,9 +273,9 @@ const EmployeeProfilePage = () => {
             </div>
             <p className="text-slate-500 text-sm mt-0.5">{emp.role} · {emp.department}</p>
             <div className="flex items-center gap-6 mt-3 text-sm text-slate-500">
-              <span className="flex items-center gap-1.5"><Icon name="cake" className="text-sm" />{emp.dob || '01 Jan 1990'}</span>
-              <span className="flex items-center gap-1.5"><Icon name="water_drop" className="text-sm" />{emp.bloodGroup || 'O+'}</span>
-              <span className="flex items-center gap-1.5"><Icon name="location_on" className="text-sm" />{emp.city || emp.location || 'London'}</span>
+              <span className="flex items-center gap-1.5"><Icon name="cake" className="text-sm" />{emp.dob || '—'}</span>
+              <span className="flex items-center gap-1.5"><Icon name="water_drop" className="text-sm" />{emp.bloodGroup || '—'}</span>
+              <span className="flex items-center gap-1.5"><Icon name="location_on" className="text-sm" />{emp.city || emp.location || '—'}</span>
             </div>
           </div>
           <div className="text-right">
@@ -324,20 +324,21 @@ const EmployeeProfilePage = () => {
                   </dd></div>
                   <div><dt className="text-slate-500 text-xs uppercase font-bold">{t('Gender')}</dt><dd className="font-medium mt-0.5">
                     {isEditing ? (
-                      <select name="gender" value={editForm.gender || 'Male'} onChange={handleInputChange} className="w-full px-2 py-1 border border-slate-300 rounded">
+                      <select name="gender" value={editForm.gender || ''} onChange={handleInputChange} className="w-full px-2 py-1 border border-slate-300 rounded">
+                        <option value="">{t('Select')}</option>
                         <option value="Male">{t('Male')}</option>
                         <option value="Female">{t('Female')}</option>
                         <option value="Other">{t('Other')}</option>
                       </select>
                     ) : (
-                      emp.gender || 'Male'
+                      emp.gender || '—'
                     )}
                   </dd></div>
                   <div><dt className="text-slate-500 text-xs uppercase font-bold">{t('Join Date')}</dt><dd className="font-medium mt-0.5">
                     {isEditing ? (
                       <input name="startDate" type="date" value={editForm.startDate || ''} onChange={handleInputChange} className="w-full px-2 py-1 border border-slate-300 rounded" />
                     ) : (
-                      emp.joinDate || emp.startDate || '2023-01-15'
+                      emp.joinDate || emp.startDate || '—'
                     )}
                   </dd></div>
                   <div className="col-span-2 mt-2">
@@ -378,17 +379,17 @@ const EmployeeProfilePage = () => {
                      {isEditing ? (
                        <input name="highestQualification" value={editForm.highestQualification || ''} onChange={handleInputChange} className="w-32 px-2 py-1 border border-slate-300 rounded mr-2" />
                      ) : (
-                       <span>{emp.highestQualification || 'M.Arch'}</span>
+                       <span>{emp.highestQualification || '—'}</span>
                      )}, 
                      {isEditing ? (
                        <input name="university" value={editForm.university || ''} onChange={handleInputChange} className="w-32 px-2 py-1 border border-slate-300 rounded mr-2" />
                      ) : (
-                       <span>{emp.university || 'MIT'}</span>
+                       <span>{emp.university || '—'}</span>
                      )}, 
                      {isEditing ? (
                        <input name="graduationYear" value={editForm.graduationYear || ''} onChange={handleInputChange} className="w-20 px-2 py-1 border border-slate-300 rounded" />
                      ) : (
-                       <span>{emp.graduationYear || '2015'}</span>
+                       <span>{emp.graduationYear || '—'}</span>
                      )}
                      </p>
                 </div>
@@ -398,9 +399,10 @@ const EmployeeProfilePage = () => {
                     <input name="architectureSkills" value={editForm.architectureSkills?.join(', ') || ''} onChange={(e) => setEditForm({...editForm, architectureSkills: e.target.value.split(', ')})} className="w-full px-2 py-1 border border-slate-300 rounded" placeholder={t('Skills separated by commas')} />
                   ) : (
                     <div className="flex flex-wrap gap-2">
-                      {(emp.architectureSkills && emp.architectureSkills.length > 0 ? emp.architectureSkills : ['Conceptual Design', '3D Modeling', 'Urban Planning']).map(s => (
+                      {(emp.architectureSkills && emp.architectureSkills.length > 0 ? emp.architectureSkills : []).map(s => (
                         <span key={s} className="px-3 py-1 bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold rounded-full">{s}</span>
                       ))}
+                      {(!emp.architectureSkills || emp.architectureSkills.length === 0) && <span className="text-slate-400 text-sm">No skills listed</span>}
                     </div>
                   )}
                 </div>
@@ -410,9 +412,10 @@ const EmployeeProfilePage = () => {
                     <input name="toolsSelection" value={editForm.toolsSelection?.join(', ') || ''} onChange={(e) => setEditForm({...editForm, toolsSelection: e.target.value.split(', ')})} className="w-full px-2 py-1 border border-slate-300 rounded" placeholder={t('Tools separated by commas')} />
                   ) : (
                     <div className="flex flex-wrap gap-2">
-                      {(emp.toolsSelection && emp.toolsSelection.length > 0 ? emp.toolsSelection : ['AutoCAD', 'Revit', 'SketchUp']).map(s => (
+                      {(emp.toolsSelection && emp.toolsSelection.length > 0 ? emp.toolsSelection : []).map(s => (
                         <span key={s} className="px-3 py-1 bg-primary/10 text-primary border border-primary/20 text-xs font-bold rounded-full">{s}</span>
                       ))}
+                      {(!emp.toolsSelection || emp.toolsSelection.length === 0) && <span className="text-slate-400 text-sm">No tools listed</span>}
                     </div>
                   )}
                 </div>
@@ -447,7 +450,7 @@ const EmployeeProfilePage = () => {
                 {isEditing ? (
                   <input name="salary" type="number" value={editForm.salary || ''} onChange={handleInputChange} className="w-full px-2 py-1 border border-slate-300 rounded text-black" />
                 ) : (
-                  <p className="text-3xl font-black text-primary">{formatCurrency((emp.salary || 75000).toLocaleString())}</p>
+                  <p className="text-3xl font-black text-primary">{emp.salary ? formatCurrency(emp.salary.toLocaleString()) : '—'}</p>
                 )}
                 <p className="text-slate-400 text-xs mt-1">per year</p>
               </div>
@@ -464,22 +467,25 @@ const EmployeeProfilePage = () => {
 
          {activeTab === 'projects' && (
              <div className="bg-white rounded-xl border border-slate-200 p-6">
-                <h3 className="font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">{t('Project Assignment History')}</h3>
+                <h3 className="font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">{t('Assigned Projects')}</h3>
                 {projects.length === 0 ? (
                   <div className="text-center py-12">
                     <Icon name="folder_open" className="text-5xl text-slate-300 mx-auto" />
                     <p className="text-slate-500 text-sm mt-3">{t('No projects assigned to this employee.')}</p>
                   </div>
                 ) : (
-                  <div className="relative border-l-2 border-slate-200 ml-3 mt-6 space-y-8">
-                    {projects.map((project, index) => (
-                      <div key={project.id} className="relative pl-6">
-                        <span className={`absolute -left-1.5 top-1 w-3 h-3 rounded-full ring-4 ring-white ${index === 0 ? 'bg-primary' : 'bg-slate-300'}`}></span>
-                        <p className={`text-xs font-bold mb-1 ${index === 0 ? 'text-primary' : 'text-slate-500'}`}>{index === 0 ? 'Current' : 'Previous'}</p>
-                        <h4 className="text-sm font-bold text-slate-800">{project.name}</h4>
-                        <p className="text-xs text-slate-500 mt-1">
-                          {project.lead === emp.employeeId ? 'Lead Architect' : 'Team Member'} • {project.type || 'Project'}
-                        </p>
+                  <div className="space-y-3 mt-4">
+                    {projects.map((project) => (
+                      <div key={project.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200">
+                        <div>
+                          <h4 className="text-sm font-bold text-slate-900">{project.name}</h4>
+                          <p className="text-xs text-slate-500 mt-1">
+                            {project.lead === emp.employeeId ? 'Lead Architect' : 'Team Member'} • {project.type || 'Project'}
+                          </p>
+                        </div>
+                        <span className={`px-3 py-1 text-xs font-bold rounded-lg ${project.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'}`}>
+                          {project.status === 'Completed' ? 'Completed' : 'Assigned'}
+                        </span>
                       </div>
                     ))}
                   </div>

@@ -148,8 +148,8 @@ const ProjectViewPage = () => {
         const emp = getEmployeeById(empId);
         return {
           id: empId,
-          name: emp?.name || 'Unknown',
-          role: emp?.role || 'Member',
+          name: emp?.name || '—',
+          role: emp?.role || '—',
           color: ['bg-primary', 'bg-blue-600', 'bg-zinc-600', 'bg-violet-600', 'bg-teal-600', 'bg-rose-600'][Math.floor(Math.random() * 6)],
         };
       }) || [];
